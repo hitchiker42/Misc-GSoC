@@ -1,0 +1,8 @@
+mmintrin.h  | mmx
+xmmintrin.h | sse
+emmintrin.h | see2
+pmmintrin.h | sse3
+tmmintrin.h | ssse3
+smmintrin.h | sse4.2
+wmmintrin.h | aes (?)
+avxintrin.h | avx (duh)
