@@ -1,0 +1,828 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  
+  
+
+  
+
+
+  
+
+  <head>
+    <title>
+      SIMD/Design – GHC
+    </title>
+        <link rel="search" href="/trac/ghc/search" />
+        <link rel="help" href="/trac/ghc/wiki/TracGuide" />
+        <link rel="alternate" href="/trac/ghc/wiki/SIMD/Design?format=txt" type="text/x-trac-wiki" title="Plain Text" />
+        <link rel="up" href="/trac/ghc/wiki/SIMD" title="View parent page" />
+        <link rel="start" href="/trac/ghc/wiki" />
+        <link rel="stylesheet" href="/trac-htdocs/css/trac.css" type="text/css" /><link rel="stylesheet" href="/trac-htdocs/css/wiki.css" type="text/css" />
+        <link rel="shortcut icon" href="/trac/ghc/chrome/common/trac.ico" type="image/x-icon" />
+        <link rel="icon" href="/trac/ghc/chrome/common/trac.ico" type="image/x-icon" />
+      <link type="application/opensearchdescription+xml" rel="search" href="/trac/ghc/search/opensearch" title="Search GHC" />
+    <script type="text/javascript" src="/trac-htdocs/js/jquery.js"></script><script type="text/javascript" src="/trac-htdocs/js/trac.js"></script><script type="text/javascript" src="/trac-htdocs/js/search.js"></script>
+    <!--[if lt IE 7]>
+    <script type="text/javascript" src="/trac-htdocs/js/ie_pre7_hacks.js"></script>
+    <![endif]-->
+    <script type="text/javascript">
+      jQuery(document).ready(function($) {
+        $("#content").find("h1,h2,h3,h4,h5,h6").addAnchor("Link to this section");
+      });
+    </script>
+    <link rel="stylesheet" type="text/css" href="/ghc/style.css" />
+    <script type="text/javascript" src="/ghc/tracDupeSearch.js"></script>
+    <link rel="stylesheet" type="text/css" href="/ghc/tracDupeSearch.css" />
+  </head>
+  <body>
+    <div id="siteheader">
+      <?cs ####################################################################
+# Site header - Contents are automatically inserted above Trac HTML
+?><div id="left">
+  <div class="block"><ul>
+    <li><a href="/trac/ghc">GHC Trac Home</a></li>
+    <li><a href="http://www.haskell.org/ghc/">GHC Home</a></li>
+    <li> </li>
+    <li><b>Joining In</b></li>
+    <li><a href="/trac/ghc/wiki/WorkingConventions">Working on GHC</a></li>
+    <li><a href="/trac/ghc/wiki/MailingListsAndIRC">Mailing Lists &amp; IRC</a></li>
+    <li><a href="/trac/ghc/wiki/Contributors">GHC Contributors</a></li>
+    <li> </li>
+    <li><b>Documentation</b></li>
+    <li><a href="/trac/ghc/wiki/Status">Status Reports</a></li>
+    <li><a href="/trac/ghc/wiki/Repositories">Repositories</a></li>
+    <li><a href="/trac/ghc/wiki/Building">Building Guide</a></li>
+    <li><a href="/trac/ghc/wiki/Commentary">Commentary</a></li>
+    <li><a href="/trac/ghc/wiki/Debugging">Debugging</a></li>
+    <li> </li>
+    <li><b>View Tickets</b></li>
+    <li><a href="/trac/ghc/query?status=new&amp;status=assigned&amp;status=reopened&amp;group=priority&amp;type=bug&amp;order=id&amp;desc=1">All Bugs</a></li>
+    <li><a href="/trac/ghc/query?status=new&amp;status=assigned&amp;status=reopened&amp;type=task&amp;order=priority&amp;group=difficulty">All Tasks</a></li>
+    <li><a href="/trac/ghc/query?status=new&amp;status=assigned&amp;status=reopened&amp;type=feature+request&amp;order=priority">All Feature Req's</a></li>
+    <li><a href="/trac/ghc/query?status=new&amp;status=assigned&amp;status=reopened&amp;type=proposal&amp;order=priority">All Proposals</a></li>
+    <li><a href="/trac/ghc/query?status=infoneeded&amp;status=new&amp;status=patch&amp;order=priority&amp;owner=$USER">My Tickets</a></li>
+    <li><a href="/trac/ghc/query?status=infoneeded&amp;status=new&amp;status=patch&amp;order=priority&amp;reporter=$USER">Tickets I Created</a></li>
+    <li><a href="/trac/ghc/query?status=new&amp;status=assigned&amp;status=reopened&amp;group=milestone&amp;order=priority">By Milestone</a></li>
+    <li><a href="/trac/ghc/query?status=new&amp;status=assigned&amp;status=reopened&amp;group=os&amp;order=priority">By OS</a></li>
+    <li><a href="/trac/ghc/query?status=new&amp;status=assigned&amp;status=reopened&amp;group=architecture&amp;order=priority">By Architecture</a></li>
+    <li><a href="/trac/ghc/query?status=patch&amp;ol=id&amp;col=summary&amp;col=owner&amp;col=type&amp;col=priority&amp;col=milestone&amp;col=component&amp;order=priority">Patches for review</a></li>
+    <li> </li>
+    <li><b>Create Ticket</b></li>
+    <li><a href="/trac/ghc/newticket?type=bug">New Bug</a></li>
+    <li><a href="/trac/ghc/newticket?type=task">New Task</a></li>
+    <li><a href="/trac/ghc/newticket?type=feature+request">New Feature Req</a></li>
+    <li> </li>
+    <li><b>Wiki</b></li>
+    <li><a href="/trac/ghc/wiki/TitleIndex">Title Index</a></li>
+    <li><a href="/trac/ghc/wiki/RecentChanges">Recent Changes</a></li>
+    <li><a href="/trac/ghc/wiki/TracWikiMisc">Wiki Notes</a></li>
+  </ul></div>
+</div>
+    </div>
+    <div id="banner">
+      <div id="header">
+        <a id="logo" href="http://www.haskell.org/ghc/"><img src="/ghc/ghc_logo.png" alt="Trac" height="73" width="584" /></a>
+      </div>
+      <form id="search" action="/trac/ghc/search" method="get">
+        <div>
+          <label for="proj-search">Search:</label>
+          <input type="text" id="proj-search" name="q" size="18" value="" />
+          <input type="submit" value="Search" />
+        </div>
+      </form>
+      <div id="metanav" class="nav">
+    <ul>
+      <li class="first"><a href="/trac/ghc/login">Login</a></li><li><a href="/trac/ghc/wiki/TracGuide">Help/Guide</a></li><li><a href="/trac/ghc/about">About Trac</a></li><li><a href="/trac/ghc/register">Register</a></li><li><a href="/trac/ghc/reset_password">Forgot your password?</a></li><li class="last"><a href="/trac/ghc/prefs">Preferences</a></li>
+    </ul>
+  </div>
+    </div>
+    <div id="mainnav" class="nav">
+    <ul>
+      <li class="first active"><a href="/trac/ghc/wiki">Wiki</a></li><li><a href="/trac/ghc/timeline">Timeline</a></li><li><a href="/trac/ghc/roadmap">Roadmap</a></li><li><a href="/trac/ghc/report">View Tickets</a></li><li><a href="/trac/ghc/pdashboard">Dashboard</a></li><li class="last"><a href="/trac/ghc/blog">Blog</a></li>
+    </ul>
+  </div>
+    <div id="main">
+      <div id="ctxtnav" class="nav">
+        <h2>Context Navigation</h2>
+          <ul>
+              <li class="first"><a href="/trac/ghc/wiki/SIMD">Up</a></li><li><a href="/trac/ghc/wiki/WikiStart">Start Page</a> / <a href="/trac/ghc/wiki/SIMD">SIMD</a> / Design</li><li><a href="/trac/ghc/wiki/TitleIndex">Index</a></li><li><a href="/trac/ghc/wiki/SIMD/Design?action=history">History</a></li><li class="last"><a href="/trac/ghc/wiki/SIMD/Design?action=diff&amp;version=2">Last Change</a></li>
+          </ul>
+        <hr />
+      </div>
+    <div id="content" class="wiki">
+      <p class="path noprint">
+        <a class="pathentry" title="View SIMD" href="/trac/ghc/wiki/SIMD">SIMD</a><span class="pathentry sep">/</span><a class="pathentry" title="View SIMD/Design" href="/trac/ghc/wiki/SIMD/Design">Design</a>
+        <br style="clear: both" />
+      </p>
+      <div class="wikipage searchable">
+        
+          <p>
+</p><div class="wiki-toc"><ol><li><ol><li><a href="#Introduction">Introduction</a><ol><li><a href="#Usecases">Use cases</a></li><li>
+<a href="#ExistingSIMDinstructionsets">Existing SIMD instruction sets</a></li><li>
+<a href="#SIMDvectorsupportinothercompilers">SIMD/vector support in other compilers</a></li></ol></li><li>
+<a href="#Generalplan">General plan</a><ol><li><a href="#Vectortypes">Vector types</a></li><li>
+<a href="#Fixedandvariablesizedvectors">Fixed and variable sized vectors</a></li><li>
+<a href="#Portabilityandfallbacks">Portability and fallbacks</a></li><li>
+<a href="#GHCcommandlineflags">GHC command line flags</a></li></ol></li><li>
+<a href="#Codegenerators">Code generators</a></li><li>
+<a href="#Cmmlayer">Cmm layer</a></li><li>
+<a href="#Corelayer">Core layer</a><ol><li><a href="#Optionalextension:extrasyntax">Optional extension: extra syntax</a></li><li>
+<a href="#Primopgenerationandrepresentation">Primop generation and representation</a></li><li>
+<a href="#Optionalextension:primitiveintsizes">Optional extension: primitive int sizes</a></li></ol></li><li>
+<a href="#Nativevectorsizes">Native vector sizes</a></li><li>
+<a href="#Vectoroperations">Vector operations</a><ol><li><a href="#IntWordsizewrinkle">Int/Word size wrinkle</a></li></ol></li><li>
+<a href="#DataParallelHaskelllayer">Data Parallel Haskell layer</a></li><li>
+<a href="#ABIsandcallingconventions">ABIs and calling conventions</a><ol><li><a href="#Alternativedesign:separateABIs">Alternative design: separate ABIs</a></li><li>
+<a href="#Selecteddesign:mixedABIsusingworkerwrapper">Selected design: mixed ABIs using worker/wrapper</a></li><li>
+<a href="#Optionalextension:compilingcodeformultiplesub-architectures">Optional extension: compiling code for multiple sub-architectures</a></li><li>
+<a href="#Typesforcallingconventions">Types for calling conventions</a></li><li>
+<a href="#Callingconventionandperformance">Calling convention and performance</a></li><li>
+<a href="#Optionalextension:fastercommoncallingconvention">Optional extension: faster common calling convention</a></li><li>
+<a href="#Alternativedesign:onlymachine-specificABItypes">Alternative design: only machine-specific ABI types</a></li><li>
+<a href="#Memoryalignmentforvectors">Memory alignment for vectors</a></li><li>
+<a href="#ABIsummary">ABI summary</a></li></ol></li><li>
+<a href="#Seealso">See also</a></li></ol></li></ol></div><p>
+</p>
+<p>
+This is the design document for SIMD support in GHC that resulted from the October 11, 2011 meeting at GHC HQ. Please see the <a class="wiki" href="/trac/ghc/wiki/SIMD">top-level GHC SIMD</a> page for further details.
+</p>
+<h2 id="Introduction">Introduction</h2>
+<p>
+We are interested in the SIMD vector instructions on current and future generations of CPUs. This includes SSE and AVX on x86/x86-64 and NEON on ARM chips (targets like GPUs or FPGAs are out of scope for this project). These SIMD vector instruction sets are broadly similar in the sense of having relatively short vector registers and operations for various sizes of integer and/or floating point operation. In the details however they have different capabilities and different vector register sizes.
+</p>
+<p>
+We therefore want a design for SIMD support in GHC that will let us efficiently exploit current vector instructions but a design that is not tied too tightly to one CPU architecture or generation. In particular, it should be possible to write portable Haskell programs that use SIMD vectors.
+</p>
+<p>
+On the other hand, we want to be able to write programs for maximum efficiency that exploit the native vector sizes, preferably while remaining portable. For example, algorithms on large variable length vectors are in principle agnostic about the size of the primitive vector operations.
+</p>
+<p>
+Finally, we want a design that is not too difficult or time consuming to implement.
+</p>
+<h3 id="Usecases">Use cases</h3>
+<p>
+We are mainly interested in scientific / numerical use cases with large arrays / vectors. These are the kinds of use cases that DPH already targets.
+</p>
+<p>
+In the interests of limiting implementation difficulty, we are prepared initially to sacrifice performance in use cases with small vectors. Examples with lots of small vectors include 3D work where there are lots of 4-element vectors and 4x4 matrices. These tradeoffs show up in our choices about calling conventions and vector memory alignment which are discussed below.
+</p>
+<p>
+Note: we will need to be clear with users that initially this SIMD work is not suitable for small vectors, just big arrays.
+</p>
+<h3 id="ExistingSIMDinstructionsets">Existing SIMD instruction sets</h3>
+<p>
+Intel and AMD CPUs use the <a class="ext-link" href="http://en.wikipedia.org/wiki/Streaming_SIMD_Extensions"><span class="icon"> </span>SSE family</a> of extensions and, more recently (since Q1 2011), the <a class="ext-link" href="http://en.wikipedia.org/wiki/Advanced_Vector_Extensions"><span class="icon"> </span>AVX</a> extensions.  ARM CPUs (Cortex A series) use the <a class="ext-link" href="http://www.arm.com/products/processors/technologies/neon.php"><span class="icon"> </span>NEON</a> extensions. PowerPC and SPARC have similar vector extensions. Variations between different families of SIMD extensions and between different family members in one family of extensions include the following:
+</p>
+<dl><dt><strong>Register width</strong></dt><dd>
+SSE registers are 128 bits, whereas AVX registers are 256 bits, but they can also still be used as 128 bit registers with old SSE instructions. NEON registers can be used as 64-bit or 128-bit register.
+</dd><dt><strong>Register number</strong></dt><dd>
+SSE sports 8 SIMD registers in the 32-bit i386 instruction set and 16 SIMD registers in the 64-bit x84_64 instruction set. (AVX still has 16 SIMD registers.) NEON's SIMD registers can be used as 32 64-bit registers or 16 128-bit registers.
+</dd><dt><strong>Register types</strong></dt><dd>
+In the original SSE extension, SIMD registers could only hold 32-bit single-precision floats, whereas SSE2 extend that to include 64-bit double precision floats as well as 8 to 64 bit integral types. The extension from 128 bits to 256 bits in register size only applies to floating-point types in AVX. This is expected to be extended to integer types in AVX2, but in AVX, SIMD operations on integral types can only use the lower 128 bits of the SIMD registers. NEON registers can hold 8 to 64 bit integral types and 32-bit single-precision floats.
+</dd><dt><strong>Alignment requirements</strong></dt><dd>
+SSE requires alignment on 16 byte boundaries. With AVX, it seems that operations on 128 bit SIMD vectors may be unaligned, but operations on 256 bit SIMD vectors needs to be aligned to 32 byte boundaries. NEON suggests to align SIMD vectors with <i>n</i>-bit elements to <i>n</i>-bit boundaries.
+</dd></dl>
+<h3 id="SIMDvectorsupportinothercompilers">SIMD/vector support in other compilers</h3>
+<p>
+Both GCC and LLVM provide some low-level yet portable support for SIMD vector types and operations.
+</p>
+<p>
+GCC provides <a class="ext-link" href="http://gcc.gnu.org/onlinedocs/gcc/Vector-Extensions.html"><span class="icon"> </span>vector extensions</a> to C where the programmer may define vector types of a fixed size. The standard C <tt>+</tt>, <tt>-</tt>, <tt>*</tt> etc operators then work on these vector types. GCC implements these operations using whatever hardware support is available. Depending on the requested vector size GCC uses native vector registers and instructions, or synthesises large requested vectors using smaller hardware vectors. For example it can generate code for operating on vectors of 4 doubles by using SSE2 registers and operations which only handle vectors of doubles of size 2.
+</p>
+<p>
+The LLVM compiler tools targeted by GHC's <a class="wiki" href="/trac/ghc/wiki/Commentary/Compiler/Backends/LLVM">LLVM backend</a> support a generic <a class="ext-link" href="http://llvm.org/docs/LangRef.html#t_vector"><span class="icon"> </span>vector type</a> of arbitrary, but fixed length whose elements may be any LLVM scalar type. In addition to three <a class="ext-link" href="http://llvm.org/docs/LangRef.html#vectorops"><span class="icon"> </span>vector operations</a>, LLVM's operations on scalars are overloaded to work on vector types as well. LLVM compiles operations on vector types to target-specific SIMD instructions, such as those of the SSE, AVX, and NEON instruction set extensions. As the capabilities of the various versions of SSE, AVX, and NEON vary widely, LLVM's code generator maps operations on LLVM's generic vector type to the more limited capabilities of the various hardware targets.
+</p>
+<h2 id="Generalplan">General plan</h2>
+<p>
+We need to implement support for vectors in several layers of GHC + Libraries, from bottom to top:
+</p>
+<ul><li>code generators (NCG, LLVM)
+</li><li>Cmm
+</li><li>Haskell/Core primops
+</li><li>Some strategy for making use of vector primops, e.g. DPH or Vector lib
+</li></ul><h3 id="Vectortypes">Vector types</h3>
+<p>
+We intend to provide vectors of the following basic types:
+</p>
+<blockquote>
+<table class="wiki">
+<tr><td> Int8  </td><td> Int16  </td><td> Int32  </td><td> Int64  
+</td></tr><tr><td> Word8 </td><td> Word16 </td><td> Word32 </td><td> Word64 
+</td></tr><tr><td>       </td><td>        </td><td> Float  </td><td> Double 
+</td></tr></table>
+</blockquote>
+<h3 id="Fixedandvariablesizedvectors">Fixed and variable sized vectors</h3>
+<p>
+The hardware supports only small fixed sized vectors. High level libraries would like to be able to use arbitrary sized vectors. Similar to the design in GCC and LLVM we will provide primitive Haskell types and operations for fixed-size vectors. The task of implementing variable sized vectors in terms of fixed-size vector types and primops is left to the next layer up (DPH, vector lib).
+</p>
+<p>
+That is, in the core primop layer and down, vector support is only for fixed-size vectors. The fixed sizes will be only powers of 2 and only up to some maximum size. The choice of maximum size should reflect the largest vector size supported by the current range of CPUs (256bit with AVX):
+</p>
+<blockquote>
+<table class="wiki">
+<tr><td> types </td><td>        </td><td>        </td><td> vector sizes    
+</td></tr><tr><td> Int8  </td><td> Word8  </td><td>        </td><td> 2, 4, 8, 16, 32 
+</td></tr><tr><td> Int16 </td><td> Word16 </td><td>        </td><td> 2, 4, 8, 16     
+</td></tr><tr><td> Int32 </td><td> Word32 </td><td> Float  </td><td> 2, 4, 8         
+</td></tr><tr><td> Int64 </td><td> Word64 </td><td> Double </td><td> 2, 4            
+</td></tr><tr><td> Int   </td><td> Word   </td><td>        </td><td> 2, 4            
+</td></tr></table>
+</blockquote>
+<p>
+In addition, we will support vector types with fixed but architecture-dependent sizes (see below).
+</p>
+<p>
+We could choose to support larger fixed sizes, or the same maximum size for all types, but there is no strict need to do so.
+</p>
+<h3 id="Portabilityandfallbacks">Portability and fallbacks</h3>
+<p>
+To enable portable Haskell code we will provide the same set of vector types and operations on all architectures. Again this follows the approach taken by GCC and LLVM.
+</p>
+<p>
+We will rely on fallbacks for the cases where certain types or operations are not supported directly in hardware. In particular we can implement large vectors on machines with only small vector registers. Where there is no vector hardware support at all for a type (e.g. arch with no vectors or 64bit doubles on ARM's NEON) we can implement it using scalar code.
+</p>
+<p>
+The obvious approach is a transformation to synthesize larger vector types and operations using smaller vector operations or scalar operations. This synthesisation could plausibly be done at the core, Cmm or code generator layers, however the most natural choice would be as a Cmm -&gt; Cmm transformation. This approach would reduce or eliminate the burden on code generators by allowing them to support only their architecture's native vector sizes and types, or none at all.
+</p>
+<p>
+Using fallbacks does pose some challenges for a stable/portable ABI, in particular how vector registers should be used in the GHC calling convention. This is discussed in a later section.
+</p>
+<h3 id="GHCcommandlineflags">GHC command line flags</h3>
+<p>
+We will add machine flags such as <tt>-msse2</tt> and <tt>-mavx</tt>. These tell GHC that it is allowed to make use of the corresponding instruction sets.
+</p>
+<p>
+For compatibility, the default will remain targeting the base instruction set of the architecture. This is the behaviour of most other compilers. We may also want to add a <tt>-mnative</tt> / <tt>-mdetect</tt> flag that is equivalent to the <tt>-m</tt> flag corresponding to the host machine.
+</p>
+<h2 id="Codegenerators">Code generators</h2>
+<p>
+We will not extend the portable C backend to emit vector instructions. It will rely on the higher layers transforming vector operations into scalar operations. The portable C backend is not ABI compatible with the other code generators so there is no concern about vector registers in the calling convention.
+</p>
+<p>
+The LLVM C library supports vector types and instructions directly. The GHC LLVM backend could be extended to translate vector ops at the Cmm level into LLVM vector ops.
+</p>
+<p>
+The NCG (native code generator) may need at least minimal support for vector types if vector registers are to be used in the calling convention (see below). If we choose a common calling convention where vectors are passed in registers rather than on the stack then minimal support in the NCG would be necessary if ABI compatibility is to be preserved with the LLVM backend. It is optional whether vector instructions are used to improve performance.
+</p>
+<h2 id="Cmmlayer">Cmm layer</h2>
+<p>
+The Cmm layer will be extended to represent vector types and operations.
+</p>
+<p>
+The <tt>CmmType</tt> describes the machine-level type of data. It consists of the "category" of data, along with the <tt>Width</tt> in bits.
+</p>
+<pre class="wiki">data CmmType = CmmType CmmCat Width
+data Width = ...
+data CmmCat     -- "Category" (not exported)
+   = GcPtrCat   -- GC pointer
+   | BitsCat    -- Non-pointer
+   | FloatCat   -- Float
+</pre><p>
+The current code distinguishes floats, pointer and non-pointer data. These are distinguished primarily because either they need to be tracked separately (GC pointers) or because they live in special registers on many architectures (floats).
+</p>
+<p>
+For vectors we add two new categories
+</p>
+<pre class="wiki">   | VBitsCat  Multiplicity   -- Non-pointer
+   | VFloatCat Multiplicity   -- Float
+
+type Multiplicty = Int
+</pre><p>
+We keep vector types separate from scalars, rather than representing scalars as having multiplicty 1. This is to limit disruption to existing code paths and also because it is expected that vectors will often need to be treated differently from scalars. Again we distinguish float from integral types as these may use different classes of registers. There is no need to support vectors of GC pointers.
+</p>
+<p>
+Vector operations on these machine vector types will be added to the Cmm <tt>MachOp</tt> type, e.g.
+</p>
+<pre class="wiki">data MachOp = 
+  ...
+  | MO_VF_Add Width Multiplicity
+</pre><p>
+For example <tt>MO_VF_Add W64 4</tt> represents vector addition on a length-4 vector of 64bit floats.
+</p>
+<h2 id="Corelayer">Core layer</h2>
+<p>
+We need Haskell data types and Haskell primitive operations for fixed size vectors. In some ways this is a harder problem than representing the vector types and opertions at the Cmm level. In particular, at the Haskell type level we cannot easily parametrise on the vector length.
+</p>
+<p>
+Our design is to provide a family of fixed size vector types and primitive operations, but not to provide any facility to parametrise this family on the vector length.
+</p>
+<p>
+for width {w} in 8, 16, 32, 64 and "", (empty for native Int#/Word# width)<br />
+for multiplicity {m} in 2, 4, 8, 16, 32
+</p>
+<p>
+<tt>type Int</tt><i>{w}</i><tt>Vec</tt><i>{m}</i><tt>#</tt><br />
+<tt>type Word</tt><i>{w}</i><tt>Vec</tt><i>{m}</i><tt>#</tt><br />
+<tt>type FloatVec</tt><i>{m}</i><tt>#</tt><br />
+<tt>type DoubleVec</tt><i>{m}</i><tt>#</tt><br />
+</p>
+<p>
+Syntax note: here {m} is meta-syntax, not concrete syntax
+</p>
+<p>
+Hence we have individual type names with the following naming convention:
+</p>
+<blockquote>
+<table class="wiki">
+<tr><td>              </td><td> length 2     </td><td> length 4     </td><td> length 8     </td><td> etc 
+</td></tr><tr><td> native <tt>Int</tt> </td><td> <tt>IntVec2#</tt>   </td><td> <tt>IntVec4#</tt>   </td><td> <tt>IntVec8#</tt>   </td><td> ... 
+</td></tr><tr><td> <tt>Int8</tt>       </td><td> <tt>Int8Vec2#</tt>  </td><td> <tt>Int8Vec4#</tt>  </td><td> <tt>Int8Vec8#</tt>  </td><td> ... 
+</td></tr><tr><td> <tt>Int16</tt>      </td><td> <tt>Int16Vec2#</tt> </td><td> <tt>Int16Vec4#</tt> </td><td> <tt>Int16Vec8#</tt> </td><td> ... 
+</td></tr><tr><td> etc          </td><td> ...          </td><td> ...          </td><td> ...          </td><td> ... 
+</td></tr></table>
+</blockquote>
+<p>
+Similarly there will be families of primops:
+</p>
+<pre class="wiki">extractInt{w}Vec{m}#  :: Int{w}Vec{m}# -&gt; Int# -&gt; Int{w}#
+addInt{w}Vec{m}#      :: Int{w}Vec{m}# -&gt; Int{w}Vec{m}# -&gt; Int{w}Vec{m}#
+</pre><p>
+From the point of view of the Haskell namespace for values and types, each member of each of these families is distinct. It is just a naming convention that suggests the relationship.
+</p>
+<h3 id="Optionalextension:extrasyntax">Optional extension: extra syntax</h3>
+<p>
+We could add a new concrete syntax using <tt>&lt;...&gt;</tt> to suggest a paramater, but have it really still part of the name:
+</p>
+<blockquote>
+<table class="wiki">
+<tr><td>              </td><td> length 2       </td><td> length 4       </td><td> length 8       </td><td> etc 
+</td></tr><tr><td> native <tt>Int</tt> </td><td> <tt>IntVec&lt;2&gt;#</tt>   </td><td> <tt>IntVec&lt;4&gt;#</tt>   </td><td> <tt>IntVec&lt;8&gt;#</tt>   </td><td> ... 
+</td></tr><tr><td> <tt>Int8</tt>       </td><td> <tt>Int8Vec&lt;2&gt;#</tt>  </td><td> <tt>Int8Vec&lt;4&gt;#</tt>  </td><td> <tt>Int8Vec&lt;8&gt;#</tt>  </td><td> ... 
+</td></tr><tr><td> <tt>Int16</tt>      </td><td> <tt>Int16Vec&lt;2&gt;#</tt> </td><td> <tt>Int16Vec&lt;4&gt;#</tt> </td><td> <tt>Int16Vec&lt;8&gt;#</tt> </td><td> ... 
+</td></tr><tr><td> etc          </td><td> ...            </td><td> ...            </td><td> ...            </td><td> ... 
+</td></tr></table>
+</blockquote>
+<h3 id="Primopgenerationandrepresentation">Primop generation and representation</h3>
+<p>
+Internally in GHC we can take advantage of the obvious parametrisation within the families of primitive types and operations. In particular we extend GHC's <tt>primop.txt.pp</tt> machinery to enable us to describe the family as a whole and to generate the members.
+</p>
+<p>
+For example, here is some plausible concrete syntax for <tt>primop.txt.pp</tt>:
+</p>
+<pre class="wiki">parameter &lt;w, m&gt; Width Multiplicity
+  with &lt;w, m&gt; in &lt;8, 2&gt;,&lt;8, 4&gt;,&lt;8, 8&gt;,&lt;8, 16&gt;,&lt;8, 32&gt;,
+                 &lt;16,2&gt;,&lt;16,4&gt;,&lt;16,8&gt;,&lt;16,16&gt;,
+                 &lt;32,2&gt;,&lt;32,4&gt;,&lt;32,8&gt;,
+                 &lt;64,2&gt;,&lt;64,4&gt;
+</pre><p>
+Note that we allow non-rectangular combinations of values for the parameters. We declare the range of values along with the parameter so that we do not have to repeat it for every primtype and primop.
+</p>
+<pre class="wiki">primtype &lt;w,m&gt; Int&lt;w&gt;Vec&lt;m&gt;#
+
+primop VIntAddOp &lt;w,m&gt; "addInt&lt;w&gt;Vec&lt;m&gt;#" Dyadic
+  Int&lt;w&gt;Vec&lt;m&gt;# -&gt; Int&lt;w&gt;Vec&lt;m&gt;# -&gt; Int&lt;w&gt;Vec&lt;m&gt;#
+  {Vector addition}
+</pre><p>
+This would generate a family of primops, and an internal representation using the type names declared for the parameters:
+</p>
+<pre class="wiki">data PrimOp = ...
+   | IntAddOp
+   | VIntQuotOp Width Multiplicity
+</pre><p>
+It is not yet clear what syntax to achieve the names of the native sized types <tt>Int</tt> and <tt>Word</tt>. Perhaps we should use "", e.g.
+</p>
+<pre class="wiki">parameter &lt;w, m&gt; Width Multiplicity
+  with &lt;w, m&gt; in &lt;8, 2&gt;,&lt;8, 4&gt;,&lt;8, 8&gt;,&lt;8, 16&gt;,&lt;8, 32&gt;,
+                 &lt;16,2&gt;,&lt;16,4&gt;,&lt;16,8&gt;,&lt;16,16&gt;,
+                 &lt;32,2&gt;,&lt;32,4&gt;,&lt;32,8&gt;,
+                 &lt;64,2&gt;,&lt;64,4&gt;
+                 &lt;"",2&gt;,&lt;"",4&gt; 
+</pre><h3 id="Optionalextension:primitiveintsizes">Optional extension: primitive int sizes</h3>
+<p>
+The above mechanism could be used to handle parametrisation between Int8#, Int16# etc. Currently these do not exist as primitive types. The types Int8, Int16 etc are implemented as a boxed native-sized Int# plus narrowing.
+</p>
+<p>
+Note that while this change is possible and would make things more uniform it is not essential for vector support.
+</p>
+<p>
+That is we might have:
+</p>
+<pre class="wiki">parameter &lt;w&gt; Width
+  with &lt;w&gt; in &lt;8&gt;, &lt;16&gt;, &lt;32&gt;, &lt;64&gt;, &lt;""&gt;
+
+primtype Int&lt;w&gt;#
+
+primop   IntAddOp &lt;w&gt;    "addInt&lt;w&gt;#"    Dyadic
+   Int&lt;w&gt;# -&gt; Int&lt;w&gt;# -&gt; Int&lt;w&gt;#
+   with commutable = True
+</pre><p>
+generating
+</p>
+<pre class="wiki">data PrimOp = ...
+   | IntAddOp Width
+</pre><p>
+We might want some other solution so we can use <tt>+#</tt> as well as <tt>addInt#</tt> since <tt>+8#</tt> as an infix operator doesn't really work.
+</p>
+<h2 id="Nativevectorsizes">Native vector sizes</h2>
+<p>
+In addition to various portable fixed size vector types, we will have a portable vector type that is tuned for the hardware vector register size. This is analogous to the existing integer types that GHC supports. We have Int8, Int16, Int32 etc and in addition we have Int, the size of which is machine dependent (either 32 or 64bit).
+</p>
+<p>
+As with Int, the rationale is efficiency. For algorithms that could work with a variety of primitive vector sizes it will almost always be fastest to use the vector size that matches the hardware vector register size. Clearly it is suboptimal to use a vector size that is smaller than the native size. Using a larger vector is not nearly as bad as using as smaller one, though it does contribute to register pressure.
+</p>
+<p>
+Without a native sized vector, libraries would be forced to use CPP to pick a good vector size based on the architecture, or to pick a fixed register size that is always at least as big as the native size on all platforms that are likely to be used. The former is annoying and the latter makes less sense as vector sizes on some architectures increase.
+</p>
+<p>
+Note that the actual size of the native vector size will be fixed per architecture and will not vary based on "sub-architecture" features like SSE vs AVX. We will pick the size to be the maximum of all the sub-architectures. That is we would pick the AVX size for x86-64. The rationale for this is ABI compatibility which is discussed below. In this respect, the IntVec# is like Int#, the size of both is crucial for the ABI and is determined by the target platform/architecture.
+</p>
+<p>
+So we extend our family of vector types with:
+</p>
+<blockquote>
+<table class="wiki">
+<tr><td>              </td><td> native length </td><td> length 2     </td><td> length 4     </td><td> length 8     </td><td> etc 
+</td></tr><tr><td> native <tt>Int</tt> </td><td> <tt>IntVec#</tt>     </td><td> <tt>IntVec2#</tt>   </td><td> <tt>IntVec4#</tt>   </td><td> <tt>IntVec8#</tt>   </td><td> ... 
+</td></tr><tr><td> <tt>Int8</tt>       </td><td> <tt>Int8Vec#</tt>    </td><td> <tt>Int8Vec2#</tt>  </td><td> <tt>Int8Vec4#</tt>  </td><td> <tt>Int8Vec8#</tt>  </td><td> ... 
+</td></tr><tr><td> <tt>Int16</tt>      </td><td> <tt>Int16Vec#</tt>   </td><td> <tt>Int16Vec2#</tt> </td><td> <tt>Int16Vec4#</tt> </td><td> <tt>Int16Vec8#</tt> </td><td> ... 
+</td></tr><tr><td> etc          </td><td> ...           </td><td> ...          </td><td> ...          </td><td> ...          </td><td> ... 
+</td></tr></table>
+</blockquote>
+<p>
+and there are some top level constants describing the vector size so as to enable their portable use
+</p>
+<pre class="wiki">intVecSize, int8VecSize, int16VecSize, int32VecSize, int64VecSize :: Int
+wordVecSize, word8VecSize, word16VecSize, word32VecSize, word64VecSize :: Int
+floatVecSize, doubleVecSize :: Int
+</pre><p>
+Note that these constants are of type Int since top level values of type Int# are not currently supported. This should not be a problem as they should always get inlined and unboxed where it matters.
+</p>
+<p>
+The native-sized vector types are distinct types from the explicit-sized vector types, not type aliases for the corresponding explicit-sized vector. This is to support and encourage portable code.
+</p>
+<h2 id="Vectoroperations">Vector operations</h2>
+<p>
+The following operations on vectors will be supported. They will need to be implemented at the Haskell/core primop layer, Cmm <tt>MachOp</tt> layer and optional support in the code generators.
+</p>
+<p>
+In the following, <tt>&lt;t&gt;</tt> ranges over <tt>Int&lt;w&gt;</tt>, <tt>Word&lt;w&gt;</tt>, <tt>Float</tt>, <tt>Double</tt>.
+</p>
+<p>
+Loading and storing vectors in arrays, <tt>ByteArray#</tt> and raw <tt>Addr#</tt>
+</p>
+<pre class="wiki">indexInt&lt;w&gt;Vec&lt;m&gt;Array#  :: ByteArray# -&gt; Int# -&gt; Int&lt;w&gt;Vec&lt;m&gt;#
+indexWord&lt;w&gt;Vec&lt;m&gt;Array# :: ByteArray# -&gt; Int# -&gt; Word&lt;w&gt;Vec&lt;m&gt;#
+indexFloatVec&lt;m&gt;Array#   :: ByteArray# -&gt; Int# -&gt; FloatVec&lt;m&gt;#
+indexDoubleVec&lt;m&gt;Array#  :: ByteArray# -&gt; Int# -&gt; DoubleVec&lt;m&gt;#
+
+readInt&lt;w&gt;Vec&lt;m&gt;Array#  :: MutableByteArray# d -&gt; Int# -&gt; State# d -&gt; (# State# d, Int&lt;w&gt;Vec&lt;m&gt;#  #)
+readWord&lt;w&gt;Vec&lt;m&gt;Array# :: MutableByteArray# d -&gt; Int# -&gt; State# d -&gt; (# State# d, Word&lt;w&gt;Vec&lt;m&gt;# #)
+readFloatVec&lt;m&gt;Array#   :: MutableByteArray# d -&gt; Int# -&gt; State# d -&gt; (# State# d, FloatVec&lt;m&gt;#   #)
+readDoubleVec&lt;m&gt;Array#  :: MutableByteArray# d -&gt; Int# -&gt; State# d -&gt; (# State# d, DoubleVec&lt;m&gt;#  #)
+
+writeInt&lt;w&gt;Vec&lt;m&gt;Array#  :: MutableByteArray# d -&gt; Int# -&gt; Int&lt;w&gt;Vec&lt;m&gt;#  -&gt; State# d -&gt; State# d
+writeWord&lt;w&gt;Vec&lt;m&gt;Array# :: MutableByteArray# d -&gt; Int# -&gt; Word&lt;w&gt;Vec&lt;m&gt;# -&gt; State# d -&gt; State# d
+writeFloatVec&lt;m&gt;Array#   :: MutableByteArray# d -&gt; Int# -&gt; FloatVec&lt;m&gt;#   -&gt; State# d -&gt; State# d
+writeDoubleVec&lt;m&gt;Array#  :: MutableByteArray# d -&gt; Int# -&gt; DoubleVec&lt;m&gt;#  -&gt; State# d -&gt; State# d
+
+readInt&lt;w&gt;Vec&lt;m&gt;OffAddr#  :: Addr# -&gt; Int# -&gt; State# d -&gt; (# State# d, Int&lt;w&gt;Vec&lt;m&gt;# #)
+readWord&lt;w&gt;Vec&lt;m&gt;OffAddr# :: Addr# -&gt; Int# -&gt; State# d -&gt; (# State# d, Word&lt;w&gt;Vec&lt;m&gt;# #)
+readFloatVec&lt;m&gt;OffAddr#   :: Addr# -&gt; Int# -&gt; State# d -&gt; (# State# d, FloatVec&lt;m&gt;# #)
+readDoubleVec&lt;m&gt;OffAddr#  :: Addr# -&gt; Int# -&gt; State# d -&gt; (# State# d, DoubleVec&lt;m&gt;# #)
+
+writeInt&lt;w&gt;Vec&lt;m&gt;OffAddr#  :: Addr# -&gt; Int# -&gt; Int&lt;w&gt;Vec&lt;m&gt;#  -&gt; State# d -&gt; State# d
+writeWord&lt;w&gt;Vec&lt;m&gt;OffAddr# :: Addr# -&gt; Int# -&gt; Word&lt;w&gt;Vec&lt;m&gt;# -&gt; State# d -&gt; State# d
+writeFloatVec&lt;m&gt;OffAddr#   :: Addr# -&gt; Int# -&gt; FloatVec&lt;m&gt;#   -&gt; State# d -&gt; State# d
+writeDoubleVec&lt;m&gt;OffAddr#  :: Addr# -&gt; Int# -&gt; DoubleVec&lt;m&gt;#  -&gt; State# d -&gt; State# d
+</pre><p>
+Extracting and inserting vector elements:
+</p>
+<pre class="wiki">extractInt&lt;w&gt;Vec&lt;m&gt;#   :: Int&lt;w&gt;Vec&lt;m&gt;#  -&gt; Int# -&gt; Int#
+extractWord&lt;w&gt;Vec&lt;m&gt;#  :: Word&lt;w&gt;Vec&lt;m&gt;# -&gt; Int# -&gt; Word#
+extractFloatVec&lt;m&gt;#    :: FloatVec&lt;m&gt;#   -&gt; Int# -&gt; Float#
+extractDoubleVec&lt;m&gt;#   :: DoubleVec&lt;m&gt;#  -&gt; Int# -&gt; Double#
+</pre><pre class="wiki">insertInt&lt;w&gt;Vec&lt;m&gt;#   :: Int&lt;w&gt;Vec&lt;m&gt;#  -&gt; Int# -&gt; Int#    -&gt; Int&lt;w&gt;Vec&lt;m&gt;#
+insertWord&lt;w&gt;Vec&lt;m&gt;#  :: Word&lt;w&gt;Vec&lt;m&gt;# -&gt; Int# -&gt; Word#   -&gt; Word&lt;w&gt;Vec&lt;m&gt;#
+insertFloatVec#       :: FloatVec&lt;m&gt;#   -&gt; Int# -&gt; Float#  -&gt; FloatVec&lt;m&gt;#
+insertDoubleVec#      :: DoubleVec&lt;m&gt;#  -&gt; Int# -&gt; Double# -&gt; DoubleVec&lt;m&gt;#
+</pre><p>
+Duplicating a scalar to a vector:
+</p>
+<pre class="wiki">replicateToInt&lt;w&gt;Vec&lt;m&gt;#  :: Int&lt;w&gt;Vec&lt;m&gt;#  -&gt; Int#    -&gt; Int&lt;w&gt;Vec&lt;m&gt;#
+replicateToWord&lt;w&gt;Vec&lt;m&gt;# :: Word&lt;w&gt;Vec&lt;m&gt;# -&gt; Word#   -&gt; Word&lt;w&gt;Vec&lt;m&gt;#
+replicateToFloatVec#      :: FloatVec&lt;m&gt;#   -&gt; Float#  -&gt; FloatVec&lt;m&gt;#
+replicateToDoubleVec#     :: DoubleVec&lt;m&gt;#  -&gt; Double# -&gt; DoubleVec&lt;m&gt;#
+</pre><p>
+Vector shuffle:
+</p>
+<pre class="wiki">shuffle&lt;t&gt;Vec&lt;m&gt;ToVec&lt;m'&gt; :: &lt;t&gt;Vec&lt;m&gt;# -&gt; Int32Vec&lt;m'&gt;# -&gt; &lt;t&gt;Vec&lt;m'&gt;#
+</pre><p>
+For the fixed size vectors (not native size) we may also want to add pack/unpack functions like:
+</p>
+<pre class="wiki">unpackInt&lt;w&gt;Vec4# :: Int&lt;w&gt;Vec4# -&gt; (# Int#, Int#, Int#, Int# #)
+packInt&lt;w&gt;Vec4#   :: (# Int#, Int#, Int#, Int# #) -&gt; Int&lt;w&gt;Vec4#
+</pre><p>
+Arithmetic operations:
+</p>
+<pre class="wiki">plus&lt;t&gt;Vec&lt;m&gt;#, minus&lt;t&gt;Vec&lt;m&gt;#,
+times&lt;t&gt;Vec&lt;m&gt;#, quot&lt;t&gt;Vec&lt;m&gt;#, rem&lt;t&gt;Vec&lt;m&gt;# :: &lt;t&gt;Vec&lt;m&gt;# -&gt; &lt;t&gt;Vec&lt;m&gt;# -&gt; &lt;t&gt;Vec&lt;m&gt;#
+
+negate&lt;t&gt;Vec&lt;m&gt;# :: &lt;t&gt;Vec&lt;m&gt;# -&gt; &lt;t&gt;Vec&lt;m&gt;#
+</pre><p>
+Logic operations:
+</p>
+<pre class="wiki">andInt&lt;w&gt;Vec&lt;m&gt;#, orInt&lt;w&gt;Vec&lt;m&gt;#, xorInt&lt;w&gt;Vec&lt;m&gt;#    :: Int&lt;w&gt;Vec&lt;m&gt;#  -&gt; Int&lt;w&gt;Vec&lt;m&gt;#  -&gt; Int&lt;w&gt;Vec&lt;m&gt;#
+andWord&lt;w&gt;Vec&lt;m&gt;#, orWord&lt;w&gt;Vec&lt;m&gt;#, xorWord&lt;w&gt;Vec&lt;m&gt;# :: Word&lt;w&gt;Vec&lt;m&gt;# -&gt; Word&lt;w&gt;Vec&lt;m&gt;# -&gt; Word&lt;w&gt;Vec&lt;m&gt;#
+
+notInt&lt;w&gt;Vec&lt;m&gt;#  :: Int&lt;w&gt;Vec&lt;m&gt;#  -&gt; Int&lt;w&gt;Vec&lt;m&gt;#
+notWord&lt;w&gt;Vec&lt;m&gt;# :: Word&lt;w&gt;Vec&lt;m&gt;# -&gt; Word&lt;w&gt;Vec&lt;m&gt;#
+
+shiftLInt&lt;w&gt;Vec&lt;m&gt;#,  shiftRAInt&lt;w&gt;Vec&lt;m&gt;#  :: Int&lt;w&gt;Vec&lt;m&gt;#  -&gt; Word# -&gt; Int&lt;w&gt;Vec&lt;m&gt;#
+ShiftLWord&lt;w&gt;Vec&lt;m&gt;#, ShiftRLWord&lt;w&gt;Vec&lt;m&gt;# :: Word&lt;w&gt;Vec&lt;m&gt;# -&gt; Word# -&gt; Word&lt;w&gt;Vec&lt;m&gt;#
+</pre><p>
+Comparison:
+</p>
+<pre class="wiki">cmp&lt;eq,ne,gt,gt,lt,le&gt;Int&lt;w&gt;Vec&lt;m&gt;#  :: Int&lt;w&gt;Vec&lt;m&gt;#  -&gt; Int&lt;w&gt;Vec&lt;m&gt;#  -&gt; Word&lt;w&gt;Vec&lt;m&gt;#
+cmp&lt;eq,ne,gt,gt,lt,le&gt;Word&lt;w&gt;Vec&lt;m&gt;# :: Word&lt;w&gt;Vec&lt;m&gt;# -&gt; Word&lt;w&gt;Vec&lt;m&gt;# -&gt; Word&lt;w&gt;Vec&lt;m&gt;#
+</pre><p>
+Note that LLVM does not yet support the comparison operations (See the comment at the end of the documentation for the <a class="ext-link" href="http://llvm.org/docs/LangRef.html#i_icmp"><span class="icon"> </span>icmp</a> instruction, for example).
+</p>
+<p>
+Integer width narrow/widen operations:
+</p>
+<pre class="wiki">narrowInt&lt;w&gt;To&lt;w'&gt;Vec&lt;m&gt;#  :: Int&lt;w&gt;Vec&lt;m&gt;# -&gt; Int&lt;w'&gt;Vec&lt;m&gt;#     -- for w' &lt; w
+narrowWord&lt;w&gt;To&lt;w'&gt;Vec&lt;m&gt;# :: Word&lt;w&gt;Vec&lt;m&gt;# -&gt; Word&lt;w'&gt;Vec&lt;m&gt;#   -- for w' &lt; w
+
+widenInt&lt;w&gt;To&lt;w'&gt;Vec&lt;m&gt;#   :: Int&lt;w&gt;Vec&lt;m&gt;# -&gt; Int&lt;w'&gt;Vec&lt;m&gt;#     -- for w' &gt; w
+widenWord&lt;w&gt;To&lt;w'&gt;Vec&lt;m&gt;#  :: Word&lt;w&gt;Vec&lt;m&gt;# -&gt; Word&lt;w'&gt;Vec&lt;m&gt;#   -- for w' &gt; w
+</pre><p>
+Note: LLVM calls these truncate and extend (signed extend or unsigned extend)
+</p>
+<p>
+Floating point conversion:
+</p>
+<pre class="wiki">narrowDoubleToFloatVec&lt;m&gt;#  :: DoubleVec&lt;m&gt;# -&gt; FloatVec&lt;m&gt;#
+widenFloatToDoubleVec&lt;m&gt;#   :: FloatVec&lt;m&gt;#  -&gt; DoubleVec&lt;m&gt;#
+
+roundFloatToInt32Vec&lt;m&gt;     :: FloatVec&lt;m&gt;#  -&gt; Int32Vec&lt;m&gt;#
+roundFloatToInt64Vec&lt;m&gt;     :: FloatVec&lt;m&gt;#  -&gt; Int64Vec&lt;m&gt;#
+roundDoubleToInt32Vec&lt;m&gt;    :: DoubleVec&lt;m&gt;# -&gt; Int32Vec&lt;m&gt;#
+roundDoubleToInt64Vec&lt;m&gt;    :: DoubleVec&lt;m&gt;# -&gt; Int64Vec&lt;m&gt;#
+
+truncateFloatToInt32Vec&lt;m&gt;  :: FloatVec&lt;m&gt;#  -&gt; Int32Vec&lt;m&gt;#
+truncateFloatToInt64Vec&lt;m&gt;  :: FloatVec&lt;m&gt;#  -&gt; Int64Vec&lt;m&gt;#
+truncateDoubleToInt32Vec&lt;m&gt; :: DoubleVec&lt;m&gt;# -&gt; Int32Vec&lt;m&gt;#
+truncateDoubleToInt64Vec&lt;m&gt; :: DoubleVec&lt;m&gt;# -&gt; Int64Vec&lt;m&gt;#
+
+promoteInt32ToFloatVec&lt;m&gt;   :: Int32Vec&lt;m&gt;# -&gt; FloatVec&lt;m&gt;#
+promoteInt64ToFloatVec&lt;m&gt;   :: Int64Vec&lt;m&gt;# -&gt; FloatVec&lt;m&gt;#
+promoteInt32ToDoubleVec&lt;m&gt;  :: Int32Vec&lt;m&gt;# -&gt; DoubleVec&lt;m&gt;#
+promoteInt64ToDoubleVec&lt;m&gt;  :: Int64Vec&lt;m&gt;# -&gt; DoubleVec&lt;m&gt;#
+</pre><p>
+TODO: Should consider:
+</p>
+<ul><li>vector constants, at least at Cmm level
+</li><li>replicating a scalar to a vector
+</li><li>FMA: fused multiply add, this is supported by NEON and AVX however software fallback may not be possible with the same precision. Tricky.
+</li><li>SSE/AVX also suppports a bunch of interesting things:
+<ul><li>add/sub/mul/div of vector by a scalar
+</li><li>reciprocal, square root, reciprocal of square root
+</li><li>permute, shuffle, "blend", masked moves.
+</li><li>abs
+</li><li>min, max within a vector
+</li><li>average
+</li><li>horizontal add/sub
+</li><li>shift whole vector left/right by n bytes
+</li><li>and not logical op
+</li><li>gather (but not scatter) of 32, 64bit int and fp from memory (base + vector of offsets)
+</li></ul></li></ul><h3 id="IntWordsizewrinkle">Int/Word size wrinkle</h3>
+<p>
+Note that there is a wrinkle with the 32 and 64 bit int and word types. For example, the types for the extract functions should be:
+</p>
+<pre class="wiki">extractInt32Vec&lt;m&gt;#  :: Int32Vec#  -&gt; Int# -&gt; INT32
+extractInt64Vec&lt;m&gt;#  :: Int64Vec#  -&gt; Int# -&gt; INT64
+extractWord32Vec&lt;m&gt;# :: Word32Vec# -&gt; Int# -&gt; WORD32
+extractWord64Vec&lt;m&gt;# :: Word64Vec# -&gt; Int# -&gt; WORD64
+</pre><p>
+where <tt>INT32</tt>, <tt>INT64</tt>, <tt>INT64</tt>, <tt>WORD64</tt> are CPP macros that expand in a arch-dependent way to the types Int#/Int64# and Word#/Word64#.
+</p>
+<p>
+To describe this in the primop definition we might want something like:
+</p>
+<pre class="wiki">primop   IntAddOp &lt;w,m,t&gt;    "extractWord&lt;w&gt;Vec&lt;m&gt;#"    Dyadic
+  Word&lt;w&gt;Vec&lt;m&gt;# -&gt; Int# -&gt; &lt;t&gt;
+  with &lt;w, m, t&gt; in &lt;8, 2,Word#&gt;,&lt;8, 4,Word#&gt;,&lt;8, 8,Word#&gt;,&lt;8, 16,Word#&gt;,&lt;8, 32,Word#&gt;,
+                    &lt;16,2,Word#&gt;,&lt;16,4,Word#&gt;,&lt;16,8,Word#&gt;,&lt;16,16,Word#&gt;,
+                    &lt;32,2,WORD32&gt;,&lt;32,4,WORD32&gt;,&lt;32,8,WORD32&gt;,
+                    &lt;64,2,WORD64&gt;,&lt;64,4,WORD64&gt;
+                    &lt;"",2,WORD&gt;,&lt;"",4,WORD&gt; 
+</pre><p>
+To iron out this wrinkle we would need the whole family of primitve types: Int8#, Int16#, Int32# etc whereas currently only the native register sized Int# type is provided, plus a primitive Int64# type is provided on 32bit systems.
+</p>
+<h2 id="DataParallelHaskelllayer">Data Parallel Haskell layer</h2>
+<p>
+In <a class="ext-link" href="http://www.haskell.org/haskellwiki/GHC/Data_Parallel_Haskell"><span class="icon"> </span>DPH</a>, we will use the new SIMD instructions by suitably modifying the definition of the lifted versions of arithmetic and other operations that we would like to accelerate. These lifted operations are defined in the <tt>dph-common</tt> package and made accessible to the vectoriser via <a class="wiki" href="/trac/ghc/wiki/DataParallel/VectPragma">VECTORISE pragmas</a>. Many of them currently use <tt>VECTORISE SCALAR</tt> pragmas, such as
+</p>
+<pre class="wiki">(+) :: Int -&gt; Int -&gt; Int
+(+) = (P.+)
+{-# VECTORISE SCALAR (+) #-}
+</pre><p>
+We could define them more verbosely using a plain <tt>VECTORISE</tt> pragma, but might instead like to extend <tt>VECTORISE SCALAR</tt> or introduce a variant.
+</p>
+<p>
+<strong>NB:</strong> The use of SIMD instructions interferes with vectorisation avoidance for scalar subcomputations. Code that avoids vectorisation also avoids the use of SIMD instructions. We would like to use SIMD instructions, but still avoid full-scale vectorisation. This should be possible, but it is not immediately clear how to realise it (elegantly).
+</p>
+<h2 id="ABIsandcallingconventions">ABIs and calling conventions</h2>
+<p>
+For each CPU architecture GHC has a calling convention that it uses for all Haskell function calls. The calling convention specifies where function arguments and results are placed in registers and on the stack. Adhering to the calling convention is necessary for correctness. Code compiled using different calling conventions should not be linked together. Note that currently the LLVM and NCG code generators adhere to the same ABI.
+</p>
+<p>
+The calling convention needs to be extended to take into account the primitive vector types. We have to decide if vectors should be passed in registers or on the stack and how to handle vectors that do not match the native vector register size.
+</p>
+<p>
+For efficiency it is highly desirable to make use of vector registers in the calling convention. This can be significantly quicker than copying vectors to and from the stack.
+</p>
+<p>
+Within the same overall CPU architecture, there are several sub-architectures with different vector capabilities and in particular different vector sizes. The x86-64 architecture supports SSE2 vectors as a baseline which includes pairs of doubles, but the AVX extension doubles the size of the vector registers. Ideally when compiling for AVX we would make use of the larger AVX vectors, including passing the larger vectors in registers.
+</p>
+<p>
+This poses a major challenge: we want to make use of large vectors when possible but we would also like to maintain some degree of ABI compatibility.
+</p>
+<h3 id="Alternativedesign:separateABIs">Alternative design: separate ABIs</h3>
+<p>
+It is worth briefly exploring the option of abandoning ABI compatibility. We could declare that we have two ABIs on x86-64, the baseline SSE ABI and the AVX ABI. We would further declare that to generate AVX code you must build all of your libraries using AVX. Essentially this would mean having two complete sets of libraries, or perhaps simply two instances of GHC, each with their own libraries. While this would work and may be satisfactory when speed is all that matters, it would not encourage use of vectors more generally. In practice haskell.org and linux distributions would have to distribute the more compatible SSE build so that in many cases even users with AVX hardware would be using GHC installations that make no use of AVX code. On x86 the situation could be even worse since the baseline x86 sub-architecture used by many linux distributions does not include even SSE2. In addition it is wasteful to have two instances of libraries when most libraries do not use vectors at all.
+</p>
+<h3 id="Selecteddesign:mixedABIsusingworkerwrapper">Selected design: mixed ABIs using worker/wrapper</h3>
+<p>
+It it worth exploring options for making use of AVX without having to force all code to be recompiled. Ideally the base package would not need to be recompiled at all and perhaps only have packages like vector recompiled to take advantage of AVX.
+</p>
+<p>
+Consider the situation where we have two modules <tt>Lib.hs</tt> and <tt>App.hs</tt> where <tt>App</tt> imports <tt>Lib</tt>. The <tt>Lib</tt> module exports:
+</p>
+<pre class="wiki">f :: DoubleVec4# -&gt; Int
+g :: (DoubleVec4# -&gt; a) -&gt; a
+</pre><p>
+which are used by App. We compile:
+</p>
+<pre class="wiki">ghc -msse2 Lib.hs
+ghc -mavx  App.hs.
+</pre><p>
+There are two cases to consider:
+</p>
+<ul><li>if the function being called has an unfolding exported from <tt>Lib</tt> then that unfolding can be compiled in the context of App and can make use of AVX instructions
+</li><li>alternatively we are dealing with object code for the function which follows a certain ABI
+</li></ul><p>
+Notice that not only do we need to be careful to call <tt>f</tt> and <tt>g</tt> using the right calling convention, but in the case of <tt>g</tt>, the function that we pass as its argument must also follow the calling convention that <tt>g</tt> will call it with.
+</p>
+<p>
+Our solution is to take a worker/wrapper approach. We will split each function into a wrapper that uses a lowest common denominator calling convention and a worker that uses the best calling convention for the target sub-architecture. The simplest lowest common denominator calling convention is to pass all vectors on the stack, while the fast calling convention will use SSE2 or AVX registers.
+</p>
+<p>
+For <tt>App</tt> calling <tt>Lib.f</tt> we start with a call to the wrapper, this can be inlined to a call to the worker at which point we discover that the calling convention will use SSE2 registers. For <tt>App</tt> calling <tt>Lib.g</tt> with a locally defined <tt>h</tt>, we would pass the wrapper for <tt>h</tt> to <tt>g</tt> and since we assume we have no unfolding for <tt>g</tt> then this is how it remains: at runtime <tt>g</tt> will call <tt>h</tt> through the wrapper for <tt>h</tt> and so will use the lowest common denominator calling convention.
+</p>
+<p>
+We might be concerned with the reverse situation where we have A and B, with A importing B:
+</p>
+<pre class="wiki">ghc -mavx  B.hs.
+ghc -msse2 A.hs
+</pre><p>
+That is, a module compiled with SSE2 that imports a module that was compiled with AVX. How can we call functions using AVX registers if we are only targeting SSE2? There are two design options:
+</p>
+<ul><li>One option is to note that since we will be using AVX instructions at runtime when we call the functions in B, and hence it is legitimate to use AVX instructions in A also, at least for the calling convention.
+</li><li>The other is to avoid generating AVX instructions at all, even for the calling convention, in which case it is essential to avoid inlining the wrapper function since this exposes the worker that uses the AVX calling convention.
+</li></ul><p>
+While the first option is in some ways simpler, it also implies that all ABI-compatible code generators can produce at least some vector instructions. In particular it requires data-movement instructions to be supported. If however we wish to completely avoid implementing any vector support in the NCG backend then we must take the second approach.
+</p>
+<p>
+For the second approach we would need to add an extra architecture flag and check to inlining annotations. There are already several conditions that are checked prior to inlining (e.g. phase checks), this would add an additional check.
+</p>
+<h3 id="Optionalextension:compilingcodeformultiplesub-architectures">Optional extension: compiling code for multiple sub-architectures</h3>
+<p>
+If we have support for arch-conditional inlining, we in future may want to extend the idea to allow inlining to one of a number of arch-specific implementations.
+</p>
+<p>
+Consider a hypothetical function in a core library that uses vectors but that is too large to be a candidate for inlining. We have to ship core libraries compiled for the base architecture. Hence the function from the core lib will not be compiled to use AVX. Another possibility is to generate several copies of the function worker, compiled for different sub-archtectires. Then when the function is called in another module compiled with -mavx we would like to call the AVX worker. This could be achieved by arch-conditional inlining or rules.
+</p>
+<p>
+This option should only be considered if we expect to have functions in core libs that are above the inlining threshold. This would probably not be the case for ghc-prim and base. It may however make sense for the vector library should that become part of the standard platform and hence typically shipped to users as a pre-compiled binary.
+</p>
+<h3 id="Typesforcallingconventions">Types for calling conventions</h3>
+<p>
+One of GHC's clever design tricks is that the type of a function in core determines its calling convention. A function in core that accepts an Int is different to one that accepts an Int#. The use of two different types, Int and Int# let us talk about the transformation and lets us write code in core for the wrapper function that converts from Int to Int#.
+</p>
+<p>
+If we are to take a worker wrapper approach with calling conventions for vectors then we would do well to use types to distinguish the common and special calling conventions. For example, we could define sub-architecture specific types:
+</p>
+<pre class="wiki">FloatSseVec4#
+DoubleSseVec2#
+
+FloatAvxVec8#
+DoubleAvxVec4#
+</pre><p>
+We would also need some suitable primitive conversion operations
+</p>
+<pre class="wiki">toSseVec4#   :: FloatVec4# -&gt; FloatSseVec4#
+fromSseVec4# :: FloatSseVec4# -&gt; FloatVec4#
+etc
+</pre><p>
+Then we can describe the types for the worker and wrapper for our function
+</p>
+<pre class="wiki">f :: DoubleVec4# -&gt; Int
+</pre><p>
+This remains the type of the wrapper, which also is still called f. If we compile the module with -msse2 or -mavx then we would get workers with the respective types:
+</p>
+<pre class="wiki">f_worker :: (# DoubleSseVec2#, DoubleSseVec2# #) -&gt; Int
+</pre><p>
+or
+</p>
+<pre class="wiki">f_worker :: DoubleAvxVec4# -&gt; Int
+</pre><p>
+Note that in the SSE2 case we have to synthesize a vector of length 4 using native vectors of length 2.
+</p>
+<p>
+Now it is clearer what the calling convention of the workers are. What is the calling convention of the wrapper?
+</p>
+<pre class="wiki">f :: DoubleVec4# -&gt; Int
+</pre><p>
+We have said that this is the lowest common denominator calling convention. The simplest is passing vectors on the stack. This has the advantage of not requiring vector support in the NCG.
+</p>
+<h3 id="Callingconventionandperformance">Calling convention and performance</h3>
+<p>
+The mixed ABI approach using worker/wrapper trades off some performance for convenience and compatibility. Why do we think the tradeoff is reasonable?
+</p>
+<p>
+In the case of ordinary unboxed types, Int/Int# etc, this approach is very effective. It is only when calling unknown functions, e.g. higher order functions that are not inlined that we would be calling the wrapper and using the slower calling convention. This is unlikely for high performance numeric code.
+</p>
+<h3 id="Optionalextension:fastercommoncallingconvention">Optional extension: faster common calling convention</h3>
+<p>
+On x86-64 we know we always have SSE2 available, so we might want to use that in our lowest common denominator calling convention. It would of course require support for vector data movement instructions in the NCG.
+</p>
+<h3 id="Alternativedesign:onlymachine-specificABItypes">Alternative design: only machine-specific ABI types</h3>
+<p>
+With the above extension to use vectors registers in the common calling convention, it would make sense to say that in fact the wrapper <tt>f</tt> has type:
+</p>
+<pre class="wiki">f :: (# DoubleSseVec2#, DoubleSseVec2# #) -&gt; Int
+</pre><p>
+This is a plausible design, but it is not necessary to go this way. We can simply declare types like <tt>DoubleVec4#</tt> to have a particular calling convention without forcing it to be rewritten in terms of machine-specific types in core.
+</p>
+<p>
+But it would be plausible to say that types like <tt>DoubleVec4#</tt> are ephemeral, having no ABI and must be rewritten by a core -&gt; core pass to use machine-specific types with an associated ABI.
+</p>
+<h3 id="Memoryalignmentforvectors">Memory alignment for vectors</h3>
+<p>
+Many CPUs that support vectors have strict alignment requirements, e.g. that 16 byte vectors must be aligned on 16byte boundaries. On some architectures the requirements are not strict but there may be a performance penalty, or alternative instruction may be required to load unaligned vectors. For example AVX has special instructions for unaligned loads and stores but Intel estimates a <a class="ext-link" href="http://software.intel.com/en-us/articles/practical-intel-avx-optimization-on-2nd-generation-intel-core-processors/"><span class="icon"> </span>20% performance loss</a>.
+</p>
+<p>
+LLVM has primitives that can load and store vectors from unaligned memory locations, which (presumably) compile to either aligned vector instructions if the architecture has them, or non-vector instructions if not.  So alignment of vectors in memory is optional, and we can make an independent choice about whether we align stored vectors
+</p>
+<ul><li>on the stack
+</li><li>in a heap closure
+</li><li>in an array
+</li></ul><p>
+<strong>Alignment in arrays.</strong> Arrays of vectors are clearly the most important case, so we must support allocation of aligned unboxed arrays.  Indeed GHC already does support <i>pinned</i> arrays of unboxed data, and any array larger than about 3k is implicitly pinned. Supporting unpinned arrays would be somewhat more difficult, requiring some GC support to keep the objects aligned when copying them, and requiring that the "slop" be filled in some cases, but it could be done.
+</p>
+<p>
+<strong>Alignment on the stack.</strong> Aligning the stack could be done either by ensuring that all stack allocation is a multiple of the alignment (thus possibly wasting a lot of stack space), or by adding extra frames to fill the slop when allocating a frame that needs alignment.  Neither option is particularly attractive.  We propose to use unaligned access to vectors stored on the stack for the time being, and revisit this decision if it is found to be a performance bottleneck later.
+</p>
+<p>
+<strong>Alignment in the heap.</strong>  Again, while we could arrange the correct alignment for vectors stored in heap objects, it would be painful to do so, requiring code generator support and GC support.  We propose not to do this, at least for the time being, and to use unaligned loads and stores for vectors in heap objects.
+</p>
+<h3 id="ABIsummary">ABI summary</h3>
+<p>
+The size of the native-sized vectors <tt>IntVec#</tt>, <tt>DoubleVec#</tt> etc correspond to the maximum size for any sub-architecture, e.g. AVX on x86-64.
+</p>
+<p>
+The ordinary <tt>IntVec#</tt>, <tt>Int32Vec4#</tt> etc types correspond to the slow compatible calling convention which passes all vectors on the stack. These vectors must all have their obvious strict alignment. For example <tt>Int32Vec4#</tt> is 16 bytes large and has 16 byte alignment.
+</p>
+<p>
+Extra machine-specific types <tt>DoubleSseVec2#</tt>, <tt>FloatAvxVec8#</tt>, <tt>FloatNeonVec4#</tt> etc correspond to the fast calling convention which use the corresponding vector registers. These have the alignment requirements imposed by the hardware. The machine-specific types need not be exposed but it is also plausible to do so.
+</p>
+<p>
+We will use worker/wrapper to convert between the common types and the machine-specific types.
+</p>
+<p>
+Initially, to avoid implementing vector data-movement instructions in the NCG, we will add arch-conditional inlining of the wrapper functions.
+</p>
+<p>
+If later on we add vector data-movement instructions to the NCG, then the arch-conditional inlining of the wrapper functions can be discarded and the compatible calling convention could be changed to make use of any vector registers in the base architecture (e.g. SSE2 on x86-64).
+</p>
+<h2 id="Seealso">See also</h2>
+<ul><li><a class="ext-link" href="http://perilsofparallel.blogspot.com/2008/09/larrabee-vs-nvidia-mimd-vs-simd.html"><span class="icon"> </span>Blog article about Larrabee and Nvidia, MIMD vs. SIMD</a>
+</li><li><a class="wiki" href="/trac/ghc/wiki/SIMD/Implementation/Llvm">SIMD LLVM:</a> A previous (LLVM-specific) iteration of this SIMD proposal.
+</li><li><a class="wiki" href="/trac/ghc/wiki/SIMD/Implementation/Old">Vector Computing:</a>  A previous proposal to make use of x86 SSE in GHC.
+</li></ul>
+        
+        
+      </div>
+    </div>
+    <div id="altlinks">
+      <h3>Download in other formats:</h3>
+      <ul>
+        <li class="last first">
+          <a rel="nofollow" href="/trac/ghc/wiki/SIMD/Design?format=txt">Plain Text</a>
+        </li>
+      </ul>
+    </div>
+    </div>
+    <div id="footer" lang="en" xml:lang="en"><hr />
+      <a id="tracpowered" href="http://trac.edgewall.org/"><img src="/trac-htdocs/trac_logo_mini.png" height="30" width="107" alt="Trac Powered" /></a>
+      <p class="left">
+        Powered by <a href="/trac/ghc/about"><strong>Trac 0.11.6</strong></a><br />
+        By <a href="http://www.edgewall.org/">Edgewall Software</a>.
+      </p>
+      <p class="right">To edit, <a href="http://hackage.haskell.org/trac/ghc/login">login</a> as user <b>guest</b>, password <b>guest</b></p>
+    </div>
+    <div id="sitefooter">
+    </div>
+  </body>
+</html>

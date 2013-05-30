@@ -1,0 +1,647 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  
+  
+
+  
+
+
+  
+
+  <head>
+    <title>
+      SIMD/Implementation/Plan – GHC
+    </title>
+        <link rel="search" href="/trac/ghc/search" />
+        <link rel="help" href="/trac/ghc/wiki/TracGuide" />
+        <link rel="alternate" href="/trac/ghc/wiki/SIMD/Implementation/Plan?format=txt" type="text/x-trac-wiki" title="Plain Text" />
+        <link rel="up" href="/trac/ghc/wiki/SIMD/Implementation" title="View parent page" />
+        <link rel="start" href="/trac/ghc/wiki" />
+        <link rel="stylesheet" href="/trac-htdocs/css/trac.css" type="text/css" /><link rel="stylesheet" href="/trac-htdocs/css/wiki.css" type="text/css" />
+        <link rel="shortcut icon" href="/trac/ghc/chrome/common/trac.ico" type="image/x-icon" />
+        <link rel="icon" href="/trac/ghc/chrome/common/trac.ico" type="image/x-icon" />
+      <link type="application/opensearchdescription+xml" rel="search" href="/trac/ghc/search/opensearch" title="Search GHC" />
+    <script type="text/javascript" src="/trac-htdocs/js/jquery.js"></script><script type="text/javascript" src="/trac-htdocs/js/trac.js"></script><script type="text/javascript" src="/trac-htdocs/js/search.js"></script>
+    <!--[if lt IE 7]>
+    <script type="text/javascript" src="/trac-htdocs/js/ie_pre7_hacks.js"></script>
+    <![endif]-->
+    <script type="text/javascript">
+      jQuery(document).ready(function($) {
+        $("#content").find("h1,h2,h3,h4,h5,h6").addAnchor("Link to this section");
+      });
+    </script>
+    <link rel="stylesheet" type="text/css" href="/ghc/style.css" />
+    <script type="text/javascript" src="/ghc/tracDupeSearch.js"></script>
+    <link rel="stylesheet" type="text/css" href="/ghc/tracDupeSearch.css" />
+  </head>
+  <body>
+    <div id="siteheader">
+      <?cs ####################################################################
+# Site header - Contents are automatically inserted above Trac HTML
+?><div id="left">
+  <div class="block"><ul>
+    <li><a href="/trac/ghc">GHC Trac Home</a></li>
+    <li><a href="http://www.haskell.org/ghc/">GHC Home</a></li>
+    <li> </li>
+    <li><b>Joining In</b></li>
+    <li><a href="/trac/ghc/wiki/WorkingConventions">Working on GHC</a></li>
+    <li><a href="/trac/ghc/wiki/MailingListsAndIRC">Mailing Lists &amp; IRC</a></li>
+    <li><a href="/trac/ghc/wiki/Contributors">GHC Contributors</a></li>
+    <li> </li>
+    <li><b>Documentation</b></li>
+    <li><a href="/trac/ghc/wiki/Status">Status Reports</a></li>
+    <li><a href="/trac/ghc/wiki/Repositories">Repositories</a></li>
+    <li><a href="/trac/ghc/wiki/Building">Building Guide</a></li>
+    <li><a href="/trac/ghc/wiki/Commentary">Commentary</a></li>
+    <li><a href="/trac/ghc/wiki/Debugging">Debugging</a></li>
+    <li> </li>
+    <li><b>View Tickets</b></li>
+    <li><a href="/trac/ghc/query?status=new&amp;status=assigned&amp;status=reopened&amp;group=priority&amp;type=bug&amp;order=id&amp;desc=1">All Bugs</a></li>
+    <li><a href="/trac/ghc/query?status=new&amp;status=assigned&amp;status=reopened&amp;type=task&amp;order=priority&amp;group=difficulty">All Tasks</a></li>
+    <li><a href="/trac/ghc/query?status=new&amp;status=assigned&amp;status=reopened&amp;type=feature+request&amp;order=priority">All Feature Req's</a></li>
+    <li><a href="/trac/ghc/query?status=new&amp;status=assigned&amp;status=reopened&amp;type=proposal&amp;order=priority">All Proposals</a></li>
+    <li><a href="/trac/ghc/query?status=infoneeded&amp;status=new&amp;status=patch&amp;order=priority&amp;owner=$USER">My Tickets</a></li>
+    <li><a href="/trac/ghc/query?status=infoneeded&amp;status=new&amp;status=patch&amp;order=priority&amp;reporter=$USER">Tickets I Created</a></li>
+    <li><a href="/trac/ghc/query?status=new&amp;status=assigned&amp;status=reopened&amp;group=milestone&amp;order=priority">By Milestone</a></li>
+    <li><a href="/trac/ghc/query?status=new&amp;status=assigned&amp;status=reopened&amp;group=os&amp;order=priority">By OS</a></li>
+    <li><a href="/trac/ghc/query?status=new&amp;status=assigned&amp;status=reopened&amp;group=architecture&amp;order=priority">By Architecture</a></li>
+    <li><a href="/trac/ghc/query?status=patch&amp;ol=id&amp;col=summary&amp;col=owner&amp;col=type&amp;col=priority&amp;col=milestone&amp;col=component&amp;order=priority">Patches for review</a></li>
+    <li> </li>
+    <li><b>Create Ticket</b></li>
+    <li><a href="/trac/ghc/newticket?type=bug">New Bug</a></li>
+    <li><a href="/trac/ghc/newticket?type=task">New Task</a></li>
+    <li><a href="/trac/ghc/newticket?type=feature+request">New Feature Req</a></li>
+    <li> </li>
+    <li><b>Wiki</b></li>
+    <li><a href="/trac/ghc/wiki/TitleIndex">Title Index</a></li>
+    <li><a href="/trac/ghc/wiki/RecentChanges">Recent Changes</a></li>
+    <li><a href="/trac/ghc/wiki/TracWikiMisc">Wiki Notes</a></li>
+  </ul></div>
+</div>
+    </div>
+    <div id="banner">
+      <div id="header">
+        <a id="logo" href="http://www.haskell.org/ghc/"><img src="/ghc/ghc_logo.png" alt="Trac" height="73" width="584" /></a>
+      </div>
+      <form id="search" action="/trac/ghc/search" method="get">
+        <div>
+          <label for="proj-search">Search:</label>
+          <input type="text" id="proj-search" name="q" size="18" value="" />
+          <input type="submit" value="Search" />
+        </div>
+      </form>
+      <div id="metanav" class="nav">
+    <ul>
+      <li class="first"><a href="/trac/ghc/login">Login</a></li><li><a href="/trac/ghc/wiki/TracGuide">Help/Guide</a></li><li><a href="/trac/ghc/about">About Trac</a></li><li><a href="/trac/ghc/register">Register</a></li><li><a href="/trac/ghc/reset_password">Forgot your password?</a></li><li class="last"><a href="/trac/ghc/prefs">Preferences</a></li>
+    </ul>
+  </div>
+    </div>
+    <div id="mainnav" class="nav">
+    <ul>
+      <li class="first active"><a href="/trac/ghc/wiki">Wiki</a></li><li><a href="/trac/ghc/timeline">Timeline</a></li><li><a href="/trac/ghc/roadmap">Roadmap</a></li><li><a href="/trac/ghc/report">View Tickets</a></li><li><a href="/trac/ghc/pdashboard">Dashboard</a></li><li class="last"><a href="/trac/ghc/blog">Blog</a></li>
+    </ul>
+  </div>
+    <div id="main">
+      <div id="ctxtnav" class="nav">
+        <h2>Context Navigation</h2>
+          <ul>
+              <li class="first"><a href="/trac/ghc/wiki/SIMD/Implementation">Up</a></li><li><a href="/trac/ghc/wiki/WikiStart">Start Page</a> / <a href="/trac/ghc/wiki/SIMD">SIMD</a> / <a href="/trac/ghc/wiki/SIMD/Implementation">Implementation</a> / Plan</li><li><a href="/trac/ghc/wiki/TitleIndex">Index</a></li><li><a href="/trac/ghc/wiki/SIMD/Implementation/Plan?action=history">History</a></li><li class="last"><a href="/trac/ghc/wiki/SIMD/Implementation/Plan?action=diff&amp;version=2">Last Change</a></li>
+          </ul>
+        <hr />
+      </div>
+    <div id="content" class="wiki">
+      <p class="path noprint">
+        <a class="pathentry" title="View SIMD" href="/trac/ghc/wiki/SIMD">SIMD</a><span class="pathentry sep">/</span><a class="pathentry" title="View SIMD/Implementation" href="/trac/ghc/wiki/SIMD/Implementation">Implementation</a><span class="pathentry sep">/</span><a class="pathentry" title="View SIMD/Implementation/Plan" href="/trac/ghc/wiki/SIMD/Implementation/Plan">Plan</a>
+        <br style="clear: both" />
+      </p>
+      <div class="wikipage searchable">
+        
+          <p>
+Please see the <a class="wiki" href="/trac/ghc/wiki/SIMD">top-level SIMD project page</a> for further details.
+</p>
+<h2 id="Introduction">Introduction</h2>
+<p>
+This text documents the implementation stages / components for adding SIMD support to GHC.
+</p>
+<p>
+Based on that design, the high-level tasks that must be accomplished include the following:
+</p>
+<ol><li>Modify autoconf to determine SSE availability and vector size
+</li><li>Add new <a class="missing wiki">PrimOps?</a> to allow Haskell to make use of Vectors
+</li><li>Add new <a class="missing wiki">MachOps?</a> to Cmm to communicate use of Vectors
+</li><li>Modify the LLVM Code Generator to translate Cmm to LLVM vector instructions
+</li><li>Demonstrate use of <a class="missing wiki">PrimOps?</a> from Haskell program
+</li><li>Modify Vector Library
+</li><li>Modify DPH Libraries
+</li><li>Arrange that the other Code Generators continue to generate non SIMD code
+</li></ol><p>
+Introduction of SIMD support to GHC will occur in stages to demonstrate the entire “vertical” stack is functional:
+</p>
+<ol><li>Introduce “Float” <a class="missing wiki">PrimOps?</a> (as necessary to run an example showing SIMD usage in the LLVM)
+</li><li>Add appropriate Cmm support for the Float primtype / primop subset
+</li><li>Modify the LLVM Code Generator to support the Double vectorization
+</li><li>Demonstrate the <a class="missing wiki">PrimOps?</a> and do limited performance testing to ensure SIMD is functional
+</li><li>Modify Vector Libraries to make use of new <a class="missing wiki">PrimOps?</a>
+</li><li>Modify the DPH Libraries
+</li><li>Higher level examples using the above libraries
+</li><li>Build out the remaining <a class="missing wiki">PrimOps?</a>
+</li><li>Demonstrate full stack
+</li><li>Test remaining code generators
+</li></ol><h2 id="CurrentOpenQuestions">Current Open Questions</h2>
+<p>
+These clearly won't be all of the questions I have, there is a substantial amount of work that goes through the entire GHC compiler stack before reaching the LLVM instructions.
+</p>
+<h2 id="LocationofSIMDbranch">Location of SIMD branch</h2>
+<p>
+The SIMD branch of GHC is named, appropriately, <tt>simd</tt>.
+</p>
+<h2 id="AddingaprimtypeprimopOutline">Adding a primtype / primop Outline</h2>
+<p>
+When going through this outline, it is helpful to have the <a class="ext-link" href="http://hackage.haskell.org/trac/ghc/wiki/Commentary/Compiler/HscMain"><span class="icon"> </span>Compiler Pipeline</a> explanation available as well as the explanation of the source code tree (that includes nested explanations of important directories and files) available <a class="ext-link" href="http://hackage.haskell.org/trac/ghc/wiki/Commentary/SourceTree"><span class="icon"> </span>here</a>.
+</p>
+<p>
+Addition of Types for use by Haskell
+</p>
+<ul><li>./compiler/types/TyCon.lhs
+<ul><li><a class="missing wiki">TyCons?</a> represent type constructors.  There are @data declarations, @type synonyms, @newtypes and class declarations (@class).  We will need to modify this to add a proper type constructor.
+</li><li>Prelude uses this type constructor in ./compiler/prelude/TysPrim.lhs
+</li></ul></li></ul><p>
+Modifications to the compiler to add primtype / primop to Prelude
+</p>
+<ul><li>./compiler/prelude/PrelNames.lhs
+</li><li>./compiler/prelude/TysPrim.lhs
+</li><li>./compiler/prelude/primops.txt.pp
+<ul><li>Addition of a type here (primtype) to operate on
+</li><li>Defines the primops that are associated with the types that are defined
+</li><li>For primops defined here that are inline, modify compiler/codeGen/CgPrimOp.hs
+</li></ul></li></ul><p>
+Modifications to add support to the compiler for the new types.  Look to individual files for the portion of the compiler that is being modified.  The binaries generated out of this branch are called from the ghc/ binaries.
+</p>
+<ul><li>./compiler/codeGen/CgCallConv.hs
+</li><li>./compiler/codeGen/CgPrimOp.hs
+</li><li>./compiler/codeGen/CgUtils.hs
+</li><li>./compiler/codeGen/SMRep.lhs
+</li><li>./compiler/codeGen/StgCmmLayout.hs
+</li><li>./compiler/codeGen/StgCmmPrim.hs
+</li></ul><p>
+More modifications to the Cmm portion of the compiler chain.
+</p>
+<ul><li>./compiler/cmm contains the code that inputs STG and outputs Cmm
+</li><li>./compiler/cmm/CmmExpr.hs
+</li><li>./compiler/cmm/CmmType.hs
+</li><li>./compiler/cmm/CmmUtils.hs
+</li><li>./compiler/cmm/OldCmm.hs
+</li><li>./compiler/cmm/StackColor.hs
+</li></ul><p>
+Modifications to the LLVM code generator
+</p>
+<ul><li>Generating the human readable LLVM code (.ll) occurs in the compiler/llvmGen code.  It receives Cmm and turns it around to LLVM bytecodes through human readable LLVM code.  A "simple" use of LLVM vector instructions using floats is shown at the <a class="wiki" href="/trac/ghc/wiki/SIMDVectorExampleInLLVM">SIMD Vector Example In LLVM</a> page
+<ul><li>compiler/llvmGen/Llvm/AbsSyn.hs - no changes, describes the abstract structure of an LLVM program
+</li><li>compiler/llvmGen/Llvm/PpLlvm.hs - no changes, this is the module that does a Pretty Print of LLVM I(ntermediate) R(epresentation), it still uses generic constructs described in Llvm.<a class="missing wiki">AbsSyn?</a> (where no changes are necessary), Llvm.Types (where changes are needed)
+</li><li>compiler/llvmGen/Llvm/Types.hs - Describes the LLVM Basic Types and Variables.  Changes are necessary to add Vectors.  LMVector Int <a class="missing wiki">LlvmType?</a> will be added (eventually constraints on the width may need to be added.  "fadd" is already present, as is "add" and other operations.  Most likely, additional operations will have to be added as the code generated is slightly different for, say, a float vector since a series of instructions have to be executed for each "add", even though the basic "fadd" structure remains the same.
+</li><li>compiler/llvmGen/LlvmCodeGen/Base.hs, no changes appear necessary here.  These seem to be primarily various Label and Environment handling items ... primarily structural.
+</li><li>compiler/llvmGen/LlvmCodeGen/CodeGen.hs, changes will most likely be necessary here for various operators.  This is the primary location where Cmm is converted to LLVM operators ... for example, MO_F_Add with a parameter is converted to LM_MO_FAdd here:  MO_F_Add  _ -&gt; genBinMach LM_MO_FAdd).  In the event that additional operators are added (MO_VF_Add for example), this will definitely have to be modified.
+</li><li>compiler/llvmGen/LlvmCodeGen/Data.hs. converts static data types from Cmm (<a class="missing wiki">CmmData?</a>) to LLVM structures, no changes are likely necessary here
+</li><li>compiler/llvmGen/LlvmCodeGen/Ppr.hs, the pretty print helpers for the LLVM Code Generator ... dependent on other files
+</li><li>compiler/llvmGen/LlvmCodeGen/Regs.hs, no additional registers necessary (??), no changes
+</li></ul></li></ul><p>
+Modifications to the STG Code Generation
+</p>
+<ul><li>./includes/stg/MachRegs.h
+</li><li>./includes/stg/Regs.h
+</li><li>./includes/stg/Types.h
+</li></ul><p>
+./includes/HaskellConstants.hs
+./includes/mkDerivedConstants.c
+</p>
+<p>
+./includes/rts/storage/FunTypes.h
+</p>
+<p>
+./utils/genapply/GenApply.hs
+./utils/genprimopcode/Main.hs
+</p>
+<h2 id="Modifyautoconf">Modify autoconf</h2>
+<p>
+Determining if a particular hardware architecture has SIMD instructions, the version of the instructions available (SSE, SSE2, SSE3, SSE4 or an iteration of one of those), and consequently the size of vectors that are supported occurs during the configuration step on the architecture that the build will occur on.  This is the same time that the sizes of Ints are calculated, alignment constants, and other pieces that are critical to GHC.
+</p>
+<p>
+Backing up from the results to the location that the changes are introduced, the current alignment and primitive sizes are available in ./includes/ghcautoconfig.h, here is a sample:
+</p>
+<pre class="wiki">...
+/* The size of `char', as computed by sizeof. */
+#define SIZEOF_CHAR 1
+
+/* The size of `double', as computed by sizeof. */
+#define SIZEOF_DOUBLE 8
+...
+</pre><p>
+These are constructed from mk/config.h* that are generated by configure.ac and autoheader.  The configure.ac (or a related file) should be able to be sufficiently modified to determine if SSE is available and, consequently, the vector size that can be operated on and (later) how many pieces of data can be operated on in parallel (determined by the operation).  SSE had an MMX register size of 64-bits and all later SSE versions (2 and above) have a register size of 128 bits.  This implies that any type that is 32-bits can have 4 pieces of data calculated against in a single instruction.
+</p>
+<p>
+There is an example of configure.ac modifications to detect SSE availability available on the web, the primary body of the check is as follows (xmmintrin.h contains the SSE instruction set):
+</p>
+<pre class="wiki">AC_MSG_CHECKING(for SSE in current arch/CFLAGS)
+AC_LINK_IFELSE([
+AC_LANG_PROGRAM([[
+#include &lt;xmmintrin.h&gt;
+__m128 testfunc(float *a, float *b) {
+  return _mm_add_ps(_mm_loadu_ps(a), _mm_loadu_ps(b));
+}
+]])],
+[
+has_sse=yes
+],
+[
+has_sse=no
+]
+)
+AC_MSG_RESULT($has_sse)
+
+if test "$has_sse" = yes; then
+  AC_DEFINE([_USE_SSE], 1, [Enable SSE support])
+  AC_DEFINE([_VECTOR_SIZE], 128, [Default Vector Size for Optimization])
+fi
+</pre><p>
+Once the mk/config.h is modified with the above, the includes/ghcautoconf.h is modified during the first stage of the GHC build process.  Once includes/ghcautoconf.h is modified, the _USE_SSE constant is available in the Cmm definitions (next section).
+</p>
+<p>
+There are more detailed explanations of how to use cpuid to determine the supported SSE instruction set available on the web as well.  cpuid may be more appropriate but are also much more complex.  Details for using cpuid are available at <a class="ext-link" href="http://software.intel.com/en-us/articles/using-cpuid-to-detect-the-presence-of-sse-41-and-sse-42-instruction-sets/"><span class="icon"> </span>http://software.intel.com/en-us/articles/using-cpuid-to-detect-the-presence-of-sse-41-and-sse-42-instruction-sets/</a>.
+</p>
+<p>
+It should be noted, that since the overall goal is to let the LLVM handle the actual assembly code that does vectorization, it's only possible to support vectorization up to the version that the LLVM supports.
+</p>
+<h2 id="AddnewMachOpstoCmmcode">Add new <a class="missing wiki">MachOps?</a> to Cmm code</h2>
+<p>
+It may make more sense to add the <a class="missing wiki">MachOps?</a> to Cmm prior to implementing the <a class="missing wiki">PrimOps?</a> (or at least before adding the code to the <a class="missing wiki">CgPrimOp?</a>.hs file).  There is a useful <a class="ext-link" href="http://hackage.haskell.org/trac/ghc/wiki/Commentary/Compiler/CmmType#AdditionsinCmm"><span class="icon"> </span>Cmm Wiki Page</a> available to aid in the definition of the new Cmm operations.
+</p>
+<p>
+Modify compiler/cmm/CmmType.hs to add new required vector types and such, here is a basic outline of what needs to be done:
+</p>
+<pre class="wiki">data CmmType    -- The important one!
+  = CmmType CmmCat Width
+ 
+type Multiplicty = Int
+ 
+data CmmCat     -- "Category" (not exported)
+   = GcPtrCat   -- GC pointer
+   | BitsCat   -- Non-pointer
+   | FloatCat   -- Float
+   | VBitsCat  Multiplicity   -- Non-pointer
+   | VFloatCat Multiplicity  -- Float
+   deriving( Eq )
+        -- See Note [Signed vs unsigned] at the end
+</pre><p>
+Modify compiler/cmm/CmmMachOp.hs, this will add the necessary <a class="missing wiki">MachOps?</a> for use from the <a class="missing wiki">PrimOps?</a> modifications to support SIMD.  Here is an example of adding a SIMD version of the MO_F_Add <a class="missing wiki">MachOp?</a>:
+</p>
+<pre class="wiki">  -- Integer SIMD arithmetic
+  | MO_V_Add  Width Int
+  | MO_V_Sub  Width Int
+  | MO_V_Neg  Width Int         -- unary -
+  | MO_V_Mul  Width Int
+  | MO_V_Quot Width Int
+
+  -- Floating point arithmetic
+  | MO_VF_Add Width Int   -- MO_VF_Add W64 4   Add 4-vector of 64-bit floats
+  ...
+</pre><p>
+Some existing Cmm instructions may be able to be reused, but there will have to be additional instructions added to account for vectorization primitives.  This will help keep the SIMD / non-SIMD code generation separate for the time being until we have it working.
+</p>
+<h2 id="AddnewPrimOps">Add new <a class="missing wiki">PrimOps?</a></h2>
+<p>
+Adding the new <a class="missing wiki">PrimOps?</a> is relatively straight-forward, but a  substantial number of LOC will be added to achieve it.  Most of this code is cut/paste "like" with minor type modifications.
+</p>
+<p>
+Background: The following articles can aid in getting the work done:
+</p>
+<ul><li><a class="ext-link" href="http://hackage.haskell.org/trac/ghc/wiki/Commentary/PrimOps"><span class="icon"> </span>Primitive Operations (PrimOps)</a>
+</li><li><a class="ext-link" href="http://hackage.haskell.org/trac/ghc/wiki/AddingNewPrimitiveOperations"><span class="icon"> </span>Adding new primitive operations to GHC Haskell</a>
+</li><li>Some guidelines for <a class="missing wiki">addition?</a>, at least until I find something on the Wiki
+</li></ul><p>
+The steps to be undertaken are:
+</p>
+<ol><li>Modify ./compiler/prelude/primops.txt.pp (the following instructions may be changed a bit based on the direction)
+<ol class="loweralpha"><li>Add the following vector length constants as Int# types
+<ul><li>intVecLen, intVec8Len, intVec16Len, intVec32Len, intVec64Len, wordVecLen, wordVec8Len, wordVec16Len, wordVec32Len, wordVec64Len, floatVecLen, and doubleVecLen, 
+</li></ul></li><li>Then add the following primtypes:
+<ul><li>Int : <a class="missing wiki">IntVec?</a>#, Int8Vec#, Int16Vec#, Int32Vec#, Int64Vec#
+</li><li>Word : <a class="missing wiki">WordVec?</a>#, Word8Vec#, Word16Vec#, Word32Vec#, Word64Vec#
+</li><li>Float : <a class="missing wiki">FloatVec?</a>#
+</li><li>Double : <a class="missing wiki">DoubleVec?</a>#
+</li></ul></li><li>Add the following primops associated with the above primtypes.   The ops come in groups associated with the types above, for example for <a class="missing wiki">IntVec?</a>#’s we get the following family for the “plus” operation alone:
+<ul><li>plusInt8Vec# :: Int8Vec# -&gt; Int8Vec# -&gt; Int8Vec#
+</li><li>plusInt16Vec# :: Int16Vec# -&gt; Int16Vec# -&gt; Int16Vec#
+</li><li>plusInt32Vec# :: Int32Vec# -&gt; Int32Vec# -&gt; Int32Vec#
+</li><li>plusInt64Vec# :: Int64Vec# -&gt; Int64Vec# -&gt; Int64Vec#
+</li></ul></li><li>Repeat this for the following set of operations on <a class="missing wiki">IntVec?</a>#’s of various lengths, note that the signatures are summarized informally in parentheses behind the operation:        
+<ul><li>plusIntVec#, (signature :: Int8Vec# -&gt; Int8Vec# -&gt; Int8Vec#)
+</li><li>minusIntVec#, 
+</li><li>timesIntVec#, 
+</li><li>quotIntVec#, 
+</li><li>remIntVec#
+</li><li>negateIntVec# (signature :: <a class="missing wiki">IntVec?</a># -&gt; <a class="missing wiki">IntVec?</a>#)
+</li><li>uncheckedIntVecShiftL# (signature :: <a class="missing wiki">IntVec?</a># -&gt; Int# -&gt; <a class="missing wiki">IntVec?</a>#)
+</li><li>uncheckedIntVecShiftRA#, 
+</li><li>uncheckedIntVecShiftRL# 
+</li></ul></li><li>For the Word vectors we similarly introduce:
+<ul><li>plusWordVec#, minusWordVec#, timesWordVec#, quotWordVec#, remWordVec#, negateWordVec#, andWordVec#, orWordVec#, xorWordVec#, notWord#, uncheckedWordVecShiftL#, uncheckedWordVecShiftRL#
+</li></ul></li><li>Float
+<ul><li>plusFloatVec#, minusFloatVec#, timesFloatVec#, quotFloatVec#, remFloatVec#, negateFloatVec#, expFloatVec#, logFloatVec#, sqrtFloatVec#<sub> sinFloatVec#, cosFloatVec#, tanFloatVec#, asinFloatVec#, acosFloatVec#, atanFloatVec#, sinhFloatVec#, coshFloatVec#, tanhFloatVec#
+</li></ul></li><li>Double
+<ul><li>plusDoubleVec#, minusDoubleVec#, timesDoubleVec#, quotDoubleVec#, remDoubleVec#, negateDoubleVec#, expDoubleVec#, logDoubleVec#, sqrtDoubleVec#, sinDoubleVec#, cosDoubleVec#, tanDoubleVec#, asinDoubleVec#, acosDoubleVec#, atanDoubleVec#, sinhDoubleVec#, coshDoubleVec#, tanhDoubleVec#
+</li></ul></li></ol></li><li>Do NOT Modify ./compiler/prelude/PrimOp.lhs (actually, ./compiler/primop-data-decl.hs-incl) to add the new <a class="missing wiki">PrimOps?</a> (VIntQuotOp, etc...), this will be generated based on the primops.txt.pp modifications
+</li><li>Modify ./compiler/codeGen/CgPrimOp.hs, code for each primop (above) must be added to complete the primop addition.
+<ol class="loweralpha"><li>The code, basically, links the primops to the Cmm <a class="missing wiki">MachOps?</a> (that, in turn, are read by the code generators)
+</li><li>It looks like some Cmm extensions will have to be added to ensure alignment and pass vectorization information onto the back ends, the necessary <a class="missing wiki">MachOps?</a> will be determined after the first vertical stack is completed (using the "Double" as a model).  There may be some reuse from the existing <a class="missing wiki">MachOps?</a>.  There is some discussion to these extensions (or similar ones) on the original <a class="ext-link" href="http://hackage.haskell.org/trac/ghc/ticket/3557"><span class="icon"> </span>Patch 3557 Documentation</a>
+</li></ol></li></ol><p>
+Example of modification to ./compiler/prelude/primops.txt.pp to add one of the additional Float operations:
+</sub></p>
+<pre class="wiki">------------------------------------------------------------------------
+section "SIMDFloat"
+	{Float operations that can take advantage of vectorization.}
+------------------------------------------------------------------------
+primtype FloatVec# a
+
+primop   FloatVectorAddOp   "plusFloatVec#"      Dyadic            
+   FloatVec# -&gt; FloatVec# -&gt; FloatVec#
+   with can_fail = True
+
+primop   FloatVectorAddOp   "plusFloatVec#"      Dyadic            
+   FloatVec# -&gt; FloatVec# -&gt; FloatVec#
+   with can_fail = True
+</pre><p>
+Here is an example of the update to ./compiler/codeGen/CgPrimOp.hs that generates Machine Ops based on the new <a class="missing wiki">PrimOps?</a>.
+</p>
+<pre class="wiki">-- SIMD Float Ops
+translateOp FloatVectorAddOp	= Just (MO_VF_Add W32 4)
+translateOp FloatVectorMultOp	= Just (MO_VF_Mult W32 4)
+</pre><p>
+The new primtype also needs to be weaved through the code generation path, but it is slightly different then primops.  To complete the primtype definition, the following files need to be modified.
+</p>
+<p>
+./utils/genprimopcode/Main.hs needs to have an association added between the <a class="missing wiki">FloatVec?</a># type added above and a Type that is used for representation elsewhere:
+</p>
+<pre class="wiki">ppType (TyApp "FloatVec#"   []) = "floatVecPrimTy"
+</pre><p>
+By adding the floatVecPrimTy, several additional relationships and constructs need to be created as well.
+</p>
+<p>
+./compiler/prelude/TysPrim.lhs, wires the new type into Prelude:
+</p>
+<pre class="wiki">module TysPrim(
+....
+-- Added
+	floatVecPrimTyCon,	floatVecPrimTy,
+...
+
+primTyCons 
+  = [ addrPrimTyCon
+...
+-- Added
+    , floatVecPrimTyCon
+
+...
+floatVecPrimTyConName		  = mkPrimTc (fsLit "FloatVec#") floatVecPrimTyConKey floatVecPrimTyCon
+
+...
+-- Add a new subsection for primitive types (others will be added here as well)
+%************************************************************************
+%*									*
+\subsection[TysPrim-SIMDvectors]{The primitive SIMD vector types}
+%*									*
+%************************************************************************
+
+\begin{code}
+floatVecPrimTyCon :: TyCon
+floatVecPrimTyCon		  = pcPrimTyCon  floatVecPrimTyConName	       1 PtrRep
+
+floatVecPrimTy :: Type
+floatVecPrimTy	    	    = mkTyConTy floatVecPrimTyCon
+\end{code}
+</pre><p>
+./compiler/prelude/PrelNames.lhs gives keys for each of the primtypes
+</p>
+<pre class="wiki">\subsection[Uniques-prelude-TyCons] ...
+...
+floatVecPrimTyConKey	= mkPreludeTyConUnique 38
+</pre><p>
+./compiler/ghci/ByteCodeGen.lhs
+</p>
+<p>
+./compiler/ghci/RtClosureInspect.hs
+</p>
+<pre class="wiki">repPrim t = rep where 
+...
+-- Added
+    | t == floatVecPrimTyCon  = "&lt;floatvec&gt;"
+</pre><p>
+The above, after compilation, adds the following to the ./compiler/prelude/PrimOp.lhs file:
+</p>
+<pre class="wiki">   | FloatVectorAddOp
+   | FloatVectorMultOp
+</pre><h2 id="ModifyLLVMCodeGenerator">Modify LLVM Code Generator</h2>
+<p>
+Take the <a class="missing wiki">MachOps?</a> in the Cmm definition and translate correctly to the corresponding LLVM instructions.  LLVM code generation is in the /compiler/llvmGen directory.  The following will have to be modified (at a minimum):
+</p>
+<ul><li>/compiler/llvmGen/Llvm/Types.hs - add the <a class="missing wiki">MachOps?</a> from Cmm and how they bridge to the LLVM vector operations
+</li><li>/compiler/llvmGen/LlvmCodeGen/CodeGen.hs - This is the heart of the translation from <a class="missing wiki">MachOps?</a> to LLVM code.   Possibly significant changes will have to be added.
+</li></ul><p>
+* Remaining /compiler/llvmGen/* - Supporting changes
+</p>
+<p>
+At this point, <a class="missing wiki">CodeGen?</a> is not modified, though it will likely have to be eventually.  Types.hs has a new LMVector type added to support vectors.  As the operations on vectors are the same as all LLVM types (for float vectors use fadd, etc...), I have not made changes to the operators yet (though I'm guessing I will have to eventually).  Here is the diff of changes to Types.hs:
+</p>
+<pre class="wiki">[paul.monday@pg155-n19 Llvm]$ git diff Types.hs
+diff --git a/compiler/llvmGen/Llvm/Types.hs b/compiler/llvmGen/Llvm/Types.hs
+index 1013426..1133d37 100644
+--- a/compiler/llvmGen/Llvm/Types.hs
++++ b/compiler/llvmGen/Llvm/Types.hs
+@@ -38,6 +38,7 @@ data LlvmType
+   | LMFloat128           -- ^ 128 bit floating point
+   | LMPointer LlvmType   -- ^ A pointer to a 'LlvmType'
+   | LMArray Int LlvmType -- ^ An array of 'LlvmType'
++  | LMVector Int LlvmType -- ^ A vector of 'LlvmType'
+   | LMLabel              -- ^ A 'LlvmVar' can represent a label (address)
+   | LMVoid               -- ^ Void type
+   | LMStruct [LlvmType]  -- ^ Structure type
+@@ -55,6 +56,7 @@ instance Show LlvmType where
+   show (LMFloat128    ) = "fp128"
+   show (LMPointer x   ) = show x ++ "*"
+   show (LMArray nr tp ) = "[" ++ show nr ++ " x " ++ show tp ++ "]"
++  show (LMVector nr tp ) = "&lt;" ++ show nr ++ " x " ++ show tp ++ "&gt;"  
+   show (LMLabel       ) = "label"
+   show (LMVoid        ) = "void"
+   show (LMStruct tys  ) = "&lt;{" ++ (commaCat tys) ++ "}&gt;"
+@@ -295,6 +297,7 @@ llvmWidthInBits (LMFloat128)    = 128
+ -- it points to. We will go with the former for now.
+ llvmWidthInBits (LMPointer _)   = llvmWidthInBits llvmWord
+ llvmWidthInBits (LMArray _ _)   = llvmWidthInBits llvmWord
++llvmWidthInBits (LMVector _ _)   = llvmWidthInBits llvmWord
+ llvmWidthInBits LMLabel         = 0
+ llvmWidthInBits LMVoid          = 0
+ llvmWidthInBits (LMStruct tys)  = sum $ map llvmWidthInBits tys
+</pre><h2 id="ModifyNativeCodeGenerator">Modify Native Code Generator</h2>
+<p>
+Unfortunately, the native code generator will also have to be recompiled.  The GHC compilation depends on a 6.x version of GHC, before native LLVM code generation was built into the HEAD (so simply modifying the mk/build.mk file to go to -fllvm does not work).
+</p>
+<p>
+For x86 Native Code Generation, locate the ./compiler/nativeGen/X86/CodeGen.hs file and modify it appropriately.  For the example above, simply adding a conversion from MO_VF_Add to the equivalent non-vector add is sufficient.
+</p>
+<pre class="wiki">	  -- SIMD Vector Instruction in Native Revert to Simple Instructions
+      MO_VF_Add w i | sse2      -&gt; trivialFCode_sse2 w ADD  x y
+                  | otherwise -&gt; trivialFCode_x87    GADD x y
+      MO_VF_Mul w i | sse2      -&gt; trivialFCode_sse2 w MUL x y
+                  | otherwise -&gt; trivialFCode_x87    GMUL x y	
+</pre><p>
+Changes for the remaining new <a class="missing wiki">MachOps?</a> may be much larger.
+</p>
+<h2 id="Example:DemonstrateSIMDOperation">Example: Demonstrate SIMD Operation</h2>
+<p>
+Once the Code Generator, <a class="missing wiki">PrimOps?</a> and Cmm are modified, we should be able to demonstrate performance scenarios.  The simplest example to use for demonstrating performance is to time vector additions and multiplications using the new vectorized instruction set against a similar addition or multiplication using another <a class="missing wiki">PrimOp?</a>.
+</p>
+<p>
+The following two simple programs should demonstrate the difference in performance.  The program using the <a class="missing wiki">PrimOps?</a> <i>should</i> improve performance approaching 2x (Doubles are 64bit and SSE provides two 64bit registers).
+</p>
+<p>
+Simple usage of the new instructions to add to vectors of doubles:
+</p>
+<p>
+<strong>Question:</strong>  How does one create one of the new <a class="missing wiki">PrimOp?</a> types to test prior to testing the vector add operations?  This is going to have to be looked at a little ... the code should basically create a vector and then insertDoubleVec# repeatedly to populate the vector.  Without the subsequent steps done, this will have to be "hand" done without additional operations defined.  Here is the response from Manuel to expand on this:  I am not quite sure what the best approach is. The intention in LLVM is clearly to populate vectors using the 'insertIntVec#' etc functions. However, in LLVM you can just use an uninitialised register and insert elements into a vector successively. We could provide a vector "0" value in Haskell and insert into that. Any other ideas?
+</p>
+<pre class="wiki">{-# LANGUAGE MagicHash #-}
+import GHC.Prim
+import GHC.Exts
+
+getPrimFloat :: Float -&gt; Float#
+getPrimFloat f = case f of { F# f -&gt; f }
+
+main = do
+    numberString &lt;- getLine
+    let num = read numberString
+    let value = getPrimFloat num
+    numberString2 &lt;- getLine
+    let num2 = read numberString2
+    let value2 = getPrimFloat num2
+    
+    let packedVector1 = pack4FloatOp# value value value value
+    let packedVector2 = pack4FloatOp# value2 value2 value2 value2
+
+    let resultVector = multFloatVec4# packedVector1 packedVector2
+    
+    let result = extractFloatVec# resultVector 1
+
+    let resultFloat = F# result
+    print resultFloat
+</pre><p>
+        
+Using simple lists to achieve the same operation (note that the below is Integer only, I have to modify it to read floats off the command line otherwise a parse error occurs after the reads).
+</p>
+<pre class="wiki">main = do
+    numberString &lt;- getLine
+    let value = read numberString
+    numberString2 &lt;- getLine
+    let value2 = read numberString2
+
+    let list1 = [value,value,value,value]
+    let list2 = [value2,value2,value2,value2]
+
+    let result = zipWith (*) list1 list2 
+
+    print (result !! 1)
+</pre><p>
+The above can be repeated with any of the common operations (multiplication, division, subtraction).  This should be sufficient with large sized vectors / lists to illustrate speedup.
+</p>
+<p>
+(Note that over time and several generations of the integration, one would hope that the latter path would be “optimized” into SIMD instructions)
+</p>
+<h2 id="ModifyVectorLibrariesandVectorCompilerOptimizationPragmasandsuch">Modify Vector Libraries and Vector Compiler Optimization (Pragmas and such)</h2>
+<p>
+Once we've shown there is speed-up for the lower portions of the compiler and have quantified it, the upper half of the stack should be optimized to take advantage of the vectorization code that was added to the <a class="missing wiki">PrimOps?</a> and Cmm.  There are two primary locations this is handled, in the compiler (compile/vectorize) code that vectorizes modules post-desugar process.  This location handles the VECTORISE pragmas as well as implicit vectorization of code.  The other location that requires modification is the Vector library itself.
+</p>
+<ol><li>Modify the Vector library /libraries/vector/Data to make use of <a class="missing wiki">PrimOps?</a> where possible and adjust VECTORISE pragmas if necessary
+<ul><li>Modify the existing Vector code
+</li><li>We will likely also need vector versions of array read/write/indexing to process Haskell arrays with vector operations (this may need to go into compiler/vectorise)
+</li><li>Use the /libraries/vector/benchmarks to test updated code, look for
+<ul><li>slowdowns - vector operations that cannot benefit from SIMD should not show slowdown
+</li><li>speedup - all performance tests that make use of maps for the common operators (+, -, *, etc..) should benefit from the SIMD speedup
+</li></ul></li></ul></li><li>Modify the compiler/vectorise code to adjust pragmas and vectorization post-desugar process.  These modifications may not need to be made on the first pass through the code, more evaluation is necessary.
+<ul><li>/compiler/vectorise/Vectorise.hs
+</li><li>/compiler/vectorise/Vectorise/Env.hs
+</li><li>/compiler/vectorise/Vectorise/Type/Env.hs
+</li></ul></li></ol><p>
+Once the benchmarks show measurable, reproducible behavior, move onto the DPH libraries.  Note that a closer inspection of the benchmarks in the /libraries/vector/benchmarks directory is necessary to ensure they reflect code that will be optimized with the use of SIMD instructions.  If they are not appropriate, add code that demonstrates SIMD speed-up appropriately.
+</p>
+<h2 id="ModifyDPHLibraries">Modify DPH Libraries</h2>
+<p>
+The DPH libraries have heavy dependencies on the previous vectorization modification step (modifying the Vector libraries and the compiler vector options and post-desugar vectorization steps).  The DPH steps should not be undertaken without significant performance improvements illustrated in the previous steps.
+</p>
+<ol><li>The primary changes for DPH are in /libraries/dph/dph-common/Data/Array/Parallel/Lifted/*
+</li><li>VECTOR SCALAR is also heavily used in /libraries/dph/dph-common/Data/Array/Parallel/Prelude, these should be inspected for update as well (Double.hs, Float.hs, Int.hs, Word8.hs)
+</li><li>Modify pragmas as necessary based on changes made above
+</li></ol><p>
+<strong>Note to Self:</strong> Determine if the VECTORISE pragmas need adjustment or enhancement (based on previous steps)
+</p>
+<h2 id="EnsureRemainingCodeGeneratorsFunctionProperly">Ensure Remaining Code Generators Function Properly</h2>
+<p>
+There are really two options on the remaining code generators:
+</p>
+<ul><li>Modify each code generator to understand the new Cmm instructions and restore them to non-vectorized instructions
+</li><li>Add a compiler step that that does a pre-pass and replaces all "length = 1" vectors and operations on them by the corresponding scalar type and operations
+</li></ul><p>
+The latter makes sense in that it is effective on all code generators, including the LLVM code generator.  Vectors of length = 1 should not be put through SIMD instructions to begin with (as they will incur substantial overhead for no return).
+</p>
+<p>
+To make this work, a ghc compiler flag must be added that forces all vector lengths to 1 (this will be required in conjunction with any non-LLVM code generator).  A user can also use this option to turn off SIMD optimization for LLVM.
+</p>
+<ul><li>Add the ghc compiler option: --vector-length=1
+</li><li>Modify compiler/vectorise to recognize the new option or add this compiler pass as appropriate
+</li></ul><h2 id="ReferenceDocumentation">Reference Documentation</h2>
+<ul><li><a class="ext-link" href="https://wiki.aalto.fi/display/t1065450/LLVM+vectorization"><span class="icon"> </span>LLVM Vectorization</a>
+</li><li><a class="ext-link" href="http://llvm.org/docs/LangRef.html#t_vector"><span class="icon"> </span>LLVM Vector Type</a>
+</li></ul><h2 id="ReferenceDiscussionThreads">Reference Discussion Threads</h2>
+<pre class="wiki">From: Manual Chakravarty
+Q: Should the existing pure Vector libraries (/libraries/vector/Data/*) be modified to use the vectorized code as a first priority, wait until DPH (/libraries/dph/) is modified, or leave the Vector library as is?
+
+A: The DPH libraries ('dph-*') are based on the 'vector' library — i.e., for DPH to use SIMD instruction, we must modify 'vector' first.
+
+Q: How does one create one of the new Vector Types in a Haskell program (direct PrimOp?, for testing ... let x = ????)
+
+A: I am not quite sure what the best approach is. The intention in LLVM is clearly to populate vectors using the 'insertIntVec#' etc functions. However, in LLVM you can just use an uninitialised register and insert elements into a vector successively. We could provide a vector "0" value in Haskell and insert into that. Any other ideas?
+
+A: I just realised that we need vector version of the array read/write/indexing operations as well to process Haskell arrays with vector operations.
+
+Q: One discussion point was that the "Vector Lengths" should be "Set to 1" for non LLVM code generation, where does this happen? On my first survey of the code, it seems that the code generators are partitioned from the main body of code, implying that each of the code generators will have to be modified to account for the new Cmm MachOps? and properly translate them to non-vectorized instructions.
+
+A: Instead of doing the translation for every native code generator separately, we could have a pre-pass that replaces all length = 1 vectors and operations on them by the corresponding scalar type and operation.  Then, the actual native code generators wouldn't need to be changed.
+
+A: The setting of the vector length to 1 needs to happen in dependence on the command line options passed to GHC — i.e., if a non-LLVM backend is selected.
+
+Q: Can we re-use any of the existing MachOps? when adding to Cmm?
+
+A: I am not sure.
+</pre>
+        
+        
+      </div>
+    </div>
+    <div id="altlinks">
+      <h3>Download in other formats:</h3>
+      <ul>
+        <li class="last first">
+          <a rel="nofollow" href="/trac/ghc/wiki/SIMD/Implementation/Plan?format=txt">Plain Text</a>
+        </li>
+      </ul>
+    </div>
+    </div>
+    <div id="footer" lang="en" xml:lang="en"><hr />
+      <a id="tracpowered" href="http://trac.edgewall.org/"><img src="/trac-htdocs/trac_logo_mini.png" height="30" width="107" alt="Trac Powered" /></a>
+      <p class="left">
+        Powered by <a href="/trac/ghc/about"><strong>Trac 0.11.6</strong></a><br />
+        By <a href="http://www.edgewall.org/">Edgewall Software</a>.
+      </p>
+      <p class="right">To edit, <a href="http://hackage.haskell.org/trac/ghc/login">login</a> as user <b>guest</b>, password <b>guest</b></p>
+    </div>
+    <div id="sitefooter">
+    </div>
+  </body>
+</html>
