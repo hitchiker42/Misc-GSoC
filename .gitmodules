@@ -1,3 +1,0 @@
-[submodule "cl-simd"]
-	path = cl-simd
-	url = https://github.com/angavrilov/cl-simd.git
