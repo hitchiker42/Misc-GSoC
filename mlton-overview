@@ -1,0 +1,10 @@
+Source-sml -> AST via FrontEnd (create an abstract syntax tree)
+AST -> CoreML via Elaborate (Type inference, type checking and defunctorization)
+CoreML -> XML via Defunctorize (linearization,MatchCompile,datatype lifting)
+XML -> SXML via Monomorphise (Eliminate/expand polymorphic values & datatype declarations)
+SXML  ->  SSA via ClosureConvert (Eliminate Closures)
+SAA is the main intermediate for optimizations, so note optimizations here
+SAA -> SAA2 via ToSSA2 (array, vector, and ref are eliminated in favor of select and updates)
+SAA2 -> RSSA via ToRSSA
+RSSA -> Machine via ToMachine
+Machine used as input to codegen
