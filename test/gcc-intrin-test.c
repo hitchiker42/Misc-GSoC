@@ -26,7 +26,7 @@ float v4sf_dot (float* A,float* B,int len,int bstep){
 }
 
     
-  /*
+
 void v4sf_matrix_multiply (matrix A,matrix B,matrix C){
   //assert N%4=0,M%4=0,L%4=0
   int M=A.M;//also C.M
@@ -34,8 +34,11 @@ void v4sf_matrix_multiply (matrix A,matrix B,matrix C){
   int L=B.N;//also C.N
   int i,j,k;
   for (i=0;i<M;i++){//loop over rows of A
-    for(j=0;j<N;j+=4){//loop over columns of A/rows of B
-    for(k=0;k<L;k++){*/
+    for(j=0;j<L;j++){//loop over columns B
+      C.val[i*B.N+j]=v4sf_dot(A.val[i*A.M],B.val[j],A.M,B.N);
+    }
+  }
+}
     
 v4sf test(float a1,float a2,float a3,float a4,float* b1234){
   v4sf a={a1,a2,a3,a4};

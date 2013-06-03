@@ -1,1 +1,0 @@
-tucker@Tucker-Portable-Arch.9066:1369477400
