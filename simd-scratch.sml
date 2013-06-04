@@ -12,6 +12,7 @@ datatype word128 (* talk to mentor, maybe make a new word128 primitive*) =
                    (* 8 packed shorts *)
        | v16qi of (Int8.int*Int8.int*Int8.int*Int8.int*Int8.int*Int8.int*Int8.int*Int8.int*Int8.int*Int8.int*Int8.int*Int8.int*Int8.int*Int8.int*Int8.int*Int8.int)
                     (* 16 packed bytes *)
+(*Question, do we need all these types of do we just need floats,doubles and ints, or some other subset*)
 (* zero vectors *)
 val v4sf_zero  = v4sf  (0.0,0.0,0.0,0.0)
 val v2df_zero  = v2df  (0.0,0.0)
@@ -23,21 +24,19 @@ val v18qi_zero = v16qi (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
 (* or maybe make a signiture that each vector type fits *)
 signature SIMD_VECTOR =
 sig
-(* not sure what this should be*)
-  eqtype 'a vec
-  val zero : 'a vec
 (* The whole research bit of the project will determine what operations
  * to implement, so this is going to change, as of now these are just the
  * opperations I know I'm going to need to implement *)
   val add : 'a vec*'a vec -> 'a vec
   val sub : 'a vec*'a vec -> 'a vec
-  val mul : 'a vec*'a vec -> 'a vec
+  val muls : v4sf*v4sf -> v4sf
   val div : 'a vec*'a vec -> 'a vec
-  val or  : 'a vec*'a vec -> 'a vec
-  val land: 'a vec*'a vec -> 'a vec (* logical and, I guess *)
-  val xor : 'a vec*'a vec -> 'a vec
+  val orb  : 'a vec*'a vec -> 'a vec
+  val andb: 'a vec*'a vec -> 'a vec (* logical and, I guess *)
+  val xorb : 'a vec*'a vec -> 'a vec
   val loadp: 'a vec*'a -> 'a vec (*make a vector of n of the given value*)
 end
 
 (* Big question is what to do about loading and whatnot, will the datatype
- * stuff take care of that?*)
+ * stuff take care of that, cause with C loading takes a pointer which only
+ * works cause of pointer arithmatic and whatnot*)
