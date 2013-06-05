@@ -7,10 +7,10 @@ datatype reg
     | XMM8 | XMM9 | XMM10 | XMM11 | XMM12 | XMM13 | XMM14 | XMM15 
 val allReg = [XMM0, XMM1, XMM2, XMM3, XMM4, XMM5, XMM6, XMM7,
               XMM8, XMM9, XMM10, XMM11, XMM12, XMM13, XMM14, XMM15]
-
+(* This needs to change, we need to have more than just scalars*)
 datatype part
-  = D | S
-
+  = D | S | L | I | I16 | B (*double,single(wish it was float), long, int ,short and byte*)
+  (*| all of the actual vector types*)
 datatype t = T of {reg: reg, part: part}
 
 fun size (T {part, ...})
