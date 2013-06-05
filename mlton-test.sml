@@ -12,7 +12,32 @@ signature POLYARITH = sig
   val div:t*t->t
   val sub:t*t->t
 end
-functor POLYMATH (M : POLYARITH) = 
+signature NUMBER = sig
+  val size:int
+  val real:bool
+end
+functor PolyArith (N:NUMBER) =
+struct
+type t = if N.real then 
+           case N.size of
+               32 => Real.32
+             | 64 => Real.64
+             | _ => raise Size
+         else
+           case N.size of
+               8 => Int.8
+             | 16 => Int.16
+             | 32 => Int.32
+             | 64 => Int.64
+             | _ => if N.size > 64 then Int.inf
+                    else raise Size
+fun add (a,b) = op + (a,b)
+fun sub (a,b) = op - (a,b)
+fun mult (a,b) = op * (a,b)
+fun div (a,b) if N.real then op div (a,b)
+              else op / (a,b)
+end
+functor PolyMath (M : POLYARITH) = 
         struct
         fun fma (a,b,c) = M.mult(M.add(a,b),c)
         fun fma2 (a,b,c) = M.mult(a,M.add(b,c))
@@ -27,7 +52,7 @@ fun div (a,b) = op Real64./ (a,b)
 fun sub (a,b) = op Real64.- (a,b)
 end
 
-structure Doublemath = POLYMATH (Polydouble)
+structure Doublemath = PolyMath (Polydouble)
 
 structure Polyint:POLYARITH = 
 struct
@@ -47,4 +72,4 @@ fun mult (a,b) = op Int64.* (a,b)
 fun div (a,b) = op Int64.div (a,b)
 fun sub (a,b) = op Int64.- (a,b)
 end
-in structure Longmath = POLYMATH (Polylong) end
+in structure Longmath = PolyMath (Polylong) end
