@@ -9,7 +9,7 @@ val allReg = [XMM0, XMM1, XMM2, XMM3, XMM4, XMM5, XMM6, XMM7,
               XMM8, XMM9, XMM10, XMM11, XMM12, XMM13, XMM14, XMM15]
 (* This needs to change, we need to have more than just scalars*)
 datatype part
-  = D | S | L | I | W | B (*double,single(wish it was float), long, int ,word(16 bit int and byte*)
+  = D | S | L | I | W | B (*double,single, long, int ,word(16 bit int and byte*)
 (*datatype simd_vector
   = v2df | v4sf | v2di | v4si | v8hi | v16qi*)
   (*| all of the actual vector types*)
