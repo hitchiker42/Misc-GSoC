@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <assert.h>
 typedef float v4sf __attribute__ ((vector_size (16)));
+typedef float v4si __attribute__ ((vector_size (16)));
 #define builtin __builtin_ia32;
 typedef struct {
   float* val;
@@ -18,7 +19,7 @@ float v4sf_dot (float* A,float* B,int len,int bstep){
     v4sf n={*(B+i*bstep),*(B+(i+1)*bstep),*(B+(i+2)*bstep),*(B+(i+3)*bstep)};
     v4sf l={*(B+(i+4)*bstep),*(B+(i+5)*bstep),*(B+(i+6)*bstep),*(B+(i+7)*bstep)};
     n=__builtin_ia32_mulps(m,n);
-    m=__builtin_ia32_loadups(A+i+4);
+    v4sf m=__builtin_ia32_loadups(A+i+4);
     l=__builtin_ia32_mulps(m,l);
     m=__builtin_ia32_haddps(n,l);
     ans+=m[0]+m[1]+m[2]+m[3];
@@ -91,3 +92,28 @@ void mat_mult_v4sf (matrix A,matrix B,matrix C){
     }
   }
 }
+int compare(){
+  v4sf a={1,2,3,4},b={2,1,3,4};
+  v4si c=__builtin_ia32_cmpeqps   (a,b) ;
+  v4si d=__builtin_ia32_cmpltps   (a,b); 
+  v4si e=__builtin_ia32_cmpleps   (a,b); 
+  v4si f=__builtin_ia32_cmpgtps   (a,b); 
+  v4si g=__builtin_ia32_cmpgeps   (a,b); 
+  v4si h=__builtin_ia32_cmpunordps(a,b); 
+  v4si i=__builtin_ia32_cmpneqps  (a,b); 
+  v4si k=__builtin_ia32_cmpnltps  (a,b); 
+  v4si j=__builtin_ia32_cmpnleps  (a,b); 
+  v4si l=__builtin_ia32_cmpngtps  (a,b); 
+  v4si m=__builtin_ia32_cmpngeps  (a,b); 
+  v4si n=__builtin_ia32_cmpordps  (a,b); 
+  v4si o=__builtin_ia32_cmpeqss   (a,b); 
+  v4si p=__builtin_ia32_cmpltss   (a,b); 
+  v4si q=__builtin_ia32_cmpless   (a,b); 
+  v4si r=__builtin_ia32_cmpunordss(a,b); 
+  v4si s=__builtin_ia32_cmpneqss  (a,b); 
+  int t=__builtin_ia32_cmpnlts   (a,b); 
+  v4si u=__builtin_ia32_cmpnless  (a,b); 
+  v4si v=__builtin_ia32_cmpordss  (a,b);  
+  return 5;
+}
+
