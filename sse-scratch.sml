@@ -35,37 +35,38 @@ signature SSE4.1_TYPES=SSSE3_TYPES
 signature SSE4.2_TYPES=SSE4.1_TYPES
 
 signature SSE = sig
-  val ADDPS:T.v4sf*T.v4sf->T.v4sf
-  val MULPS:T.v4sf*T.v4sf->T.v4sf
-  val DIVPS:T.v4sf*T.v4sf->T.v4sf
-  val RCPPS:T.v4sf*T.v4sf->T.v4sf  
-  val SQRTPS:T.v4sf*T.v4sf->T.v4sf
-  val RSQRTPS:T.v4sf*T.v4sf->T.v4sf
-  val MAXPS:T.v4sf*T.v4sf->T.v4sf
-  val MINPS:T.v4sf*T.v4sf->T.v4sf
-  val ANDPS:T.v4sf*T.v4sf->T.v4sf
-  val ORPS:T.v4sf*T.v4sf->T.v4sf
-  val XORPS:T.v4sf*T.v4sf->T.v4sf
-  val CMPEQPS:T.v4sf*T.v4sf->T.v4sf
-  val CMPLTPS:T.v4sf*T.v4sf->T.v4sf
-  val CMPLEPS:T.v4sf*T.v4sf->T.v4sf
-  val CMPGTPS:T.v4sf*T.v4sf->T.v4sf
-  val CMPGEPS:T.v4sf*T.v4sf->T.v4sf
-  val CMPUNORDPS:T.v4sf*T.v4sf->T.v4sf
-  val CMPNEQPS:T.v4sf*T.v4sf->T.v4sf
-  val CMPNLTPS:T.v4sf*T.v4sf->T.v4sf
-  val CMPNLEPS:T.v4sf*T.v4sf->T.v4sf
-  val CMPNGTPS:T.v4sf*T.v4sf->T.v4sf
-  val CMPNGEPS:T.v4sf*T.v4sf->T.v4sf
-  val CMPORDPS:T.v4sf*T.v4sf->T.v4sf
-  val SHUFPS:T.v4sf*T.v4sf->T.v4sf
-  val UNPCKHPS:T.v4sf*T.v4sf->T.v4sf
-  val UNPCKLPS:T.v4sf*T.v4sf->T.v4sf
+  type v4sf
+  val ADDPS:v4sf*v4sf->v4sf
+  val MULPS:v4sf*v4sf->v4sf
+  val DIVPS:v4sf*v4sf->v4sf
+  val RCPPS:v4sf*v4sf->v4sf  
+  val SQRTPS:v4sf*v4sf->v4sf
+  val RSQRTPS:v4sf*v4sf->v4sf
+  val MAXPS:v4sf*v4sf->v4sf
+  val MINPS:v4sf*v4sf->v4sf
+  val ANDPS:v4sf*v4sf->v4sf
+  val ORPS:v4sf*v4sf->v4sf
+  val XORPS:v4sf*v4sf->v4sf
+  val CMPEQPS:v4sf*v4sf->v4sf
+  val CMPLTPS:v4sf*v4sf->v4sf
+  val CMPLEPS:v4sf*v4sf->v4sf
+  val CMPGTPS:v4sf*v4sf->v4sf
+  val CMPGEPS:v4sf*v4sf->v4sf
+  val CMPUNORDPS:v4sf*v4sf->v4sf
+  val CMPNEQPS:v4sf*v4sf->v4sf
+  val CMPNLTPS:v4sf*v4sf->v4sf
+  val CMPNLEPS:v4sf*v4sf->v4sf
+  val CMPNGTPS:v4sf*v4sf->v4sf
+  val CMPNGEPS:v4sf*v4sf->v4sf
+  val CMPORDPS:v4sf*v4sf->v4sf
+  val SHUFPS:v4sf*v4sf->v4sf
+  val UNPCKHPS:v4sf*v4sf->v4sf
+  val UNPCKLPS:v4sf*v4sf->v4sf
 (* rest of sse instructions are prefetch, cache control, save/store,etc. Probably good to implement
  * them, but I doubt they would be of much use to the programmer*)
 (*(mapcar #'binop (mapcar (apply-partially #'concat "CMP") '("EQPS" "LTPS" "LEPS" "GTPS" "GEPS" UNORDPS" "NEQPS" "NLTPS" "NLEPS" "NGTPS" "NGEPS" "ORDPS")))
 (*(defun binop (name)
-       (insert (format "  val %s:T.v4sf*T.v4sf->T.v4sf\n" name)))*)*)
+       (insert (format "  val %s:v4sf*v4sf->v4sf\n" name)))*)*)
 signature SSE2 = sig
 end
 
@@ -180,3 +181,124 @@ in %s end\n"
        (format "(%s#1b,%s#2b,%s#3b,%s#4b)" "castToWord " "castToWord " "castToWord " "castToWord ")
 (format "(%s(%s(#1wa,#1wb)),%s(%s(#2wa,#2wb)),%s(%s(#3wa,#3wb)),%s(%s(#4wa,#4wb)))" fun "castFromWord "
 fun "castFromWord " fun "castFromWord " fun "castFromWord "))))*)
+
+
+val _="NOTE on shuffle:
+  takes 3 args byte src dest, byte ditctates how to fill the dest
+  let src be of the form (a,b,c,d) and dest (w,x,y,z),
+  byte is read as 4 seperate sets of 2  bits, for the first two sets of bits,
+  00->a
+  01->b
+  10->c
+  11->d
+  the first two bits select the first float, the second 2 the second float
+  the next two sets of bits work like
+  00->w
+  01->x
+  10->y
+  11->z
+  again 3rd group 3rd float 4th group 4th float
+
+From the intel manual:
+
+Operation
+CASE (SELECT[1:0]) OF
+0: DEST[31:0] ← DEST[31:0];
+1: DEST[31:0] ← DEST[63:32];
+2: DEST[31:0] ← DEST[95:64];
+3: DEST[31:0] ← DEST[127:96];
+ESAC;
+CASE (SELECT[3:2]) OF
+0: DEST[63:32] ← DEST[31:0];
+1: DEST[63:32] ← DEST[63:32];
+2: DEST[63:32] ← DEST[95:64];
+3: DEST[63:32] ← DEST[127:96];
+ESAC;
+CASE (SELECT[5:4]) OF
+0: DEST[95:64] ← SRC[31:0];
+1: DEST[95:64] ← SRC[63:32];
+2: DEST[95:64] ← SRC[95:64];
+3: DEST[95:64] ← SRC[127:96];
+ESAC;
+CASE (SELECT[7:6]) OF
+0: DEST[127:96] ← SRC[31:0];   
+1: DEST[127:96] ← SRC[63:32]; 
+2: DEST[127:96] ← SRC[95:64]; 
+3: DEST[127:96] ← SRC[127:96];
+ESAC;
+SHUFPS (128-bit Legacy SSE version)
+DEST[31:0] ← Select4(SRC1[127:0], imm8[1:0]);
+DEST[63:32] ← Select4(SRC1[127:0], imm8[3:2]);
+DEST[95:64] ← Select4(SRC2[127:0], imm8[5:4]);
+DEST[127:96] ← Select4(SRC2[127:0], imm8[7:6]);
+DEST[VLMAX-1:128] (Unmodified)
+VSHUFPS (VEX.128 encoded version)
+DEST[31:0] ← Select4(SRC1[127:0], imm8[1:0]);
+DEST[63:32] ← Select4(SRC1[127:0], imm8[3:2]);
+DEST[95:64] ← Select4(SRC2[127:0], imm8[5:4]);
+DEST[127:96] ← Select4(SRC2[127:0], imm8[7:6]);
+DEST[VLMAX-1:128] ← 0
+
+(string ?\u2190) "
+signature SSE_C_TYPE = 
+sig 
+  type v4sf = Real32.real Vector.vector
+  type t
+  val pack:t->v4sf
+  val unpack:MltonPointer->t
+  val store:t ref*MltonPointer->()
+end
+
+structure SseType_Cvector:SSE_C_TYPE=
+struct
+  type t = v4sf
+  exception unimplemented
+  val pack = fn x => x
+  (*I'm not sure of the read syntax of vectors, I think its [|1,2,...n|]*)
+  local
+    open MltonPointer in
+      val unpack p = [|getReal32(p,0),getReal32(p,1),getReal32(p,2),getReal32(p,3)|]
+      val store (p,v4sfRef) = v4sfRef:=unpack p (*declare inline how?*)
+   end
+end
+structure SseType_Ctuple:SSE_C_TYPE=
+struct
+  local open Real32 in
+    type t = real*real*real*real
+    fun pack x = [|#1x,#2x,#3x,#4x|]
+  end
+  local open MltonPointer in
+    val unpack p = (getReal32(p,0),getReal32(p,1),getReal32(p,2),getReal32(p,3))
+    val store (p,tRef) = tRef:=unpack p
+  end
+end
+functor Sse_C(T:SSE_C_TYPE):SSE =
+  struct
+    type v4sf = T.t
+        ADDPS 
+        MULPS
+        DIVPS
+        RCPPS
+        SQRTPS
+        RSQRTPS
+        MAXPS
+        MINPS
+        ANDPS
+        ORPS
+        XORPS
+        CMPEQPS
+        CMPLTPS
+        CMPLEPS
+        CMPGTPS
+        CMPGEPS
+        CMPUNORDPS
+        CMPNEPS
+        CMPNLTPS
+        CMPNLEPS
+        CMPNGTPS
+        CMPNGEPS
+        CMPORDPS
+        SHUFPS
+        UNPCKHPS
+        UNPCKLPS
+end
