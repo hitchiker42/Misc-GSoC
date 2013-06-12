@@ -21,7 +21,7 @@ sig
   type v8hiInternal
   type v4siInternal
   type v2diInternal
-  (*External representations*)
+  (* representations*)
   type v2df
   type v16qi
   type v8hi
@@ -71,19 +71,17 @@ end
 
 signature SSE3 = sig
 end
-
 signature SSSE3 = sig
 end
 
 signature SSE4.1 = sig
 end 
 
-signature SSE4.2 = sig
-end
+
 
 (*signature AVX = sig
 end*)
-functor SSE (T:SSE_TYPE) = 
+functor sse (T:SSE_TYPE) = 
 struct
 (*example, assuming packing takes place behind the scenes*)
  fun ADDPS (a,b) = let
@@ -91,24 +89,94 @@ struct
    val dst = T.pack b
    val _ = (*primitive operation goes here*)
  in T.unpack dst end
+
 end
 
-functor SSE2 (T:SSE2_TYPE) = 
+functor sse2 (T:SSE2_TYPE): SSE2 = 
 struct
 end
 
-functor SSE3 (T:SSE3_TYPE) = 
+functor sse3 (T:SSE3_TYPE): SSE3 = 
 struct
 end
 
-functor SSSE3 (T:SSSE3_TYPE) = 
+functor ssse3 (T:SSSE3_TYPE): SSSE3 = 
 struct
 end
 
-functor SSE4.1 (T:SSE4.1_TYPE) = 
-struct
-end
+functor sse4.1 (T:SSE4.1_TYPE): SSE4.1 = 
+  struct
+  end
 
-functor SSE4.2 (T:SSE4.2_TYPE) = 
+functor sse4.2 (T:SSE4.2_TYPE): SSE4.2 = 
+  struct
+  end
+structure SSE_Software:SSE = 
 struct
+  open Real32 
+  (*all sse functions are on singles so we don't need to wory about name clashes*)
+    type t = real*real*real*real
+    fun v1 (a,_,_,_) = a
+    fun v2 (_,a,_,_) = a
+    fun v3 (_,_,a,_) = a
+    fun v4 (_,_,_,a) = a
+    (*Math fxns*)
+    fun ADDPS (a,b) = (op+(#1a,#1b),op+(#2a,#2b),op+(#3a,#3b),op+(#4a,#4b))
+    fun MULPS (a,b) = (op*(#1a,#1b),op*(#2a,#2b),op*(#3a,#3b),op*(#4a,#4b))
+    fun DIVPS (a,b) = (op/(#1a,#1b),op/(#2a,#2b),op/(#3a,#3b),op/(#4a,#4b))
+    fun RCPPS (a,b) = (1 /(op/(#1a,#1b)),1 /(op/(#2a,#2b)),1 /(op/(#3a,#3b)),1 /(op/(#4a,#4b)))
+    fun SQRTPS (a,b) = (sqrt(#1a,#1b),sqrt(#2a,#2b),sqrt(#3a,#3b),sqrt(#4a,#4b))
+    fun MAXPS (a,b) = (max(#1a,#1b),max(#2a,#2b),max(#3a,#3b),max(#4a,#4b))
+    fun MINPS (a,b) = (min(#1a,#1b),min(#2a,#2b),min(#3a,#3b),min(#4a,#4b))
+    (*Bitwise operations*)
+    local
+      open Word32
+    in
+    fun ANDPS (a,b) = let 
+      val wa = (castToWord #1a,castToWord #2a,castToWord #3a,castToWord #4a)
+      val wb = (castToWord #1b,castToWord #2b,castToWord #3b,castToWord #4b)
+    in (castFromWord(andb (#1wa,#1wb)),castFromWord(andb (#2wa,#2wb)),castFromWord(andb (#3wa,#3wb)),castFromWord(andb (#4wa,#4wb))) end
+    fun ORPS (a,b) = let 
+      val wa = (castToWord #1a,castToWord #2a,castToWord #3a,castToWord #4a)
+      val wb = (castToWord #1b,castToWord #2b,castToWord #3b,castToWord #4b)
+    in (castFromWord(orb (#1wa,#1wb))castFromWord(orb (#2wa,#2wb))castFromWord(orb (#3wa,#3wb))castFromWord(orb (#4wa,#4wb))) end
+    fun XORPS (a,b) = let 
+      val wa = (castToWord #1a,castToWord #2a,castToWord #3a,castToWord #4a)
+      val wb = (castToWord #1b,castToWord #2b,castToWord #3b,castToWord #4b)
+    in (castFromWord(xorb (#1wa,#1wb)),castFromWord(xorb (#2wa,#2wb)),castFromWord(xorb (#3wa,#3wb)),castFromWord(xorb (#4wa,#4wb))) end
+    end
+    (*Comparison Functions*)
+    (*might need to do someting with the types of the compare functions*)
+    fun CMPEQPS (a,b) = (op=(#1a,#1b),op=(#2a,#2b),op=(#3a,#3b),op=(#4a,#4b))
+    fun CMPLTPS (a,b) = (op<(#1a,#1b),op<(#2a,#2b),op<(#3a,#3b),op<(#4a,#4b))
+    fun CMPLEPS (a,b) = (op<=(#1a,#1b),op<=(#2a,#2b),op<=(#3a,#3b),op<=(#4a,#4b))
+    fun CMPGTPS (a,b) = (op>(#1a,#1b),op>(#2a,#2b),op>(#3a,#3b),op>(#4a,#4b))
+    fun CMPGEPS (a,b) = (op>=(#1a,#1b),op>=(#2a,#2b),op>=(#3a,#3b),op>=(#4a,#4b))
+    fun CMPUNORDPS (a,b) = (not_ordered(#1a,#1b),not_ordered(#2a,#2b),not_ordered(#3a,#3b),not_ordered(#4a,#4b))
+    fun CMPNEQPS (a,b) = (!=(#1a,#1b),!=(#2a,#2b),!=(#3a,#3b),!=(#4a,#4b))
+    fun CMPNLTPS (a,b) = (op>=(#1a,#1b),op>=(#2a,#2b),op>=(#3a,#3b),op>=(#4a,#4b))
+    fun CMPNLEPS (a,b) = (op>(#1a,#1b),op>(#2a,#2b),op>(#3a,#3b),op>(#4a,#4b))
+    fun CMPNGTPS (a,b) = (op<=(#1a,#1b),op<=(#2a,#2b),op<=(#3a,#3b),op<=(#4a,#4b))
+    fun CMPNGEPS (a,b) = (op<(#1a,#1b),op<(#2a,#2b),op<(#3a,#3b),op<(#4a,#4b))
+    fun CMPORDPS (a,b) = (ordered(#1a,#1b),ordered(#2a,#2b),ordered(#3a,#3b),ordered(#4a,#4b))
+    (*shuffle and unpack,not sure how to do shuffle*)
+    fun UNPCKHPS (a,b) = (#1a,#1b,#2a,#2b)
+    fun UNPPKLPS (a,b) = (#3a,#3b,#4a,#4b)
 end
+(*Giant mass of elisp macros*)
+(* (defun software-binop (name fun)
+     (insert (format "    fun %s (a,b) = (%s(#1a,#1b),%s(#2a,#2b),%s(#3a,#3b),%s(#4a,#4b))\n" name fun fun fun fun)))
+(defun software-math () (mapcar #'(lambda (x) (software-binop (first x) (second x)))
+'(("ADDPS" "op+") ("MULPS" "op*") ("DIVPS" "op/") ("RCPPS" "1 / op/") ("SQRTPS" "sqrt") ("MAXPS" "max") ("MINPS" "min"))))
+(defu
+(defun software-cmp() (let* ((x (-interleave (mapcar (apply-partially #'concat "CMP")
+                               '("EQPS" "LTPS" "LEPS" "GTPS" "GEPS" "UNORDPS" "NEQPS" "NLTPS" "NLEPS" "NGTPS" "NGEPS" "ORDPS"))
+                       '("op=" "op<" "op<=" "op>" "op>=" "not_ordered"  "!=" "op>=" "op>" "op<=" "op<" "ordered")))
+       (y (-partition 2 x)))
+  (mapcar #'(lambda (x) (software-binop (first x) (second x))) y)))*)
+     (*(defun bit-cast (name fun) (insert (format "fun %s (a,b) = let \n\tval wa = %s\n\tval wb = %s
+in %s end\n"
+ name (format "(%s#1a,%s#2a,%s#3a,%s#4a)" "castToWord " "castToWord " "castToWord " "castToWord ")
+       (format "(%s#1b,%s#2b,%s#3b,%s#4b)" "castToWord " "castToWord " "castToWord " "castToWord ")
+(format "(%s(%s(#1wa,#1wb)),%s(%s(#2wa,#2wb)),%s(%s(#3wa,#3wb)),%s(%s(#4wa,#4wb)))" fun "castFromWord "
+fun "castFromWord " fun "castFromWord " fun "castFromWord "))))*)
