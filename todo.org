@@ -5,18 +5,38 @@
 *** TODO Advanced implementation details [0/2]
 **** TODO Vector type implementations
 **** TODO Autovectorization
-** TODO llvm Research [0/0]
+** TODO llvm Research [0/3]
+*** TODO Read up on LLVM implementation (basic stuff)
+*** TODO Read/dig through code to learn about LLVM vector type, vectorization,
+    compilier intrinsics etc...
+*** TODO Rather unlikely but figure out how hard implementing an llvm backend would be 
 ** TODO D Research
 ** TODO Mono.Simd Research
-** TODO Non C-language Research [0/0]
+** TODO Non C-language Research [0/3]
+*** TODO GHC SIMD implementation via llvm
+*** TODO cl-simd, generic and sbcl specific
+*** TODO Any other useful languages?
 ** TODO Write MLton SIMD implementation specification [0/3]
 *** TODO Orginize Code Structure
 *** TODO Writeup basic signature files
 *** TODO Write formal spec
 * TODO Write MLton SIMD implementation [0%]
+** TODO MLton Research/Hacking
 ** TODO Finalize Signature files
 ** TODO Write C backend
 ** TODO Write AMD-64 backend
 ** TODO Write Software backend
 
-   
+* TODO MLton C ffi stuff [0/2]
+** TODO Look through ffi code, figure out how to implement gcc vector types as 
+   mlton ffi types(also requires some research on the gcc side)
+** TODO Look into issues with linking,includes etc. for using the *intrin.h 
+   headers for ffi stuff.
+
+
+
+
+
+
+
+  
