@@ -1,0 +1,24 @@
+structure SseType_Cvector: SSE_C_TYPE
+			   where type t = real32 vector
+structure Sse_Cvector: SSE
+		       where type t = real32 vector
+		       where type v4sf = real32 vector
+functor Sse_C (T: SSE_C_TYPE
+		  where type t = T.t)
+   : SSE
+     where type t = T.t
+     where type v4sf = real32 vector
+signature SSE = 
+   sig
+      type t = ?.t
+      type v4sf = ?.v4sf
+      val ADDPS: ?.t * ?.t * ?.t -> ?.t
+   end
+signature SSE_C_TYPE = 
+   sig
+      type t = ?.t
+      type v4sf = real32 vector
+      val pack: ?.t -> real32 vector
+      val store: ?.t ref * cpointer -> unit
+      val unpack: cpointer -> ?.t
+   end

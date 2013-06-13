@@ -62,6 +62,7 @@ signature SSE = sig
   val SHUFPS:v4sf*v4sf->v4sf
   val UNPCKHPS:v4sf*v4sf->v4sf
   val UNPCKLPS:v4sf*v4sf->v4sf
+end
 (* rest of sse instructions are prefetch, cache control, save/store,etc. Probably good to implement
  * them, but I doubt they would be of much use to the programmer*)
 (*(mapcar #'binop (mapcar (apply-partially #'concat "CMP") '("EQPS" "LTPS" "LEPS" "GTPS" "GEPS" UNORDPS" "NEQPS" "NLTPS" "NLEPS" "NGTPS" "NGEPS" "ORDPS")))
