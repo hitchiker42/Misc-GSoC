@@ -1,4 +1,5 @@
 * TODO SIMD Research [14%]
+  DEADLINE: <2013-06-28 Fri>
 ** TODO GCC Research [2/3]
 *** DONE Use of SIMD Primitives
 *** DONE Basic implementation of SIMD Primitives
@@ -20,23 +21,39 @@
 *** TODO Orginize Code Structure
 *** TODO Writeup basic signature files
 *** TODO Write formal spec
-* TODO Write MLton SIMD implementation [0%]
+* TODO Write MLton SIMD implementation [25%]
+  DEADLINE: <2013-09-16 Mon>
 ** TODO MLton Research/Hacking
+*** DONE C-ffi stuff [2/2]
+    DEADLINE: <2013-06-14 Fri>
+**** DONE TODO Look through ffi code, figure out how to implement
+     gcc vector types as mlton ffi types(also requires some research on the gcc side)
+
+**** DONE Look into issues with linking,includes etc. for using the *intrin.h 
+     headers for ffi stuff.
+*** TODO Intermediate languages [0/4]
+**** TODO ast & coreml
+**** TODO xml
+**** TODO ssa (1&2)
+**** TODO rsa
+**** TODO machine
+*** TODO MLton specific libraries etc
 ** TODO Finalize Signature files
-** TODO Write C backend
+** TODO Write C backend [1/5]
+   DEADLINE: <2013-07-28 Sun>
+*** TODO SSE implementation
+*** TODO SSE2 implementation
+*** TODO SSE3(etc) implementation
+*** TODO SSE4(.1,.2) implementation
+*** OPT AVX implementation
 ** TODO Write AMD-64 backend
-** TODO Write Software backend
+   DEADLINE: <2013-09-16 Mon>
+** OPT Write Software backend
+* TODO Write MLton SIMD Library
+  DEADLINE: <2013-09-16 Mon>
 
-* TODO MLton C ffi stuff [0/2]
-** TODO Look through ffi code, figure out how to implement gcc vector types as 
-   mlton ffi types(also requires some research on the gcc side)
-** TODO Look into issues with linking,includes etc. for using the *intrin.h 
-   headers for ffi stuff.
-
-
-
-
-
-
-
-  
+* NOTES
+Start <2013-06-17 Mon>
+Midterm <2013-07-29 Sat> - <2013-08-02 Fri>
+End <2013-09-16 Mon>
+Due <2013-09-23 Mon>
