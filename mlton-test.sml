@@ -12,7 +12,7 @@ signature POLYARITH = sig
   val div:t*t->t
   val sub:t*t->t
 end
-signature NUMBER = sig
+(*signature NUMBER = sig
   val size:int
   val real:bool
 end
@@ -36,7 +36,7 @@ fun sub (a,b) = op - (a,b)
 fun mult (a,b) = op * (a,b)
 fun div (a,b) if N.real then op div (a,b)
               else op / (a,b)
-end
+end*)
 functor PolyMath (M : POLYARITH) = 
         struct
         fun fma (a,b,c) = M.mult(M.add(a,b),c)

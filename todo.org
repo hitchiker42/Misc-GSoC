@@ -1,0 +1,22 @@
+* TODO SIMD Research [14%]
+** TODO GCC Research [2/3]
+*** DONE Use of SIMD Primitives
+*** DONE Basic implementation of SIMD Primitives
+*** TODO Advanced implementation details [0/2]
+**** TODO Vector type implementations
+**** TODO Autovectorization
+** TODO llvm Research [0/0]
+** TODO D Research
+** TODO Mono.Simd Research
+** TODO Non C-language Research [0/0]
+** TODO Write MLton SIMD implementation specification [0/3]
+*** TODO Orginize Code Structure
+*** TODO Writeup basic signature files
+*** TODO Write formal spec
+* TODO Write MLton SIMD implementation [0%]
+** TODO Finalize Signature files
+** TODO Write C backend
+** TODO Write AMD-64 backend
+** TODO Write Software backend
+
+   
