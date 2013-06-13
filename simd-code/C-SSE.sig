@@ -1,14 +1,16 @@
+signature SSE =
+sig
+  type v4sf
+  type t
+  val ADDPS:t*t*t->t
+end
 signature SSE_C_TYPE = 
 sig 
   type v4sf = Real32.real Vector.vector
   type t
   val pack:t->v4sf
-  val unpack:MltonPointer->t
-  val store:t ref*MltonPointer->()
-end
-signature SSE = sig
-  type v4sf
-  val ADDPS:v4sf*v4sf->v4sf
+  val unpack:MLton.Pointer.t->t
+  val store:t ref*MLton.Pointer.t->unit
 end
 (*
   val MULPS:v4sf*v4sf->v4sf
