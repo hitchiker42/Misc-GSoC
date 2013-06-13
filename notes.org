@@ -1,0 +1,6 @@
+* google hangout <2013-06-11 Tue>
+  -bracket intresting stuff with ffi calls to find them in intermediate files
+  -functon order can get reversed in different passes
+  -names are not mangled too much in intermediate code
+  -implement 2 vector types words and reals with a parameter of number elements and a parametr of element size
+  -look at codegen prim predicate, that checks if an opperation is supported
