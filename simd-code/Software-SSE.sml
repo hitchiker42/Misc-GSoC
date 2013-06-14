@@ -1,15 +1,33 @@
-structure SSE_Software:SSE = 
+local 
+  open Vector 
+in
+fun vecmap4 f (a,b) = (fromList[f(sub(a,0),sub(b,0)),f(sub(a,1),sub(b,1)),
+                               f(sub(a,2),sub(b,2)),f(sub(a,3),sub(b,3))])
+fun tuple_vec4 f ((a,b,c,d),(w,x,y,z)) = (fromList[f(a,w),f(b,x),f(c,y),f(d,z)])
+end
+structure SSE_Software_tuple:SSE = 
 struct
   open Real32 
   (*all sse functions are on singles so we don't need to wory about name clashes*)
     type v4sf = real*real*real*real
     type t = v4sf
     (*Math fxns*)
-    fun ADDPS ((a,b,c,d),(w,x,y,z}) = (op+(a,w),op+(b,x),op+(c,y),op+(d,z))
+    fun ADDPS ((a,b,c,d),(w,x,y,z)) = (op+(a,w),op+(b,x),op+(c,y),op+(d,z))
     fun SUBPS ((a,b,c,d),(w,x,y,z)) = (op-(a,w),op-(b,x),op-(c,y),op-(d,z))
     fun MULPS ((a,b,c,d),(w,x,y,z)) = (op*(a,w),op*(b,x),op*(c,y),op*(d,z))
     fun DIVPS ((a,b,c,d),(w,x,y,z)) = (op/(a,w),op/(b,x),op/(c,y),op/(d,z))
-end(*
+end
+structure SSE_Software_vec:SSE =
+struct
+  open Real32
+    type v4sf = real Vector.vector
+    type t = v4sf
+    fun ADDPS (a,b) = vecmap4 op+ (a,b)
+    fun SUBPS (a,b) = vecmap4 op- (a,b)
+    fun MULPS (a,b) = vecmap4 op* (a,b)
+    fun DIVPS (a,b) = vecmap4 op/ (a,b)
+end
+(*
     fun RCPPS (a,b) = (1.0 /(op/(#1a,#1b)),1.0 /(op/(#2a,#2b)),1.0 /(op/(#3a,#3b)),1.0 /(op/(#4a,#4b)))
     fun SQRTPS (a,b) = (Math.sqrt(#1a,#1b),Math.sqrt(#2a,#2b),Math.sqrt(#3a,#3b),Math.sqrt(#4a,#4b))
     fun MAXPS (a,b) = (max(#1a,#1b),max(#2a,#2b),max(#3a,#3b),max(#4a,#4b))

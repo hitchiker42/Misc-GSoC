@@ -15,6 +15,8 @@ sig
   val unpack:MLton.Pointer.t->t
 end
 (*
+  val ADDPS:v4sf*v4sf->v4sf
+  val SUBPS:v4sf*v4sf->v4sf
   val MULPS:v4sf*v4sf->v4sf
   val DIVPS:v4sf*v4sf->v4sf
   val RCPPS:v4sf*v4sf->v4sf  

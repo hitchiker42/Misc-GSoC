@@ -3,4 +3,10 @@
   -functon order can get reversed in different passes
   -names are not mangled too much in intermediate code
   -implement 2 vector types words and reals with a parameter of number elements and a parametr of element size
-  -look at codegen prim predicate, that checks if an opperation is supported
+  -look at codegen prim predicate, that checks if an opperation is
+  supported
+* google hangout <2013-06-14 Fri>
+-asserts in mlton/lib/basic, use for testing
+-functor calls get expanded, so try to share code explictly
+-handle generic code
+-datatype of vectorop

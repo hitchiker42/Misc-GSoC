@@ -33,30 +33,31 @@ end
 functor Sse_C(T:SSE_C_TYPE):SSE =
 struct
     type v4sf = Real32.real Vector.vector
+    type a4sf = Real32.real Array.array
     type t=T.t
-    val addps = _import "addps" :v4sf*v4sf*v4sf->MLton.Pointer.t;
-    val subps = _import "subps":v4sf*v4sf*v4sf->MLton.Pointer.t;
-    val mulps = _import "mulps":v4sf*v4sf*v4sf->MLton.Pointer.t;
-    val divps = _import "divps":v4sf*v4sf*v4sf->MLton.Pointer.t;
+    val addps = _import "addps":v4sf*v4sf*a4sf->MLton.Pointer.t;
+    val subps = _import "subps":v4sf*v4sf*a4sf->MLton.Pointer.t;
+    val mulps = _import "mulps":v4sf*v4sf*a4sf->MLton.Pointer.t;
+    val divps = _import "divps":v4sf*v4sf*a4sf->MLton.Pointer.t;
     fun ADDPS(a,b) = let
       val x = T.pack a
       val y = T.pack b
-      val z = Vector.fromList[0.0,0.0,0.0,0.0]
+      val z = Array.fromList[0.0,0.0,0.0,0.0]
     in T.unpack (addps(x,y,z)) end
     fun SUBPS(a,b) = let
       val x = T.pack a
       val y = T.pack b
-      val z = Vector.fromList[0.0,0.0,0.0,0.0]
+      val z = Array.fromList[0.0,0.0,0.0,0.0]
     in T.unpack (subps(x,y,z)) end
     fun MULPS(a,b) = let
       val x = T.pack a
       val y = T.pack b
-      val z = Vector.fromList[0.0,0.0,0.0,0.0]
+      val z = Array.fromList[0.0,0.0,0.0,0.0]
     in T.unpack (mulps(x,y,z)) end
     fun DIVPS(a,b) = let
       val x = T.pack a
       val y = T.pack b
-      val z = Vector.fromList[0.0,0.0,0.0,0.0]
+      val z = Array.fromList[0.0,0.0,0.0,0.0]
     in T.unpack (divps(x,y,z)) end
 
 end
