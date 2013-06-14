@@ -41,6 +41,7 @@
 ** TODO Finalize Signature files
 ** TODO Write C backend [1/5]
    DEADLINE: <2013-07-28 Sun>
+*** TODO Unit tests everywhere
 *** TODO SSE implementation
 *** TODO SSE2 implementation
 *** TODO SSE3(etc) implementation
@@ -49,6 +50,9 @@
 ** TODO Write AMD-64 backend
    DEADLINE: <2013-09-16 Mon>
 ** OPT Write Software backend
+** TODO Figure out how to align to 16 bit boundries
+   Its pretty important to figure this out, simd stuff really needs
+   to be aligned
 * TODO Write MLton SIMD Library
   DEADLINE: <2013-09-16 Mon>
 

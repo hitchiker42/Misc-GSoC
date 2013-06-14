@@ -1,0 +1,16 @@
+* Introduction
+* Current Implementations
+  The majority of current implementations of SIMD primitives in
+  programming languages exist in C and C like languages, with few
+  implementations in functional languages 
+* Design Plan
+  The implementation will be broken up into several parts, a C
+  backend and a native amd64 backend. Each backend will be broken up
+  into modules for each set of simd instructions (that is to say,
+  sse, sse2,sse3,etc). 
+  There will be an internal implementation of both backends will be
+  quite low level, but the external interface will use a given sml
+  type. The moduels will be implemented as functors taking a
+  structure containing an external type and a function that converts
+  the external type to the internal low level type.  
+* Layout of Modules and Files

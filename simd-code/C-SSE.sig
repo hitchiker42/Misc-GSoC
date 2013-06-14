@@ -2,7 +2,10 @@ signature SSE =
 sig
   type v4sf
   type t
-  val ADDPS:t*t*t->t
+  val ADDPS:t*t->t
+  val SUBPS:t*t->t
+  val MULPS:t*t->t
+  val DIVPS:t*t->t
 end
 signature SSE_C_TYPE = 
 sig 
@@ -10,7 +13,6 @@ sig
   type t
   val pack:t->v4sf
   val unpack:MLton.Pointer.t->t
-  val store:t ref*MLton.Pointer.t->unit
 end
 (*
   val MULPS:v4sf*v4sf->v4sf
