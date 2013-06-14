@@ -26,4 +26,36 @@ float* divps(float *arg1,float* arg2,float* retval){
   __builtin_ia32_storeups(retval,__builtin_ia32_divps(x,y));
   return retval;
 }
+/*
+float* rcpps(float *arg1,float* arg2,float* retval){
+  v4sf x = __builtin_ia32_loadups(arg1);
+  v4sf y = __builtin_ia32_loadups(arg2);
+  __builtin_ia32_storeups(retval,__builtin_ia32_rcpps(x,y));
+  return retval;
+}
+float* sqrtps(float *arg1,float* arg2,float* retval){
+  v4sf x = __builtin_ia32_loadups(arg1);
+  v4sf y = __builtin_ia32_loadups(arg2);
+  __builtin_ia32_storeups(retval,__builtin_ia32_sqrtps(x,y));
+  return retval;
+}
+float* rsqrtps(float *arg1,float* arg2,float* retval){
+  v4sf x = __builtin_ia32_loadups(arg1);
+  v4sf y = __builtin_ia32_loadups(arg2);
+  __builtin_ia32_storeups(retval,__builtin_ia32_rsqrtps(x,y));
+  return retval;
+}
+float* maxps(float *arg1,float* arg2,float* retval){
+  v4sf x = __builtin_ia32_loadups(arg1);
+  v4sf y = __builtin_ia32_loadups(arg2);
+  __builtin_ia32_storeups(retval,__builtin_ia32_maxps(x,y));
+  return retval;
+}
+float* minps(float *arg1,float* arg2,float* retval){
+  v4sf x = __builtin_ia32_loadups(arg1);
+  v4sf y = __builtin_ia32_loadups(arg2);
+  __builtin_ia32_storeups(retval,__builtin_ia32_minps(x,y));
+  return retval;
+}
+*/
 #endif

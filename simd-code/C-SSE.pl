@@ -6,7 +6,7 @@ print $file <<END;
 #ifdef _XMMINTRIN_H_INCLUDED
 typedef float v4sf __attribute__ ((__vector_size__ (16)));
 END
-for my $i ("addps","subps","mulps","divps") {
+for my $i ("addps","subps","mulps","divps","rcpps","sqrtps","rsqrtps","maxps","minps") {
     print $file <<END;
 float* ${i}(float *arg1,float* arg2,float* retval){
   v4sf x = __builtin_ia32_loadups(arg1);
