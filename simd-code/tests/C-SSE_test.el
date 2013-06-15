@@ -28,7 +28,7 @@
 "val print = TextIO.print
 fun printReal x = print (Real32.toString x ^ \" \")
 local 
-  open Sse_Cvector
+  open SSE_Cvector
 in\n"
 (format "%s\n%s\n%s\n%s\n"
         (apply #'vset-fn (cons "a" simple))

@@ -1,7 +1,7 @@
 val print = TextIO.print
 fun printReal x = print (Real32.toString x ^ " ")
 local 
-  open Sse_Cvector 
+  open SSE_Cvector 
 in
 (*ADDPS*)
 val a = Vector.fromList[1.0,2.0,3.0,4.0]

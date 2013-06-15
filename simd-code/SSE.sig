@@ -44,6 +44,13 @@ end
   val CMPNGEPS:v4sf*v4sf->v4sf
   val CMPORDPS:v4sf*v4sf->v4sf
   val SHUFPS:v4sf*v4sf->v4sf
+(*or SHUFPS:Word8.word*v4sf*v4sf
+where Word8.word determines what do to,the first four bits set the 
+first two floats, taking values from the src opperand, where the values
+in that opperand can be seen as (00,01,10,11)where thoes are the bit patterns
+of the first two bits in the Word8.
+The second two floats are chosen using the same means, only taking from the 
+dest opperand*)
   val UNPCKHPS:v4sf*v4sf->v4sf
   val UNPCKLPS:v4sf*v4sf->v4sf
 end*)

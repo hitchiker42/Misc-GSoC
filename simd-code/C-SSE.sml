@@ -1,5 +1,5 @@
 (*_import "CFunctionName" attr... : cFuncTy;*)
-structure SseType_Cvector:SSE_C_TYPE=
+structure SSEType_Cvector:SSE_C_TYPE=
 struct
   type v4sf = Real32.real Vector.vector
   type t = v4sf
@@ -9,7 +9,7 @@ struct
       fun unpack p = Vector.fromList[getReal32(p,0),getReal32(p,1),getReal32(p,2),getReal32(p,3)]
    end
 end
-structure SseType_Carray:SSE_C_TYPE=
+structure SSEType_Carray:SSE_C_TYPE=
 struct
   type v4sf = Real32.real Vector.vector
   type t = Real32.real Array.array
@@ -19,7 +19,7 @@ struct
       fun unpack p = Array.fromList[getReal32(p,0),getReal32(p,1),getReal32(p,2),getReal32(p,3)]
   end
 end
-structure SseType_Ctuple:SSE_C_TYPE=
+structure SSEType_Ctuple:SSE_C_TYPE=
 struct
   open Real32
   type v4sf = real Vector.vector
@@ -62,8 +62,6 @@ struct
 
 end
 (*
-        MULPS
-        DIVPS
         RCPPS
         SQRTPS
         RSQRTPS
@@ -89,9 +87,6 @@ end
         UNPCKLPS
 end
 *)
-structure Sse_Cvector = Sse_C(SseType_Cvector)
-structure Sse_Carray = Sse_C(SseType_Carray)
-
 structure SSE_Datatype =
 struct
 local
@@ -107,6 +102,7 @@ end
   val subps = _import "subps":v4sf_op;
   val mulps = _import "mulps":v4sf_op;
   val divps = _import "divps":v4sf_op;
+  val rcpps = _import "rcpps":v4sf_op;
   datatype SSE_Arith_op = arith_op of v4sf_op
   fun mathop (arith_op f) (a,b) =
       unpack(f(a,b,a4sf0))
@@ -145,3 +141,5 @@ functor Sse_Datatype_fun(T:SSE_DATATYPE):SSE =
   val DIVPS = vmath_op (arith_op divps)
 end
   
+structure SSE_Cvector = Sse_C(SSEType_Cvector)
+structure SSE_Carray = Sse_C(SSEType_Carray)
