@@ -15,6 +15,7 @@ sig
   val unpack:MLton.Pointer.t->t
 end
 (*
+(*Arithmatic instructions*)
   val ADDPS:v4sf*v4sf->v4sf
   val SUBPS:v4sf*v4sf->v4sf
   val MULPS:v4sf*v4sf->v4sf
@@ -22,11 +23,14 @@ end
   val RCPPS:v4sf*v4sf->v4sf  
   val SQRTPS:v4sf*v4sf->v4sf
   val RSQRTPS:v4sf*v4sf->v4sf
+(*min/max*)
   val MAXPS:v4sf*v4sf->v4sf
   val MINPS:v4sf*v4sf->v4sf
+(*bitwise instructions*)
   val ANDPS:v4sf*v4sf->v4sf
   val ORPS:v4sf*v4sf->v4sf
   val XORPS:v4sf*v4sf->v4sf
+(*comparison instructions*)
   val CMPEQPS:v4sf*v4sf->v4sf
   val CMPLTPS:v4sf*v4sf->v4sf
   val CMPLEPS:v4sf*v4sf->v4sf
@@ -39,6 +43,7 @@ end
   val CMPNGTPS:v4sf*v4sf->v4sf
   val CMPNGEPS:v4sf*v4sf->v4sf
   val CMPORDPS:v4sf*v4sf->v4sf
+(*shuffle and unpack*)
   val SHUFPS:v4sf*v4sf->v4sf
   val UNPCKHPS:v4sf*v4sf->v4sf
   val UNPCKLPS:v4sf*v4sf->v4sf
