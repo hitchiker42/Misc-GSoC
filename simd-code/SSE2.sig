@@ -1,18 +1,6 @@
 signature SSE2 = 
 sig
-  type v2df
-  type v4sf
-  type v2di
-  type v4si
-  type v8hi
-  type v16qi
-(* packed types/values
- * vxdf = double float
- * vxsf = single float
- * vxdi = packed quadword
- * vxsi = packed doubleword
- * vxhi = packed word
- * vxqi = packed byte *)
+  include SSE_TYPES
 (*MOVAPD 
  *MOVUPD
  *MOVHPD

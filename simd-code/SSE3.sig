@@ -1,19 +1,3 @@
-signature SSE_TYPES =
-sig
-  type v2df
-  type v4sf
-  type v2di
-  type v4si
-  type v8hi
-  type v16qi
-(* packed types/values(with x = the appropiate integer*)
- * vxdf = double float
- * vxsf = single float
- * vxdi = packed quadword
- * vxsi = packed doubleword
- * vxhi = packed word
- * vxqi = packed byte *)
-end
 signature SSE3 =
 sig
   include SSE_TYPES

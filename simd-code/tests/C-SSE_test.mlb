@@ -1,5 +1,5 @@
 /home/tucker/usr/lib/mlton/sml/basis/basis.mlb
 /home/tucker/usr/lib/mlton/sml/basis/mlton.mlb
-../C-SSE.sig
+../SSE.sig
 ../C-SSE.sml
 temp-C.sml

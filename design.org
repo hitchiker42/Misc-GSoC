@@ -1,8 +1,18 @@
 * Introduction
+# something about instruction level parallism
+  Nearly all modern computers contain support for Single Instruction Multiple
+  Data(SIMD) instructions, yet few high level programing languages take
+  advantage of the data level parallism offered by SIMD instructions. 
+  SIMD instructions are important in graphics processing and scientific
+  computing where the ability to process large ammounts of data quickly is
+  invaluable, but even in other areas of computing the use of simd opperations
+  can significanly increase performance.
 * Current Implementations
   The majority of current implementations of SIMD primitives in
   programming languages exist in C and C like languages, with few
-  implementations in functional languages 
+  implementations in higher level languages. There are exceptions however,
+  most notably the glaskcow haskell compilier supports simd instructions using
+  the implementation present in the llvm compilier as a backend.
 * Design Plan
 ** Intro
    (subject to revison)
@@ -31,3 +41,25 @@
    a vector of size n*128 to n machine instructions on 128 bit vectors
    
 * Layout of Modules and Files
+  There is a signature for each set of machine instructions, seperated into 5
+  files, SSE1-5 and AVX. These signatures define a set of parameterized types
+  loosely coorsponding to the primitive simd types. The functions in these
+  signatures are defined in terms of these parameterized types. The signatures
+  are instantiated in two parts, a structure which actualy implements the low
+  level simd functions in terms of predefined vector types and a functor which
+  instantiates the signature in terms of a given set of types. The functor
+  takes a structure which contains a set of parameterized types and functions
+  to convert between these types and the coorsponding low level simd types.
+  Three implemntations of the low level simd functions exist, one using C-ffi
+  calls, one using amd64 machine instructions, and one using an sml software
+  implementation. These are contained in files namedC-SSE1-5/C-AVX,
+  Amd64-SSE1-5/Amd64-AVX, and Software-SSE1-5/Software-AVX respectively.
+
+  Built on top of these low level files is a pair of files SIMD.sig/SIMD.fun
+  which provide a generalized interface to the primitive simd functions. Two
+  structures are provided simd_float and simd_int, these structures are
+  generated via functors which take a structure describing a vector type in
+  terms of the number of elements and size of each element. The actual
+  functions used are selected based on the given type and the set of machine
+  instructions available. Currently the given vector type must coorspond to an
+  existing vector type, or an integer size multiple of an existing type. 

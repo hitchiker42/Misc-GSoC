@@ -10,6 +10,19 @@
 -functor calls get expanded, so try to share code explictly
 -handle generic code
 -datatype of vectorop
+* google hangout <2013-06-18 Tue>
+  -alignment question
+  -Vector primitive needs to be written
+  -I need to do this myself (woo?)
+    -Atoms.prims is first place to look
+    -then look at places its used
+    -then goto basis lib primitives and instantiate it there
+    -Array0Const is a good place to look for an 
+  -MLton has an unsafe array to vector conversion
+  -Compairsons both bool and actual int/float values
+
+  -Functors for type paramiterization is a good idea, just be sure to
+  share the code that does the backend work
 * Low level details
 ** Immediate opperands
 *** Compairson

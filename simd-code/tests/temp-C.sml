@@ -10,7 +10,8 @@ val y = Vector.fromList[5.500000,8.600000,7.500000,0.010000]
 (*ADDPS*)
 val z = ADDPS(x,y)
 val c = ADDPS(a,b)
-val _ = (Vector.app printReal (Vector.fromList[5.000000,5.000000,5.000000,5.000000])
+val _ = (print ("ADDPS" ^ "\n")
+	;Vector.app printReal (Vector.fromList[5.000000,5.000000,5.000000,5.000000])
 	;print "\n"
 	;Vector.app printReal c
 	;print "\n"
@@ -21,7 +22,8 @@ val _ = (Vector.app printReal (Vector.fromList[5.000000,5.000000,5.000000,5.0000
 (*SUBPS*)
 val z = SUBPS(x,y)
 val c = SUBPS(a,b)
-val _ = (Vector.app printReal (Vector.fromList[~3.000000,~1.000000,1.000000,3.000000])
+val _ = (print ("SUBPS" ^ "\n")
+	;Vector.app printReal (Vector.fromList[~3.000000,~1.000000,1.000000,3.000000])
 	;print "\n"
 	;Vector.app printReal c
 	;print "\n"
@@ -32,7 +34,8 @@ val _ = (Vector.app printReal (Vector.fromList[~3.000000,~1.000000,1.000000,3.00
 (*MULPS*)
 val z = MULPS(x,y)
 val c = MULPS(a,b)
-val _ = (Vector.app printReal (Vector.fromList[4.000000,6.000000,6.000000,4.000000])
+val _ = (print ("MULPS" ^ "\n")
+	;Vector.app printReal (Vector.fromList[4.000000,6.000000,6.000000,4.000000])
 	;print "\n"
 	;Vector.app printReal c
 	;print "\n"
@@ -43,7 +46,8 @@ val _ = (Vector.app printReal (Vector.fromList[4.000000,6.000000,6.000000,4.0000
 (*DIVPS*)
 val z = DIVPS(x,y)
 val c = DIVPS(a,b)
-val _ = (Vector.app printReal (Vector.fromList[0.250000,0.666667,1.500000,4.000000])
+val _ = (print ("DIVPS" ^ "\n")
+	;Vector.app printReal (Vector.fromList[0.250000,0.666667,1.500000,4.000000])
 	;print "\n"
 	;Vector.app printReal c
 	;print "\n"

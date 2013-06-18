@@ -19,6 +19,17 @@ sig
   val SUBPS:t*t->t
   val MULPS:t*t->t
   val DIVPS:t*t->t
+  val RCPPS:t->t
+  val SQRTPS:t->t
+  val MINPS:t*t->t
+  val MAXPS:t*t->t
+end
+signature SSE_C_TYPE = 
+sig 
+  type v4sf = Real32.real Vector.vector
+  type t
+  val pack:t->v4sf
+  val unpack:MLton.Pointer.t->t
 end
 (*
   val MULPS:v4sf*v4sf->v4sf
@@ -29,6 +40,7 @@ end
   val MAXPS:v4sf*v4sf->v4sf
   val MINPS:v4sf*v4sf->v4sf
   val ANDPS:v4sf*v4sf->v4sf
+  val ANDNPS:v4sf*v4sf->v4sf
   val ORPS:v4sf*v4sf->v4sf
   val XORPS:v4sf*v4sf->v4sf
   val CMPEQPS:v4sf*v4sf->v4sf
