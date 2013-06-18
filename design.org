@@ -4,13 +4,30 @@
   programming languages exist in C and C like languages, with few
   implementations in functional languages 
 * Design Plan
-  The implementation will be broken up into several parts, a C
-  backend and a native amd64 backend. Each backend will be broken up
-  into modules for each set of simd instructions (that is to say,
-  sse, sse2,sse3,etc). 
-  There will be an internal implementation of both backends will be
-  quite low level, but the external interface will use a given sml
-  type. The moduels will be implemented as functors taking a
-  structure containing an external type and a function that converts
-  the external type to the internal low level type.  
+** Intro
+   (subject to revison)
+   The implementation will be broken up into several parts, a C
+   backend and a native amd64 backend. Each backend will be broken up
+   into modules for each set of simd instructions (that is to say,
+   sse, sse2,sse3,etc). 
+   There will be an internal implementation of both backends will be
+   quite low level, but the external interface will use a given sml
+   type. The moduels will be implemented as functors taking a
+   structure containing an external type and a function that converts
+   the external type to the internal low level type.  
+** Internals
+   Internally seperate modules will be implemented for each seperate
+   instruction set because it will be necessary to decide how to
+   implement each instruction set (software vs hardware) seperately
+   based on the target machine's capibabilities.
+** External
+   If it is feasable to implement the external interface will be a
+   generic template (one each for floats and ints) that can take a
+   vector type of a given type and size and generate optimal
+   instructions given the capibalities of the target machine. This
+   may be infeasable, in which case sizes will be restricted to
+   multiples of 128. While it may be infeasable to scale arbritarly
+   sized vectors, it is relatively simple to translate a function on
+   a vector of size n*128 to n machine instructions on 128 bit vectors
+   
 * Layout of Modules and Files

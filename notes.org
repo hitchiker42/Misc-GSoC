@@ -10,3 +10,127 @@
 -functor calls get expanded, so try to share code explictly
 -handle generic code
 -datatype of vectorop
+* Low level details
+** Immediate opperands
+*** Compairson
+#+BEGIN_SRC C
+/* Compare predicates for scalar and packed compare intrinsics. In AVX */
+
+/* Equal (ordered, non-signaling)  */
+#define _CMP_EQ_OQ	0x00
+/* Less-than (ordered, signaling)  */
+#define _CMP_LT_OS	0x01
+/* Less-than-or-equal (ordered, signaling)  */
+#define _CMP_LE_OS	0x02
+/* Unordered (non-signaling)  */
+#define _CMP_UNORD_Q	0x03
+/* Not-equal (unordered, non-signaling)  */
+#define _CMP_NEQ_UQ	0x04
+/* Not-less-than (unordered, signaling)  */
+#define _CMP_NLT_US	0x05
+/* Not-less-than-or-equal (unordered, signaling)  */
+#define _CMP_NLE_US	0x06
+/* Ordered (nonsignaling)   */
+#define _CMP_ORD_Q	0x07
+/* Equal (unordered, non-signaling)  */
+#define _CMP_EQ_UQ	0x08
+/* Not-greater-than-or-equal (unordered, signaling)  */
+#define _CMP_NGE_US	0x09
+/* Not-greater-than (unordered, signaling)  */
+#define _CMP_NGT_US	0x0a
+/* False (ordered, non-signaling)  */
+#define _CMP_FALSE_OQ	0x0b
+/* Not-equal (ordered, non-signaling)  */
+#define _CMP_NEQ_OQ	0x0c
+/* Greater-than-or-equal (ordered, signaling)  */
+#define _CMP_GE_OS	0x0d
+/* Greater-than (ordered, signaling)  */
+#define _CMP_GT_OS	0x0e
+/* True (unordered, non-signaling)  */
+#define _CMP_TRUE_UQ	0x0f
+/* Equal (ordered, signaling)  */
+#define _CMP_EQ_OS	0x10
+/* Less-than (ordered, non-signaling)  */
+#define _CMP_LT_OQ	0x11
+/* Less-than-or-equal (ordered, non-signaling)  */
+#define _CMP_LE_OQ	0x12
+/* Unordered (signaling)  */
+#define _CMP_UNORD_S	0x13
+/* Not-equal (unordered, signaling)  */
+#define _CMP_NEQ_US	0x14
+/* Not-less-than (unordered, non-signaling)  */
+#define _CMP_NLT_UQ	0x15
+/* Not-less-than-or-equal (unordered, non-signaling)  */
+#define _CMP_NLE_UQ	0x16
+/* Ordered (signaling)  */
+#define _CMP_ORD_S	0x17
+/* Equal (unordered, signaling)  */
+#define _CMP_EQ_US	0x18
+/* Not-greater-than-or-equal (unordered, non-signaling)  */
+#define _CMP_NGE_UQ	0x19
+/* Not-greater-than (unordered, non-signaling)  */
+#define _CMP_NGT_UQ	0x1a
+/* False (ordered, signaling)  */
+#define _CMP_FALSE_OS	0x1b
+/* Not-equal (ordered, signaling)  */
+#define _CMP_NEQ_OS	0x1c
+/* Greater-than-or-equal (ordered, non-signaling)  */
+#define _CMP_GE_OQ	0x1d
+/* Greater-than (ordered, non-signaling)  */
+#define _CMP_GT_OQ	0x1e
+/* True (unordered, signaling)  */
+#define _CMP_TRUE_US	0x1f
+#+END_SRC
+*** Compairson table
+| Predicate       | imm8          | Description               | Result:                   | A               | Is             | 1st   | Operand, | B     | Is    | 2nd | Operand | Signals | #IA |
+| Value           | 1             | on                        | QNAN                      |                 |                |       |          |       |       |     |         |         |     |
+| A               | >B            | A<B                       | A=B                       | Unordered       |                |       |          |       |       |     |         |         |     |
+| EQ_OQ           | (EQ)          | 0H                        | Equal                     | (ordered,       | non-signaling) | False | False    | True  | False | No  |         |         |     |
+| LT_OS           | (LT)          | 1H                        | Less-than                 | (ordered,       | signaling)     | False | True     | False | False | Yes |         |         |     |
+| LE_OS           | (LE)          | 2H                        | Less-than-or-equal        | (ordered,       | False          | True  | True     | False | Yes   |     |         |         |     |
+| signaling)      |               |                           |                           |                 |                |       |          |       |       |     |         |         |     |
+| UNORD_Q         | 3H            | Unordered                 | (non-signaling)           | False           | False          | False | True     | No    |       |     |         |         |     |
+| (UNORD)         |               |                           |                           |                 |                |       |          |       |       |     |         |         |     |
+| NEQ_UQ          | (NEQ)         | 4H                        | Not-equal                 | (unordered,     | non-           | True  | True     | False | True  | No  |         |         |     |
+| signaling)      |               |                           |                           |                 |                |       |          |       |       |     |         |         |     |
+| NLT_US          | (NLT)         | 5H                        | Not-less-than             | (unordered,     | signaling)     | True  | False    | True  | True  | Yes |         |         |     |
+| NLE_US          | (NLE)         | 6H                        | Not-less-than-or-equal    | (unordered,     | True           | False | False    | True  | Yes   |     |         |         |     |
+| signaling)      |               |                           |                           |                 |                |       |          |       |       |     |         |         |     |
+| ORD_Q           | (ORD)         | 7H                        | Ordered                   | (non-signaling) | True           | True  | True     | False | No    |     |         |         |     |
+| EQ_UQ           | 8H            | Equal                     | (unordered,               | non-signaling)  | False          | False | True     | True  | No    |     |         |         |     |
+| NGE_US          | (NGE)         | 9H                        | Not-greater-than-or-equal | False           | True           | False | True     | Yes   |       |     |         |         |     |
+| (unordered,     | signaling)    |                           |                           |                 |                |       |          |       |       |     |         |         |     |
+| NGT_US          | (NGT)         | AH                        | Not-greater-than          | (unordered,     | sig-           | False | True     | True  | True  | Yes |         |         |     |
+| naling)         |               |                           |                           |                 |                |       |          |       |       |     |         |         |     |
+| FALSE_OQ(FALSE) | BH            | False                     | (ordered,                 | non-signaling)  | False          | False | False    | False | No    |     |         |         |     |
+| NEQ_OQ          | CH            | Not-equal                 | (ordered,                 | non-signaling)  | True           | True  | False    | False | No    |     |         |         |     |
+| GE_OS           | (GE)          | DH                        | Greater-than-or-equal     | (ordered,       | sig-           | True  | False    | True  | False | Yes |         |         |     |
+| naling)         |               |                           |                           |                 |                |       |          |       |       |     |         |         |     |
+| GT_OS           | (GT)          | EH                        | Greater-than              | (ordered,       | signaling)     | True  | False    | False | False | Yes |         |         |     |
+| TRUE_UQ(TRUE)   | FH            | True                      | (unordered,               | non-signaling)  | True           | True  | True     | True  | No    |     |         |         |     |
+| EQ_OS           | 10H           | Equal                     | (ordered,                 | signaling)      | False          | False | True     | False | Yes   |     |         |         |     |
+| LT_OQ           | 11H           | Less-than                 | (ordered,                 | nonsignaling)   | False          | True  | False    | False | No    |     |         |         |     |
+| LE_OQ           | 12H           | Less-than-or-equal        | (ordered,                 | non-            | False          | True  | True     | False | No    |     |         |         |     |
+| signaling)      |               |                           |                           |                 |                |       |          |       |       |     |         |         |     |
+| UNORD_S         | 13H           | Unordered                 | (signaling)               | False           | False          | False | True     | Yes   |       |     |         |         |     |
+| NEQ_US          | 14H           | Not-equal                 | (unordered,               | signaling)      | True           | True  | False    | True  | Yes   |     |         |         |     |
+| NLT_UQ          | 15H           | Not-less-than             | (unordered,               | nonsig-         | True           | False | True     | True  | No    |     |         |         |     |
+| naling)         |               |                           |                           |                 |                |       |          |       |       |     |         |         |     |
+| NLE_UQ          | 16H           | Not-less-than-or-equal    | (unordered,               | True            | False          | False | True     | No    |       |     |         |         |     |
+| nonsignaling)   |               |                           |                           |                 |                |       |          |       |       |     |         |         |     |
+| ORD_S           | 17H           | Ordered                   | (signaling)               | True            | True           | True  | False    | Yes   |       |     |         |         |     |
+| EQ_US           | 18H           | Equal                     | (unordered,               | signaling)      | False          | False | True     | True  | Yes   |     |         |         |     |
+| Predicate       | imm8          | Description               | Result:                   | A               | Is             | 1st   | Operand, | B     | Is    | 2nd | Operand | Signals | #IA |
+| Value           | on            | QNAN                      |                           |                 |                |       |          |       |       |     |         |         |     |
+| A               | >B            | A<B                       | A=B                       | Unordered1      |                |       |          |       |       |     |         |         |     |
+| NGE_UQ          | 19H           | Not-greater-than-or-equal | (unor-                    | False           | True           | False | True     | No    |       |     |         |         |     |
+| dered,          | nonsignaling) |                           |                           |                 |                |       |          |       |       |     |         |         |     |
+| NGT_UQ          | 1AH           | Not-greater-than          | (unordered,               | non-            | False          | True  | True     | True  | No    |     |         |         |     |
+| signaling)      |               |                           |                           |                 |                |       |          |       |       |     |         |         |     |
+| FALSE_OS        | 1BH           | False                     | (ordered,                 | signaling)      | False          | False | False    | False | Yes   |     |         |         |     |
+| NEQ_OS          | 1CH           | Not-equal                 | (ordered,                 | signaling)      | True           | True  | False    | False | Yes   |     |         |         |     |
+| GE_OQ           | 1DH           | Greater-than-or-equal     | (ordered,                 | True            | False          | True  | False    | No    |       |     |         |         |     |
+| nonsignaling)   |               |                           |                           |                 |                |       |          |       |       |     |         |         |     |
+| GT_OQ           | 1EH           | Greater-than              | (ordered,                 | nonsignal-      | True           | False | False    | False | No    |     |         |         |     |
+| ing)            |               |                           |                           |                 |                |       |          |       |       |     |         |         |     |
+| TRUE_US         | 1FH           | True                      | (unordered,               | signaling)      | True           | True  | True     | True  | Yes   |     |         |         |     |
