@@ -134,3 +134,14 @@
 | GT_OQ           | 1EH           | Greater-than              | (ordered,                 | nonsignal-      | True           | False | False    | False | No    |     |         |         |     |
 | ing)            |               |                           |                           |                 |                |       |          |       |       |     |         |         |     |
 | TRUE_US         | 1FH           | True                      | (unordered,               | signaling)      | True           | True  | True     | True  | Yes   |     |         |         |     |
+* Sml snippets
+** Software vector function
+#+BEGIN_SRC 
+  local
+    open Vector
+  in
+    fun vectorFun (a,b,vecOp,n) = let
+      val f = fn x =>vecOp(sub(a,x),sub(b,x))
+    in tabulate f n end
+  end
+#+END_SRC
