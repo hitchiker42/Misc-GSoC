@@ -11,9 +11,10 @@
 #define v2di __v2di\n")
 (dolist (opcode '("addpd" "subpd" "mulpd" "divpd"))
 (insert (format
-"double* %s(float *arg1,double* arg2,double* retval){
+"double* %s(double *arg1,double* arg2,double* retval){
   v2df x = __builtin_ia32_loadupd(arg1);
   v2df y = __builtin_ia32_loadupd(arg2);
-  __builtin_ia32_storeups(retval,__builtin_ia32_%s(x,y));
+  __builtin_ia32_storeupd(retval,__builtin_ia32_%s(x,y));
   return retval;
-}" opcode opcode))))
+}\n" opcode opcode)))
+(insert "#endif\n"))

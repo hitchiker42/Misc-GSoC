@@ -3,7 +3,8 @@
 "#include <x86intrin.h>
 #include <stdlib.h>
 #ifdef _XMMINTRIN_H_INCLUDED
-typedef float v4sf __attribute__ ((__vector_size__ (16)));\n")
+/*typedef float v4sf __attribute__ ((__vector_size__ (16)));\n*/
+#define v4sf __v4sf\n")
   (dolist (opcode '("addps" "subps" "mulps" "divps" "maxps" "minps"));;
     (insert (format
 "float* %s(float *arg1,float* arg2,float* retval){

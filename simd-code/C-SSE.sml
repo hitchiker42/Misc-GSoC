@@ -1,67 +1,62 @@
 (*_import "CFunctionName" attr... : cFuncTy;*)
 structure SSE_Ctype_vector:SSE_C_TYPE=
 struct
+  type e = Real32.real
   type v4sf = Real32.real Vector.vector
   type t = v4sf
   val pack = fn x => x
-  local
-    open MLton.Pointer in
-      fun unpack p = Vector.fromList[getReal32(p,0),getReal32(p,1),getReal32(p,2),getReal32(p,3)]
-   end
+  fun unpack a = Array.vector a
 end
 structure SSE_Ctype_array:SSE_C_TYPE=
 struct
+  type e = Real32.real
   type v4sf = Real32.real Vector.vector
   type t = Real32.real Array.array
   val pack = fn x => Array.vector x
-  local
-    open MLton.Pointer in
-      fun unpack p = Array.fromList[getReal32(p,0),getReal32(p,1),getReal32(p,2),getReal32(p,3)]
-  end
+  val unpack = fn x => x
 end
 structure SSE_Ctype_tuple:SSE_C_TYPE=
 struct
+  type e = Real32.real
   open Real32
   type v4sf = real Vector.vector
   type t = real*real*real*real
   fun pack (a,b,c,d)= Vector.fromList[a,b,c,d]
-  local
-    open MLton.Pointer in
-      fun unpack p = (getReal32(p,0),getReal32(p,1),getReal32(p,2),getReal32(p,3))
-  end
+  fun unpack a = (Array.sub(a,0),Array.sub(a,1),Array.sub(a,2),Array.sub(a,3))
 end
 structure SSE_C =
-(*shared code, call c functions with vector args and return a pointer*)
+(*shared code, call c functions with vector args and an array dest
+ * return unit, result is in the array*)
 struct
     type v4sf = Real32.real Vector.vector
     type a4sf = Real32.real Array.array
-(*(defun cffi (name) (insert (format "val %s = _import \"%s\":v4sf*v4sf*a4sf->MLton.Pointer.t;\n" name name)))
+(*(defun cffi (name) (insert (format "val %s = _import \"%s\":v4sf*v4sf*a4sf->unit;\n" name name)))
 (defun c-vals ()
 (let ((beg (point)))
    (insert "\n")
    (dolist (name '("addps" "subps" "mulps" "divps" "rcpps" "sqrtps" "maxps" "minps" "andps" "orps" "xorps" "andnps"))
            (cffi name)) 
    (indent-region beg (point))))*)
-    val addps = _import "addps":v4sf*v4sf*a4sf->MLton.Pointer.t;
-    val subps = _import "subps":v4sf*v4sf*a4sf->MLton.Pointer.t;
-    val mulps = _import "mulps":v4sf*v4sf*a4sf->MLton.Pointer.t;
-    val divps = _import "divps":v4sf*v4sf*a4sf->MLton.Pointer.t;
-    val rcpps = _import "rcpps":v4sf*a4sf->MLton.Pointer.t;
-    val sqrtps = _import "sqrtps":v4sf*a4sf->MLton.Pointer.t;
-    val maxps = _import "maxps":v4sf*v4sf*a4sf->MLton.Pointer.t;
-    val minps = _import "minps":v4sf*v4sf*a4sf->MLton.Pointer.t;
-    val andps = _import "andps":v4sf*v4sf*a4sf->MLton.Pointer.t;
-    val orps = _import "orps":v4sf*v4sf*a4sf->MLton.Pointer.t;
-    val xorps = _import "xorps":v4sf*v4sf*a4sf->MLton.Pointer.t;
-    val andnps = _import "andnps":v4sf*v4sf*a4sf->MLton.Pointer.t;
+    val addps = _import "addps":v4sf*v4sf*a4sf->unit;
+    val subps = _import "subps":v4sf*v4sf*a4sf->unit;
+    val mulps = _import "mulps":v4sf*v4sf*a4sf->unit;
+    val divps = _import "divps":v4sf*v4sf*a4sf->unit;
+    val rcpps = _import "rcpps":v4sf*a4sf->unit;
+    val sqrtps = _import "sqrtps":v4sf*a4sf->unit;
+    val maxps = _import "maxps":v4sf*v4sf*a4sf->unit;
+    val minps = _import "minps":v4sf*v4sf*a4sf->unit;
+    val andps = _import "andps":v4sf*v4sf*a4sf->unit;
+    val orps = _import "orps":v4sf*v4sf*a4sf->unit;
+    val xorps = _import "xorps":v4sf*v4sf*a4sf->unit;
+    val andnps = _import "andnps":v4sf*v4sf*a4sf->unit;
     fun sml2c f = fn (x,y) =>
                      let
                        val z = Array.array(4,0.0)
-                     in f(x,y,z) end
+                     in (f(x,y,z);z) end
     fun sml2c_unary f = fn (x) =>
                            let 
                              val y = Array.array(4,0.0)
-                           in f(x,y) end
+                           in (f(x,y);y) end
 (*(defun sml-ffi (name) (insert (format "val %s = sml2c %s\n" (upcase name) (downcase name))))
 (defun sml-vals()
 (let ((beg (point)))

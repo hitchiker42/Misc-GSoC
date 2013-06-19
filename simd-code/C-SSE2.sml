@@ -1,26 +1,26 @@
 structure C_SSE2 =
 struct
   open SSE_Types
-  val addpd = _import "addpd":v2df*v2df*a2df->MLton.Pointer.t;
-  val subpd = _import "subpd":v2df*v2df*a2df->MLton.Pointer.t;
-  val mulpd = _import "mulpd":v2df*v2df*a2df->MLton.Pointer.t;
-  val divpd = _import "divpd":v2df*v2df*a2df->MLton.Pointer.t;
-  val rcppd = _import "rcppd":v2df*a2df->MLton.Pointer.t;
-  val sqrtpd = _import "sqrtpd":v2df*a2df->MLton.Pointer.t;
-  val maxpd = _import "maxpd":v2df*v2df*a2df->MLton.Pointer.t;
-  val minpd = _import "minpd":v2df*v2df*a2df->MLton.Pointer.t;
-  val andpd = _import "andpd":v2df*v2df*a2df->MLton.Pointer.t;
-  val orpd = _import "orpd":v2df*v2df*a2df->MLton.Pointer.t;
-  val xorpd = _import "xorpd":v2df*v2df*a2df->MLton.Pointer.t;
-  val andnpd = _import "andnpd":v2df*v2df*a2df->MLton.Pointer.t;
+  val addpd = _import "addpd":v2df*v2df*a2df->unit;
+  val subpd = _import "subpd":v2df*v2df*a2df->unit;
+  val mulpd = _import "mulpd":v2df*v2df*a2df->unit;
+  val divpd = _import "divpd":v2df*v2df*a2df->unit;
+  val rcppd = _import "rcppd":v2df*a2df->unit;
+  val sqrtpd = _import "sqrtpd":v2df*a2df->unit;
+  val maxpd = _import "maxpd":v2df*v2df*a2df->unit;
+  val minpd = _import "minpd":v2df*v2df*a2df->unit;
+  val andpd = _import "andpd":v2df*v2df*a2df->unit;
+  val orpd = _import "orpd":v2df*v2df*a2df->unit;
+  val xorpd = _import "xorpd":v2df*v2df*a2df->unit;
+  val andnpd = _import "andnpd":v2df*v2df*a2df->unit;
   fun sml2c f = fn (x,y) =>
                    let
                      val z = Array.array(4,0.0)
-                   in f(x,y,z) end
+                   in (f(x,y,z);z) end
   fun sml2c_unary f = fn (x) =>
                          let 
                            val y = Array.array(4,0.0)
-                         in f(x,y) end
+                         in (f(x,y);y) end
   val ADDPD = sml2c addpd
   val SUBPD = sml2c subpd
   val MULPD = sml2c mulpd
@@ -53,7 +53,7 @@ struct
   fun XORPD (a,b) = sse_call(a,b,SSE_C.XORPD)
   fun ANDNPD (a,b) = sse_call(a,b,SSE_C.ANDNPD)
 end
-(*(defun cffi (name) (insert (format "val %s = _import \"%s\":v4sf*v4sf*a4sf->MLton.Pointer.t;\n" name name)))
+(*(defun cffi (name) (insert (format "val %s = _import \"%s\":v4sf*v4sf*a4sf->unit;\n" name name)))
 (defun c-vals ()
 (let ((beg (point)))
    (insert "\n")
