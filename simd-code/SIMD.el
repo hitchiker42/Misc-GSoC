@@ -30,6 +30,37 @@
   %s y = __builtin_ia32_loaddqu(arg2);
   __builtin_ia32_storedqu(retval,__builtin_ia32_%s(x,y));
 }\n" opcode ,type ,type opcode)))))
+(defmacro Intel-intrin (name argv retval type id &optional arity)
+  (if (null arity)
+      `(defun ,name (opcode)
+         (insert (format
+"void %s_%s(%s arg1,%s retval){
+  %s x = _mm_loadu_%s(arg1);
+  _mm_storeu_%s(retval,_mm_%s_%s(x));
+}\n" opcode ,type ,argv ,retval ,id ,type ,type opcode ,type)))
+    `(defun ,name (opcode)
+       (insert (format
+"void %s_%s(%s arg1,%s arg2,%s retval){
+  %s x = _mm_loadu_%s(arg1);
+  %s y = _mm_loadu_%s(arg2);
+  _mm_storeu_%s(retval,_mm_%s_%s(x,y));
+}\n" opcode ,type ,argv ,argv ,retval ,id ,type
+,id ,type ,type opcode ,type)))))
+(defmacro Intel-intrin-int (name &optional arity)
+  (if (null arity)
+      `(defun ,name (opcode)
+         (insert (format
+"void %s(__m128i* arg1,__m128i* retval){
+  __m128i x = _mm_loadu_si128(arg1);
+  _mm_storeu_si128(retval,_mm_%s(x));
+}\n" opcode opcode)))
+    `(defun ,name (opcode)
+       (insert (format
+"void %s(__m128i* arg1,__m128i* arg2,__m128i* retval){
+  __m128i x = _mm_loadu_si128(arg1);
+  __m128i y = _mm_loadu_si128(arg2);
+  _mm_storeu_si128(retval,_mm_%s(x,y));
+}\n" opcode opcode)))))
 (defmacro c-opcodes (fxn &rest opcodes)
   `(dolist (opcode ',opcodes)
      (,fxn opcode)))
@@ -45,6 +76,18 @@
 (C-intrin-int int2 "v4si" t)
 (C-intrin-int long1 "v2di")
 (C-intrin-int long2 "v2di" t)
+(Intel-intrin intel-f1 "float*" "float*" "ps" "__m128")
+(Intel-intrin intel-f2 "float*" "float*" "ps" "__m128" t)
+(Intel-intrin intel-d1 "double*" "double*" "pd" "__m128d")
+(Intel-intrin intel-d2 "double*" "double*" "pd" "__m128d" t)
+(Intel-intrin-int intel-int1)
+(Intel-intrin-int intel-int2 t)
+(defun C-SSE-Intel ()
+  (with-temp-file "temp-sse.c"
+    (insert
+"#include <x86intrin.h>\n")
+    (c-opcodes intel-f2 "add" "sub" "mul" "div")))
+(C-SSE-Intel)
 (defvar SSE-Types 
 "#include <x86intrin.h>
 #define v4sf __v4sf
