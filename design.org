@@ -1,32 +1,32 @@
 * Introduction
-# something about instruction level parallism
+# something about instruction level parallelism
   Nearly all modern computers contain support for Single Instruction Multiple
-  Data(SIMD) instructions, yet few high level programing languages take
-  advantage of the data level parallism offered by SIMD instructions. 
+  Data(SIMD) instructions, yet few high level programming languages take
+  advantage of the data level parallelism offered by SIMD instructions. 
   SIMD instructions are important in graphics processing and scientific
-  computing where the ability to process large ammounts of data quickly is
-  invaluable, but even in other areas of computing the use of simd opperations
-  can significanly increase performance.
+  computing where the ability to process large amounts of data quickly is
+  invaluable, but even in other areas of computing the use of simd operations
+  can significantly increase performance.
 * Low level details
 * Current Implementations
   The majority of current implementations of SIMD primitives in
   programming languages exist in C and C like languages, with few
   implementations in higher level languages. Notable implementations include
-  the gnu compiler collection, the intel c compilier and the llvm compilier
-  infistructure. Some lesser known implementations include simd implementations
+  the gnu compiler collection, the intel c compiler and the llvm compiler
+  infrastructure. Some lesser known implementations include simd implementations
   in the D programming language, mono, an open source implementation of
-  microsofts common language infastructure and the steel bank common lisp
-  compilier. Of note is the implementation in the llvm compilier framework, as
-  llvm is not tied to a single compilier it is possible to integrate simd
+  Microsoft common language infrastructure and the steel bank common lisp
+  compiler. Of note is the implementation in the llvm compiler framework, as
+  llvm is not tied to a single compiler it is possible to integrate simd
   primitives into any language that can compile to llvm bytecode. A
-  particularly relevant example is the glasgow haskell compilier, which is
-  currently the implemetation in the language closest to standard ml.
+  particularly relevant example is the Glasgow haskell compiler, which is
+  currently the implementation in the language closest to standard ml.
 * Design Plan
 ** Intro
    The implementation will be broken up into several parts, a C backend, a
    native amd64 backend, and a software backend. The C backend and Software
    backend will be implemented first. The software backend exists for two
-   purposes, both to test the efficency of the C and amd64 backends and to
+   purposes, both to test the efficiency of the C and amd64 backends and to
    allow portable use of the simd functions. Each of the backends will
    implement the set of sse and avx simd instructions. The code will be
    divided into modules based on instruction set and the proper backend chosen
@@ -35,40 +35,40 @@
    floating point data, with the proper instructions decided based on the type
    and size of the values used.
 ** Internals
-   Internally seperate modules will be implemented for each seperate
+   Internally separate modules will be implemented for each separate
    instruction set because it will be necessary to decide how to
-   implement each instruction set (software vs hardware) seperately
-   based on the target machine's capibabilities. The modules will internally
+   implement each instruction set (software vs hardware) separately
+   based on the target machine's capabilities. The modules will internally
    use a single vector type to implement the low level operations, however a
    functor is provided to allow for other types to be used given functions to
-   convert to and from a vector of the appropiate size.
+   convert to and from a vector of the appropriate size.
 ** External
-   If it is feasable to implement the external interface will be a
+   If it is feasible to implement the external interface will be a
    generic template (one each for floats and ints) that can take a
    vector type of a given type and size and generate optimal
-   instructions given the capibalities of the target machine. This
-   may be infeasable, in which case sizes will be restricted to
-   multiples of 128. While it may be infeasable to scale arbritarly
+   instructions given the capabilities of the target machine. This
+   may be infeasible, in which case sizes will be restricted to
+   multiples of 128. While it may be infeasible to scale arbitrarily
    sized vectors, it is relatively simple to translate a function on
    a vector of size n*128 to n machine instructions on 128 bit vectors.
-   This all said initally the values will be restricted to 128 or 256 bit
+   This all said initially the values will be restricted to 128 or 256 bit
    vectors of 32 or 64 bit reals or 8,16,32 or 64 bit integers. These are the
    values supported by the underlying machine instructions and thus most
    important to implement, the generic sizes will be implemented later.
    
 * Layout of Modules and Files
-  There is a signature for each set of machine instructions, seperated into 5
+  There is a signature for each set of machine instructions, separated into 5
   files, SSE1-5 and AVX. These signatures define a set of parameterized types
-  loosely coorsponding to the primitive simd types. The functions in these
+  loosely corresponding to the primitive simd types. The functions in these
   signatures are defined in terms of these parameterized types. The signatures
-  are instantiated in two parts, a structure which actualy implements the low
+  are instantiated in two parts, a structure which actually implements the low
   level simd functions in terms of predefined vector types and a functor which
   instantiates the signature in terms of a given set of types. The functor
   takes a structure which contains a set of parameterized types and functions
-  to convert between these types and the coorsponding low level simd types.
-  Three implemntations of the low level simd functions exist, one using C-ffi
+  to convert between these types and the corresponding low level simd types.
+  Three implementations of the low level simd functions exist, one using C-ffi
   calls, one using amd64 machine instructions, and one using an sml software
-  implementation. These are contained in files namedC-SSE1-5/C-AVX,
+  implementation. These are contained in files named C-SSE1-5/C-AVX,
   Amd64-SSE1-5/Amd64-AVX, and Software-SSE1-5/Software-AVX respectively.
 
   Built on top of these low level files is a pair of files SIMD.sig/SIMD.fun
@@ -77,7 +77,7 @@
   generated via functors which take a structure describing a vector type in
   terms of the number of elements and size of each element. The actual
   functions used are selected based on the given type and the set of machine
-  instructions available. Currently the given vector type must coorspond to an
+  instructions available. Currently the given vector type must correspond to an
   existing vector type, a 128 or 256 bit vector of 8,16,32 or 64 bit ints or
   32 or 64 bit floats.
 * Future Possibilities
@@ -89,7 +89,7 @@
   core library
   
   Something very important, which is not currently planned to be
-  implementented for the sake of time, is adding autovectorizaiton to the
-  compilier. This intails finding sections of code that seem vectorizble and
+  implemented for the sake of time, is adding autovectorizaiton to the
+  compiler. This entails finding sections of code that seem vectorizble and
   converting them to using simd operations. Examples of this are vector map
   operations, or simple loops.

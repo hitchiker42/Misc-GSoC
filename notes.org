@@ -23,6 +23,12 @@
 
   -Functors for type paramiterization is a good idea, just be sure to
   share the code that does the backend work
+* google hangout <2013-06-21 Fri>
+  -Might be some predefined objects aligned to 8 byte boundries
+  -Also look at the runtime stuff, thats probably the issue
+  -basis lib unsafe.mlb to create uninitalized array
+  -compare c calls to c calls, i.e. c-simd call vs c-for loop
+
 * Low level details
 ** Immediate opperands
 *** Compairson

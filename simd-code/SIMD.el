@@ -120,23 +120,27 @@
     (insert (concat
              SSE-Types
              "#ifdef _PMMINTRIN_H_INCLUDED"))
-    (c-opcodes f)
-    (c-opcodes f)
-    (insert "ifdef _TMMINTRIN_H_INCLUDED\n");;SSSE3 header
-    (c-opcodes f)
+    (c-opcodes float2 "addsubps" "haddps" "hsubps")
+    (c-opcodes double2 "addsubpd" "haddpd" "hsubpd")
     (insert "#endif\n")
-    (insert "#endif\n")))
+    (c-opcodes short2 "phaddw128" "phaddsw128" "phsubw128" "phsubsw128")
+    (c-opcodes int2 "phadd128" "phsubd128")
+    (insert "#ifdef _TMMINTRIN_H_INCLUDED\n");;SSSE3 header
+    (insert "#endif\n#endif\n")))
+(C-SSE3)
 (defun C-SSE4 ()
   (with-temp-file "C-SSE4.c"
     (insert (concat
              SSE-Types
              "#ifdef _SMMINTRIN_H_INCLUDED\n#ifdef __SSE4_1__\n"))
-    (c-opcodes f) 
+    (c-opcodes float2 "blendps") 
+    (c-opcodes double2 "blendpd")
     (insert "#ifdef __SSE4_2__")
     (c-opcodes f)
     (insert "#endif\n")
     (insert "#endif\n")
     (insert "#endif\n")))
+(C-SSE4)
 (defun C-AVX ()
   (with-temp-file "C-AVX.c"
     (insert (concat
