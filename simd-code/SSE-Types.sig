@@ -6,6 +6,12 @@ sig
   type v4si
   type v8hi
   type v16qi
+  type a2df 
+  type a4sf 
+  type a2di 
+  type a4si 
+  type a8hi 
+  type a16qi
 (* packed types/values(with x = the appropiate integer)
  * vxdf = double float
  * vxsf = single float
@@ -22,6 +28,12 @@ struct
   type v4si = Int32.int Vector.vector
   type v8hi = Int16.int Vector.vector
   type v16qi = Int8.int Vector.vector
+  type a2df = Real64.real Array.array
+  type a4sf = Real32.real Array.array
+  type a2di = Int64.int Array.array
+  type a4si = Int32.int Array.array
+  type a8hi = Int16.int Array.array
+  type a16qi = Int8.int Array.array
 end
 signature SSE_C_TYPES =
 sig
@@ -44,12 +56,12 @@ sig
   val pack4i:t4i->v4si
   val pack8i:t8i->v8hi
   val pack16i:t16i->v16qi
-  val unpack2f:MLton.Pointer.t->t2f
-  val unpack4f:MLton.Pointer.t->t4f
-  val unpack2i:MLton.Pointer.t->t2i
-  val unpack4i:MLton.Pointer.t->t4i
-  val unpack8i:MLton.Pointer.t->t8i
-  val unpack16i:MLton.Pointer.t->t16i
+  val unpack2f:Real32.real Array.array->t2f
+  val unpack4f:Real64.real Array.array->t4f
+  val unpack2i:Int64.int Array.array->t2i
+  val unpack4i:Int32.int Array.array->t4i
+  val unpack8i:Int16.int Array.array->t8i
+  val unpack16i:Int8.int Array.array->t16i
 end
 signature SSE_C_FLOATS =
 sig
@@ -59,8 +71,8 @@ sig
   type t4f
   val pack2f:t2f->v2df
   val pack4f:t4f->v4sf
-  val unpack2f:MLton.Pointer.t->t2f
-  val unpack4f:MLton.Pointer.t->t4f
+  val unpack2f:Real32.real Array.array->t2f
+  val unpack4f:Real64.real Array.array->t4f
 end
 signature SSE_C_INTS =
 sig
@@ -76,8 +88,8 @@ sig
   val pack4i:t4i->v4si
   val pack8i:t8i->v8hi
   val pack16i:t16i->v16qi
-  val unpack2i:MLton.Pointer.t->t2i
-  val unpack4i:MLton.Pointer.t->t4i
-  val unpack8i:MLton.Pointer.t->t8i
-  val unpack16i:MLton.Pointer.t->t16i
+  val unpack2i:Int64.int Array.array->t2i
+  val unpack4i:Int32.int Array.array->t4i
+  val unpack8i:Int16.int Array.array->t8i
+  val unpack16i:Int8.int Array.array->t16i
 end

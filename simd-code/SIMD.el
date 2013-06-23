@@ -34,18 +34,18 @@
   (if (null arity)
       `(defun ,name (opcode)
          (insert (format
-"void %s_%s(%s arg1,%s retval){
+"void %s(%s arg1,%s retval){
   %s x = _mm_loadu_%s(arg1);
-  _mm_storeu_%s(retval,_mm_%s_%s(x));
-}\n" opcode ,type ,argv ,retval ,id ,type ,type opcode ,type)))
+  _mm_storeu_%s(retval,_mm_%s(x));
+}\n" opcode ,argv ,retval ,id ,type ,type opcode)))
     `(defun ,name (opcode)
        (insert (format
-"void %s_%s(%s arg1,%s arg2,%s retval){
+"void %s(%s arg1,%s arg2,%s retval){
   %s x = _mm_loadu_%s(arg1);
   %s y = _mm_loadu_%s(arg2);
-  _mm_storeu_%s(retval,_mm_%s_%s(x,y));
-}\n" opcode ,type ,argv ,argv ,retval ,id ,type
-,id ,type ,type opcode ,type)))))
+  _mm_storeu_%s(retval,_mm_%s(x,y));
+}\n" opcode ,argv ,argv ,retval ,id ,type
+,id ,type ,type opcode )))))
 (defmacro Intel-intrin-int (name &optional arity)
   (if (null arity)
       `(defun ,name (opcode)

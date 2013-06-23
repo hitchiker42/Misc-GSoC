@@ -1,4 +1,5 @@
 /home/tucker/usr/lib/mlton/sml/basis/basis.mlb
 /home/tucker/usr/lib/mlton/sml/basis/mlton.mlb
+/home/tucker/usr/lib/mlton/sml/basis/unsafe.mlb
 SSE.sig
 C-SSE.sml

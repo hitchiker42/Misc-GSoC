@@ -27,7 +27,7 @@
 "val print = TextIO.print
 fun printReal x = print (Real32.toString x ^ \" \")
 local 
-  open SSE_Cvector
+  open C_SSE_vector
 in\n"
 (format "%s\n%s\n%s\n%s\n"
 ;;set values of arguements
