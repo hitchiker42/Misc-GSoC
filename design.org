@@ -1,3 +1,4 @@
+Design of SIMD implementation in MLton
 * Introduction
 # something about instruction level parallelism
   Nearly all modern computers contain support for Single Instruction Multiple
@@ -9,9 +10,9 @@
   can significantly increase performance. This project aims to implement simd
   operations in the MLton SML compiler using the SSE and AVX instructions
   from the AMD64 instruction set.
-* x86_64 SIMD support
+* x86\_64 SIMD support
   The set of simd instructions being implemented are the Streaming SIMD
-  Instructions(SSE) and Advanced Vector Instructions(AVX) from the x86_64
+  Instructions(SSE) and Advanced Vector Instructions(AVX) from the x86\_64
   instruction set. The earlier MMX instruction set will not be implemented
   during this project. SSE instructions operate 128 bit data stored in XMM
   registers while the newer AVX instructions operate on 256 bit data stored in
@@ -120,7 +121,7 @@
 
   Built on top of these low level files is a pair of files SIMD.sig/SIMD.fun
   which provide a generalized interface to the primitive simd functions. Two
-  structures are provided simd_float and simd_int, these structures are
+  structures are provided simd\_float and simd\_int, these structures are
   generated via functors which take a structure describing a vector type in
   terms of the number of elements and size of each element. The actual
   functions used are selected based on the given type and the set of machine
