@@ -6,8 +6,47 @@
   SIMD instructions are important in graphics processing and scientific
   computing where the ability to process large amounts of data quickly is
   invaluable, but even in other areas of computing the use of simd operations
-  can significantly increase performance.
+  can significantly increase performance. This project aims to implement simd
+  operations in the MLton SML compiler using the SSE and AVX instructions
+  from the AMD64 instruction set.
+* x86_64 SIMD support
+  The set of simd instructions being implemented are the Streaming SIMD
+  Instructions(SSE) and Advanced Vector Instructions(AVX) from the x86_64
+  instruction set. The earlier MMX instruction set will not be implemented
+  during this project. SSE instructions operate 128 bit data stored in XMM
+  registers while the newer AVX instructions operate on 256 bit data stored in
+  YMM registers. SSE instructions consist of six separate instruction sets:
+  SSE1, SSE2, SSE3, SSSE3, SSE4.1, and SSE4.2. As these instructions were
+  introduced at different times it is important to maintain a distinction
+  between them so that the correct instructions can be chosen for each
+  specific computer. The AVX instructions consist of two separate instruction
+  sets: AVX and AVX2, the AVX instructions do not introduce many new
+  instructions but instead extend the SSE instructions to work on 256 bit
+  data, the AVX instructions expand floating point instructions and the AVX2
+  instructions expand integer operations.
+
 * Low level details
+  There are several low level challenges unique to simd instructions. One
+  challenge in using simd instructions is that of data alignment. In general
+  simd data must be aligned to 16 byte boundaries, in contrast to general
+  purpose instructions which generally are aligned to 4 or 8 byte
+  boundaries. Unaligned data can be used, but there is a notable speed
+  penalty for doing so. Another challenge, especially in a language as
+  strictly typed as sml, is that there is only one simd integer type. While
+  the operations acted on packed data, separated into 8,16,32 or 64 bit blocks
+  the loading and storing of data works only on 128 bit blocks, with no regard
+  to the actual contents. This requires the different types be defined and
+  manipulated in the sml implementation itself. Perhaps the biggest challenge
+  in working with simd instructions is converting data to and from the packed
+  simd format. There are a large number of instructions for the manipulation
+  of simd data, inserting or extracting specific elements, loading or storing
+  memory from data, etc. Because of the complexity of the low level data
+  manipulation it is important to simplify these operations for the actual
+  functions provided to the programmer. However at the same time if the
+  complex operations are simplified too much some of the power and flexibility
+  is lost, so it is important in the implementation to strike a balance
+  between simplicity and flexibility.
+  
 * Current Implementations
   The majority of current implementations of SIMD primitives in
   programming languages exist in C and C like languages, with few
@@ -20,7 +59,15 @@
   llvm is not tied to a single compiler therefore it is possible to integrate simd
   primitives into any language that can compile to llvm bytecode. A
   particularly relevant example is the Glasgow haskell compiler, which is
-  currently the implementation in the language closest to standard ml.
+  currently the implementation in the language closest to standard ml. The
+  design of the simd implementation in ghc was of great help in creating a
+  design, one key feature borrowed from ghc is the idea of creating a portable
+  higher level interface to the vector instructions, so that vector
+  instructions can be used without knowledge of the machine level simd
+  instructions. Ideas from all of these implementations have been used in
+  creating this design and will be used in the further development of the
+  native code backend.
+
 * Design Plan
 ** Intro
    The implementation will be broken up into several parts, a C backend, a
@@ -58,7 +105,7 @@
    
 * Layout of Modules and Files
   There is a signature for each set of machine instructions, separated into 5
-  files, SSE1-5 and AVX. These signatures define a set of parameterized types
+  files, SSE1-5 and AVX1-2. These signatures define a set of parameterized types
   loosely corresponding to the primitive simd types. The functions in these
   signatures are defined in terms of these parameterized types. The signatures
   are instantiated in two parts, a structure which actually implements the low
@@ -68,8 +115,8 @@
   to convert between these types and the corresponding low level simd types.
   Three implementations of the low level simd functions exist, one using C-ffi
   calls, one using amd64 machine instructions, and one using an sml software
-  implementation. These are contained in files named C-SSE1-5/C-AVX,
-  Amd64-SSE1-5/Amd64-AVX, and Software-SSE1-5/Software-AVX respectively.
+  implementation. These are contained in files named C-SSE1-5/C-AVX1-2,
+  Amd64-SSE1-5/Amd64-AVX, and Software-SSE1-5/Software-AVX1-2 respectively.
 
   Built on top of these low level files is a pair of files SIMD.sig/SIMD.fun
   which provide a generalized interface to the primitive simd functions. Two

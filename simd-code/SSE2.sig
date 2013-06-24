@@ -12,7 +12,8 @@ sig
   val SUBPD:v2df*v2df->v2df 
   val MULPD:v2df*v2df->v2df
   val DIVPD:v2df*v2df->v2df 
-  val SQRTPD:v2df*v2df->v2df 
+  val SQRTPD:v2df->v2df
+  val RCPPD:v2df->v2df 
   val MAXPD:v2df*v2df->v2df 
   val MINPD:v2df*v2df->v2df 
 (*BITWISE*)
@@ -109,7 +110,7 @@ sig
 (*min/max*)
   val PMAXUB128:v16qi*v16qi->v16qi(*unsigned bytes*)
   val PMAXSW128:v8hi*v8hi->v8hi(*signed words*)
-  val PMIXUB128:v16qi*v16qi->v16qi
+  val PMINUB128:v16qi*v16qi->v16qi
   val PMINSW128:v8hi*v8hi->v8hi
 (*unpack and interleave high order(PUNPCKH...
  *SRC :|X3|X2|X1|X0|
