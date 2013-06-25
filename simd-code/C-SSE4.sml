@@ -1,5 +1,21 @@
 structure C_SSE4.1 =
 struct
+  open SSE_TYPES
+  val dppd = _import "dppd":v2df*v2df->Real64.real
+  val dpps = _import "dpps":v4sf*v4sf->Real32.real
+  (*rounding stuff are scalar ops, so not sure what to do with them*)
+  local
+    open Unsafe
+  in
+  fun sml2c_double f = fn (x,y) =>
+			  let
+			    val z = Real64Array.create 2
+			  in (f(x,y,z);z) end
+  fun sml2c_float  f = fn (x,y) =>
+			  let
+			    val z = Real32Array.create 2
+			  in (f(x,y,z);z) end
+  end
 end
 functor C_SSE4.1_Types(T:C_SSE_TYPES):SSE4.1 = 
 struct

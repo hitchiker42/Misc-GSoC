@@ -164,3 +164,7 @@
     in tabulate f n end
   end
 #+END_SRC
+* TODO Int/word issues
+  We probably need both int and word versions of the general simd opperations
+  but at the low level it seems easiest to work with words, but as of now
+  I have everything as ints, fix this

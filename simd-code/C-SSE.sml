@@ -26,7 +26,6 @@ struct
   fun pack (a,b,c,d)= Vector.fromList[a,b,c,d]
   fun unpack a = (Array.sub(a,0),Array.sub(a,1),Array.sub(a,2),Array.sub(a,3))
 end
-end
 structure C_SSE =
 (*shared code, call c functions with vector args and an array dest
  * return unit, result is in the array*)
@@ -53,18 +52,15 @@ struct
     val orps = _import "orps":v4sf*v4sf*a4sf->unit;
     val xorps = _import "xorps":v4sf*v4sf*a4sf->unit;
     val andnps = _import "andnps":v4sf*v4sf*a4sf->unit;
-local
-  open Unsafe 
-in
+
     fun sml2c f = fn (x,y) =>
                      let
-                       val z = Real32Array.create 4
+                       val z = Unsafe.Array.create (4,0.0:Real32.real)
                      in (f(x,y,z);z) end
     fun sml2c_unary f = fn (x) =>
                            let 
-                             val y = Real32Array.create 4
+                             val y = Unsafe.Array.create (4,0.0:Real32.real)
                            in (f(x,y);y) end
-end
 (*(defun sml-ffi (name) (insert (format "val %s = sml2c %s\n" (upcase name) (downcase name))))
 (defun sml-vals()
 (let ((beg (point)))
@@ -119,6 +115,6 @@ struct
 end
 
   
-structure C_SSE_vector = SSE_C_Typed(SSE_Ctype_vector)
-structure C_SSE_array = SSE_C_Typed(SSE_Ctype_array)
-structure C_SSE_tuple = SSE_C_Typed(SSE_Ctype_tuple)
+structure C_SSE_vector = C_SSE_Typed(SSE_Ctype_vector)
+structure C_SSE_array = C_SSE_Typed(SSE_Ctype_array)
+structure C_SSE_tuple = C_SSE_Typed(SSE_Ctype_tuple)

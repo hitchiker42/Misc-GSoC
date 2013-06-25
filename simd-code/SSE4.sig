@@ -9,8 +9,11 @@ sig
  *and which results to keep,if all immediate bits are 1 then
  *multiply coorsiponding values, sum all results and store answer in all
  *values of dest, if some bits are 0 selectively set some things to 0*)
-  val DPPD:v2df*v2df*Word8.word->v2df
-  val DPPS:v4sf*v4sf*Word8.word->v4sf
+(*that all said, this is a case to just ignore complexity and just do
+ *A simple dot product, multiply two vectors, sum the results and return
+ *that value*)
+  val DPPD:v2df*v2df->Real64.real
+  val DPPS:v4sf*v4sf->Real32.real
 (*Blending instructions
  *blending instructions are like fancy shuffle instructions,
  *they take 2 operands and regular blends use an immediate byte as a selector

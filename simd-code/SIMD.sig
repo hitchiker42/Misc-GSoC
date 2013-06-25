@@ -1,3 +1,14 @@
+signature SIMD_AVAIL =
+sig
+  val sse:bool
+  val sse2:bool
+  val sse3:bool
+  val ssse3:bool
+  val sse4.1:bool
+  val sse4.2:bool
+  val avx:bool
+  val avx2:bool
+end
 signature SIMD_FLOAT =
 (*there are enough differences between floating pt simd instructions and 
  *integer ones that they merit different signatures*)
@@ -40,9 +51,10 @@ sig
                    *if type = double (*vex 128 only*)*)
 (*bitwise, no shifts for floating pt numbers*)
   val VAND:v*v->v(*vex 256 && 128*)
-  val VNOR:v*v->v(*vex 256 && 128*)
+  val VXOR:v*v->v(*vex 256 && 128*)
   val VOR: v*v->v(*vex 256 && 128*)
   val VANDN:v*v->v(*vex 256 && 128*)
+  val VNOT:v->v
 (*Round/Convert*)
   val VROUNDP:v*v*Word8.word->vi(*actual round instruction*)(*vex 256 && 128*)
 (*might not make ^ part of the final sig, but it does need to exist internally*)
