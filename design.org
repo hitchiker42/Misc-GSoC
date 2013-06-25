@@ -79,7 +79,7 @@ Design of SIMD implementation in MLton
    implement the set of sse and avx simd instructions. The code will be
    divided into modules based on instruction set and the proper backend chosen
    based on the capabilities of the machine used. There will be a unified
-   frontend structure providing generalized simd functions for integer and
+   frontend structure providing generalized simd functions for word,integer and
    floating point data, with the proper instructions decided based on the type
    and size of the values used.
 ** Internals
