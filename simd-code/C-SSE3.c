@@ -36,6 +36,36 @@ void hsubpd(double * arg1,double * arg2,double * retval){
   __builtin_ia32_storeupd(retval,__builtin_ia32_hsubpd(x,y));
 }
 #endif
-ifdef _TMMINTRIN_H_INCLUDED
+void phaddw128(char* arg1,char* arg2,char* retval){
+  v8hi x = __builtin_ia32_loaddqu(arg1);
+  v8hi y = __builtin_ia32_loaddqu(arg2);
+  __builtin_ia32_storedqu(retval,__builtin_ia32_phaddw128(x,y));
+}
+void phaddsw128(char* arg1,char* arg2,char* retval){
+  v8hi x = __builtin_ia32_loaddqu(arg1);
+  v8hi y = __builtin_ia32_loaddqu(arg2);
+  __builtin_ia32_storedqu(retval,__builtin_ia32_phaddsw128(x,y));
+}
+void phsubw128(char* arg1,char* arg2,char* retval){
+  v8hi x = __builtin_ia32_loaddqu(arg1);
+  v8hi y = __builtin_ia32_loaddqu(arg2);
+  __builtin_ia32_storedqu(retval,__builtin_ia32_phsubw128(x,y));
+}
+void phsubsw128(char* arg1,char* arg2,char* retval){
+  v8hi x = __builtin_ia32_loaddqu(arg1);
+  v8hi y = __builtin_ia32_loaddqu(arg2);
+  __builtin_ia32_storedqu(retval,__builtin_ia32_phsubsw128(x,y));
+}
+void phadd128(char* arg1,char* arg2,char* retval){
+  v4si x = __builtin_ia32_loaddqu(arg1);
+  v4si y = __builtin_ia32_loaddqu(arg2);
+  __builtin_ia32_storedqu(retval,__builtin_ia32_phadd128(x,y));
+}
+void phsubd128(char* arg1,char* arg2,char* retval){
+  v4si x = __builtin_ia32_loaddqu(arg1);
+  v4si y = __builtin_ia32_loaddqu(arg2);
+  __builtin_ia32_storedqu(retval,__builtin_ia32_phsubd128(x,y));
+}
+#ifdef _TMMINTRIN_H_INCLUDED
 #endif
 #endif

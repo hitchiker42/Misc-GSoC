@@ -3,7 +3,6 @@
  *Unsafe mono arrays*)
 structure SSE_Ctype_vector:SSE_C_TYPE=
 struct
-  type e = Real32.real
   type v4sf = Real32.real Vector.vector
   type t = v4sf 
  val pack = fn x => x
@@ -11,7 +10,6 @@ struct
 end
 structure SSE_Ctype_array:SSE_C_TYPE=
 struct
-  type e = Real32.real
   type v4sf = Real32.real Vector.vector
   type t = Real32.real Array.array
   val pack = fn x => Array.vector x
@@ -19,7 +17,6 @@ struct
 end
 structure SSE_Ctype_tuple:SSE_C_TYPE=
 struct
-  type e = Real32.real
   open Real32
   type v4sf = real Vector.vector
   type t = real*real*real*real
