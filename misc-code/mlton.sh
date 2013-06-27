@@ -32,11 +32,10 @@ TEMP=$(getopt -o a:,c:,f:,h,o:,v,d \
 if [ $? != 0 ] ; then echo "Getopt failed, error $?" >&2 ; exit 1 ; fi
 
 eval set -- "$TEMP"
-
 #parse args
 while true;do
     case "$1" in
-        -h|--help) help; exit 0;;
+        -h|--help) help;;
         -v|--version) echo "mlton.sh version $VERSION"; exit 0;;
         --prefix) prefix="$2";shift 2;;
         --libdir) libdir="$2";shift 2;;
@@ -44,7 +43,7 @@ while true;do
         -o|--os) HOST_OS="$2";shift 2;;
         -a|--arch) HOST_ARCH="$2";shift 2;;
         -f|--file) script="$2";shift 2;;
-        -c|--cc) CC="$2";;
+        -c|--cc) CC="$2";shift 2;;
         --) shift ; break;;
         *) echo "Internal error!, remaining args: $@"; exit 1 ;;
     esac
@@ -54,7 +53,7 @@ done
 [[ -z "$prefix" ]] && prefix=/usr/local
 [[ -z "$libdir" ]] && libdir=$prefix/lib
 [[ -z "$bindir" ]] && bindir=$prefix/bin
-[[ -w "$bindir" ]] || echo "can not write to $bindir" && exit 1
+#[[ -w "$bindir" ]] || echo "can not write to $bindir" && exit 1
 [[ -z "$HOST_ARCH" ]] && HOST_ARCH=$(get_arch)
 [[ -z "$HOST_OS" ]] && HOST_OS=$(get_os)
 [[ -z "$CC" ]] && CC=gcc
@@ -149,6 +148,12 @@ case "$HOST_ARCH" in
                 -malign-loops=2"
         ;;
 esac
+touch $script
+if [ $? != 0 ]; then echo "can not create $script";exit 1;fi
+if [ ! -w "$script" ] ; then
+    echo "cannot write $script" 
+    exit 1
+fi
 #generate part of script w/out shell expansion (thus the quoted EOF)
 (cat <<"EOF"
 declare -a rargs
