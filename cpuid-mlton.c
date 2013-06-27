@@ -26,7 +26,6 @@ void features(){
     avx=0x10000000,//bit 28=avx
     // if avx supported; cpuid eax=07h,ecx=0h check bit 5 of ebx
     osxsave=0xc000000,//  bit 27=osxsave
-    aes=0x2000000,//bit 25=aes
     sse4_2=0x100000,//bit 20=sse4_2
     sse4_1=0xc0000,//bit 19=sse4_1
     ssse3=0x200,//bit 9=ssse3
@@ -34,28 +33,32 @@ void features(){
     //edx:
     sse2=0x4000000,//bit 26=sse2
     sse=0x2000000,//bit 25=sse
-    fxsave=0x1000000,//bit 24=fxsave(check before any sse stuff)
     mmx=0x800000;//bit 23=mmx
   unsigned int simd[13]={mmx,fxsave,sse,sse2,sse3,ssse3,sse4_1,sse4_2,
   aes,osxsave,avx,fma};*/
-  unsigned char flags[12]={0x80,0x1,0x2,0x4,0x1,0x2,0x8,0x16,0x2,0x8,0x10,0x10};
+  unsigned char flags[11]={0x80,0x2,0x4,0x1,0x2,0x8,0x16,0x8,0x10,0x10};
   flags[0]&=edx.bytes[2];
   flags[1]&=edx.bytes[3];
   flags[2]&=edx.bytes[3];
-  flags[3]&=edx.bytes[3];
-  flags[4]&=ecx.bytes[0];
-  flags[5]&=ecx.bytes[1];
+  flags[3]&=ecx.bytes[0];
+  flags[4]&=ecx.bytes[1];
+  flags[5]&=ecx.bytes[2];
   flags[6]&=ecx.bytes[2];
-  flags[7]&=ecx.bytes[2];
+  flags[7]&=ecx.bytes[3];
   flags[8]&=ecx.bytes[3];
-  flags[9]&=ecx.bytes[3];
-  flags[10]&=ecx.bytes[3];
-  flags[11]&=ecx.bytes[1];
-  printf("mmx: %hhx, fxsave: %hhx, sse: %hhx, sse2:%hhx\n"
-         "sse3: %hhx, ssse3: %hhx, sse4.1: %hhx, sse4.2: %hhx\n"
-         "aes: %hhx, osxsave: %hhx, avx: %hhx, fma: %hhx\n",flags[0],
-         flags[1],flags[2],flags[3],flags[4],flags[5],flags[6],flags[7],
-         flags[8],flags[9],flags[10],flags[11]);
+  flags[9]&=ecx.bytes[1];
+  if(flags[0]){printf("MMX=1\n");}else{printf("MMX=0\n");}
+  if(flags[1]){printf("SSE=1\n");}else{printf("SSE=0\n");}
+  if(flags[2]){printf("SSE2=1\n");}else{printf("SSE2=0\n");}
+  if(flags[3]){printf("SSE3=1\n");}else{printf("SSE3=0\n");}
+  if(flags[4]){printf("SSSE3=1\n");}else{printf("SSSE3=0\n");}
+  if(flags[5]){printf("SSE4.1=1\n");}else{printf("SSE4.1=0\n");}
+  if(flags[6]){printf("SSE4.2=1\n");}else{printf("SSE4.2=0\n");}
+  if(flags[7]){
+    if(flags[8]){printf("AVX=1\n");
+      if(flags[9]){printf("FMA=1\n");}
+    } else {printf("FMA=0\n");}
+  } else{printf("AVX=0\n");printf("FMA=0\n");}
 }
 
 void print_cpuid()
@@ -70,7 +73,6 @@ void print_cpuid()
   }
 }
 int main(){
-  print_cpuid();
   features();
   return 0;
 }
