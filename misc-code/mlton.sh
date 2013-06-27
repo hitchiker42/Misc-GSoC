@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 #Script to generate a platform dependend mlton script
 #Rather than deducing the platform and necessary options each time
 #mlton is called, do it once and generate a script with platform dependent
@@ -8,6 +8,7 @@ help(){
   echo -e "usage: mlton.sh [options]\nOptions:"
     echo -e "\t -h|--help print this help and exit"
     echo -e "\t -v|--version print version information"
+    echo -e "\t -d|--default generate script using default options"
     echo -e "\t --prefix DIR:prefix for mlton & mlton libs [/usr/local]"
     echo -e "\t --libdir DIR:location of mlton libs [/usr/local/lib]"
     echo -e "\t --bindir DIR:location of mlton excutable (aka. this script)
@@ -17,17 +18,17 @@ help(){
     echo -e "\t -a|--arch ARCH: generate script for architecture ARCH
 \t\tdefault determined by current architecture"
     echo -e "\t -c|--cc FILE: name of default c compiler [gcc]"
-    echo -e "\t-o|--os OS: generate script for operating system OS
+    echo -e "\t -o|--os OS: generate script for operating system OS
 \t\tdefault deturmined by current os"
     exit 0
 }
 source "$PWD"/platform #functions to get host-os & host-arch
 VERSION="0.01"
+[[ $# = 0 ]] && help
 #run getopt on args
-TEMP=$(getopt -o a:,c:,f:,h,o:,v \
--l prefix:,libdir:,bindir:,file:,os:,arch:,cc:,help,version \
+TEMP=$(getopt -o a:,c:,f:,h,o:,v,d \
+-l prefix:,libdir:,bindir:,file:,os:,arch:,cc:,help,version,default \
 -n 'mlton.sh' -- "$@")
-
 if [ $? != 0 ] ; then echo "Getopt failed, error $?" >&2 ; exit 1 ; fi
 
 eval set -- "$TEMP"
@@ -53,13 +54,14 @@ done
 [[ -z "$prefix" ]] && prefix=/usr/local
 [[ -z "$libdir" ]] && libdir=$prefix/lib
 [[ -z "$bindir" ]] && bindir=$prefix/bin
+[[ -w "$bindir" ]] || echo "can not write to $bindir" && exit 1
 [[ -z "$HOST_ARCH" ]] && HOST_ARCH=$(get_arch)
 [[ -z "$HOST_OS" ]] && HOST_OS=$(get_os)
 [[ -z "$CC" ]] && CC=gcc
 #os specific options
 case "$HOST_OS" in
     mingw)
-        [[ -z "$script" ]] && script=mlton.exe
+        [[ -z "$script" ]] && script=$bindir/mlton.exe
         mlton_compile="$libdir/mlton-compile.exe"
         mlton_polyml="$libdir/mlton-polyml.exe"
         ;;
@@ -68,7 +70,7 @@ case "$HOST_OS" in
 esac
 #set excutable name for non windows platforms
 if [ "$HOST_OS" != "mingw" ]; then
-    [[ -z "$script" ]] && script=mlton
+    [[ -z "$script" ]] && script=$bindir/mlton
     mlton_compile="$libdir/mlton-compile"
     mlton_polyml="$libdir/mlton-polyml"
 fi
@@ -147,6 +149,7 @@ case "$HOST_ARCH" in
                 -malign-loops=2"
         ;;
 esac
+#generate part of script w/out shell expansion (thus the quoted EOF)
 (cat <<"EOF"
 declare -a rargs
 case "$1" in
@@ -166,6 +169,7 @@ case "$1" in
 esac
 EOF
 ) >$script
+#generate part of script w/shell expansion (thus all the backslashes)
 (cat <<EOF
 HOST_ARCH=$HOST_ARCH
 HOST_OS=$HOST_OS
