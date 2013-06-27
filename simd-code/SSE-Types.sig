@@ -44,12 +44,12 @@ sig
   type v4si = Word32.word Vector.vector
   type v8hi = Word16.word Vector.vector
   type v16qi = Word8.word Vector.vector
-  type t2f
-  type t4f
-  type t2i
-  type t4i
-  type t8i
-  type t16i
+  type t2df
+  type t4sf
+  type t2di
+  type t4si
+  type t8hi
+  type t16qi
   val pack2f:t2f->v2df
   val pack4f:t4f->v4sf
   val pack2i:t2i->v2di
@@ -67,10 +67,10 @@ signature SSE_C_FLOATS =
 sig
   type v2df = Real64.real Vector.vector
   type v4sf = Real32.real Vector.vector
-  type t2f
-  type t4f
-  val pack2f:t2f->v2df
-  val pack4f:t4f->v4sf
+  type t2df
+  type t4sf
+  val pack2f:t2df->v2df
+  val pack4f:t4sf->v4sf
   val unpack2f:Real32.real Array.array->t2f
   val unpack4f:Real64.real Array.array->t4f
 end
@@ -80,16 +80,16 @@ sig
   type v4si = Word32.word Vector.vector
   type v8hi = Word16.word Vector.vector
   type v16qi = Word8.word Vector.vector
-  type t2i
-  type t4i
-  type t8i
-  type t16i
-  val pack2i:t2i->v2di
-  val pack4i:t4i->v4si
-  val pack8i:t8i->v8hi
-  val pack16i:t16i->v16qi
-  val unpack2i:Word64.word Array.array->t2i
-  val unpack4i:Word32.word Array.array->t4i
-  val unpack8i:Word16.word Array.array->t8i
-  val unpack16i:Word8.word Array.array->t16i
+  type t2di
+  type t4si
+  type t8hi
+  type t16qi
+  val pack2i:t2di->v2di
+  val pack4i:t4si->v4si
+  val pack8i:t8hi->v8hi
+  val pack16i:t16qi->v16qi
+  val unpack2i:Word64.word Array.array->t2di
+  val unpack4i:Word32.word Array.array->t4si
+  val unpack8i:Word16.word Array.array->t8hi
+  val unpack16i:Word8.word Array.array->t16qi
 end
