@@ -4,7 +4,7 @@ structure C_SSE2 =
 struct
   open SSE_Types
   val addpd = _import "addpd":v2df*v2df*a2df->unit;
-nn  val subpd = _import "subpd":v2df*v2df*a2df->unit;
+  val subpd = _import "subpd":v2df*v2df*a2df->unit;
   val mulpd = _import "mulpd":v2df*v2df*a2df->unit;
   val divpd = _import "divpd":v2df*v2df*a2df->unit;
   val rcppd = _import "rcppd":v2df*a2df->unit;
@@ -225,3 +225,23 @@ end
 "paddd128" "psubd128" "pcmpeqd128" "pcmpgtd128" "pmuludq128" "pslld128" "psrld128" "psrad128" "pslldi128" "psrldi128" "psradi128"))
            (sse-call name)) 
    (indent-region beg (point))))*)
+structure SSE_Ctype_vector:SSE_C_TYPES =
+struct
+  type v2df = Real64.real Vector.vector
+  type v4sf = Real32.real Vector.vector
+  type v2di = Word64.word Vector.vector
+  type v4si = Word32.word Vector.vector
+  type v8hi = Word16.word Vector.vector
+  type v16qi = Word8.word Vector.vector
+  type 'a vec_type = { name:type,pack:(name->'a vector),unpack:('a array->name)}
+  type t2df = v2df
+  type t4sf = v4sf
+end
+                          
+signature VEC_TYPE_CONVERT =
+sig
+  type t
+  type e
+  val pack:t->e vector
+  val unpack:e array->t
+end

@@ -49,6 +49,7 @@ struct
     val orps = _import "orps":v4sf*v4sf*a4sf->unit;
     val xorps = _import "xorps":v4sf*v4sf*a4sf->unit;
     val andnps = _import "andnps":v4sf*v4sf*a4sf->unit;
+    val cmpltps = _import "cmpltps":v4sf*v4sf*a4sf->unit;
 
     fun sml2c f = fn (x,y) =>
                      let
@@ -77,6 +78,7 @@ struct
     val ORPS = sml2c orps
     val XORPS = sml2c xorps
     val ANDNPS = sml2c andnps
+    val CMPLTPS = sml2c cmpltps
 end
 (*  TODO
  CMPEQPS CMPLTPS CMPLEPS CMPGTPS CMPGEPS CMPUNORDPS CMPNEPS CMPNLTPS
@@ -109,6 +111,7 @@ struct
   fun ORPS (a,b) = sse_call(a,b,C_SSE.ORPS)
   fun XORPS (a,b) = sse_call(a,b,C_SSE.XORPS)
   fun ANDNPS (a,b) = sse_call(a,b,C_SSE.ANDNPS)
+  fun CMPLTPS (a,b) = sse_call(a,b,C_SSE.CMPLTPS)
 end
 
   

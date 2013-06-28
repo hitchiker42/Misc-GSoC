@@ -55,4 +55,28 @@ val _ = (print ("DIVPS" ^ "\n")
 	;print "\n"
 	;Vector.app printReal z
 	;print "\n")
+(*MAXPS*)
+val z = MAXPS(x,y)
+val c = MAXPS(a,b)
+val _ = (print ("MAXPS" ^ "\n")
+	;Vector.app printReal (Vector.fromList[4.000000,3.000000,3.000000,4.000000])
+	;print "\n"
+	;Vector.app printReal c
+	;print "\n"
+	;Vector.app printReal (Vector.fromList[5.500000,8.600000,9.900000,100.000000])
+	;print "\n"
+	;Vector.app printReal z
+	;print "\n")
+(*MINPS*)
+val z = MINPS(x,y)
+val c = MINPS(a,b)
+val _ = (print ("MINPS" ^ "\n")
+	;Vector.app printReal (Vector.fromList[1.000000,2.000000,2.000000,1.000000])
+	;print "\n"
+	;Vector.app printReal c
+	;print "\n"
+	;Vector.app printReal (Vector.fromList[3.700000,2.400000,7.500000,0.010000])
+	;print "\n"
+	;Vector.app printReal z
+	;print "\n")
 end

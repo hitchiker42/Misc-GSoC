@@ -1,60 +1,94 @@
 val print = TextIO.print
 fun printReal x = print (Real32.toString x ^ " ")
 local 
-  open SSE_Cvector 
+  open C_SSE_vector
 in
+val a = Vector.fromList[1.000000,2.000000,3.000000,4.000000]
+val b = Vector.fromList[4.000000,3.000000,2.000000,1.000000]
+val x = Vector.fromList[3.700000,2.400000,9.900000,100.000000]
+val y = Vector.fromList[5.500000,8.600000,7.500000,0.010000]
 (*ADDPS*)
-val a = Vector.fromList[1.0,2.0,3.0,4.0]
-val b = Vector.fromList[4.0,3.0,2.0,1.0]
-val d = ADDPS(a,b)
-val x = Vector.fromList[3.7,2.4,9.9,100.0]
-val y = Vector.fromList[5.5,8.6,7.5,0.01]
 val z = ADDPS(x,y)
-val _ = (Vector.app printReal (Vector.fromList[5.0,5.0,5.0,5.0])
-        ;print "\n"
-        ;Vector.app printReal d
-        ;print "\n"
-        ;Vector.app printReal (Vector.fromList[9.2,11.0,17.4,100.01])
-        ;print "\n"
-        ;Vector.app printReal z
-        ;print "\n")
+val c = ADDPS(a,b)
+val _ = (print ("ADDPS" ^ "\n")
+	;Vector.app printReal (Vector.fromList[5.000000,5.000000,5.000000,5.000000])
+	;print "\n"
+	;Vector.app printReal c
+	;print "\n"
+	;Vector.app printReal (Vector.fromList[9.200000,11.000000,17.400000,100.010000])
+	;print "\n"
+	;Vector.app printReal z
+	;print "\n")
 (*SUBPS*)
-val d = SUBPS(a,b)
 val z = SUBPS(x,y)
-val _ = (Vector.app printReal (Vector.fromList[~3.0,~1.0,1.0,3.0])
-        ;print "\n"
-        ;Vector.app printReal d
-        ;print "\n"
-        ;Vector.app printReal (Vector.fromList[~1.79999,~6.19999,2.4,99.99])
-        ;print "\n"
-        ;Vector.app printReal z
-        ;print "\n")
+val c = SUBPS(a,b)
+val _ = (print ("SUBPS" ^ "\n")
+	;Vector.app printReal (Vector.fromList[~3.000000,~1.000000,1.000000,3.000000])
+	;print "\n"
+	;Vector.app printReal c
+	;print "\n"
+	;Vector.app printReal (Vector.fromList[~1.800000,~6.200000,2.400000,99.990000])
+	;print "\n"
+	;Vector.app printReal z
+	;print "\n")
 (*MULPS*)
-val d = MULPS(a,b)
 val z = MULPS(x,y)
-val _ = (Vector.app printReal (Vector.fromList[4.0,6.0,6.0,4.0])
-        ;print "\n"
-        ;Vector.app printReal d
-        ;print "\n"
-        ;Vector.app printReal (Vector.fromList[20.35,20.639999999999997,74.25,1.0])
-        ;print "\n"
-        ;Vector.app printReal z
-        ;print "\n")
+val c = MULPS(a,b)
+val _ = (print ("MULPS" ^ "\n")
+	;Vector.app printReal (Vector.fromList[4.000000,6.000000,6.000000,4.000000])
+	;print "\n"
+	;Vector.app printReal c
+	;print "\n"
+	;Vector.app printReal (Vector.fromList[20.350000,20.640000,74.250000,1.000000])
+	;print "\n"
+	;Vector.app printReal z
+	;print "\n")
 (*DIVPS*)
-val d = DIVPS(a,b)
 val z = DIVPS(x,y)
-val _ = (Vector.app printReal (Vector.fromList[0.25,0.66666666,1.5,4.0])
-        ;print "\n"
-        ;Vector.app printReal d
-        ;print "\n"
-        ;Vector.app printReal (Vector.fromList[0.6727272727272727,0.27906976744186046,1.32,10000.0])
-        ;print "\n"
-        ;Vector.app printReal z
-        ;print "\n")
+val c = DIVPS(a,b)
+val _ = (print ("DIVPS" ^ "\n")
+	;Vector.app printReal (Vector.fromList[0.250000,0.666667,1.500000,4.000000])
+	;print "\n"
+	;Vector.app printReal c
+	;print "\n"
+	;Vector.app printReal (Vector.fromList[0.672727,0.279070,1.320000,10000.000000])
+	;print "\n"
+	;Vector.app printReal z
+	;print "\n")
+(*MAXPS*)
+val z = MAXPS(x,y)
+val c = MAXPS(a,b)
+val _ = (print ("MAXPS" ^ "\n")
+	;Vector.app printReal (Vector.fromList[4.000000,3.000000,3.000000,4.000000])
+	;print "\n"
+	;Vector.app printReal c
+	;print "\n"
+	;Vector.app printReal (Vector.fromList[5.500000,8.600000,9.900000,100.000000])
+	;print "\n"
+	;Vector.app printReal z
+	;print "\n")
+(*MINPS*)
+val z = MINPS(x,y)
+val c = MINPS(a,b)
+val _ = (print ("MINPS" ^ "\n")
+	;Vector.app printReal (Vector.fromList[1.000000,2.000000,2.000000,1.000000])
+	;print "\n"
+	;Vector.app printReal c
+	;print "\n"
+	;Vector.app printReal (Vector.fromList[3.700000,2.400000,7.500000,0.010000])
+	;print "\n"
+	;Vector.app printReal z
+	;print "\n")
+(*CMPLTPS*)
+val z = CMPLTPS(x,y)
+val c = CMPLTPS(a,b)
+val _ = (print ("CMPLTPS" ^ "\n")
+	;Vector.app printReal (Vector.fromList[1.000000,1.000000,0.000000,0.000000])
+	;print "\n"
+	;Vector.app printReal c
+	;print "\n"
+	;Vector.app printReal (Vector.fromList[1.000000,1.000000,0.000000,0.000000])
+	;print "\n"
+	;Vector.app printReal z
+	;print "\n")
 end
-(*
-val a = Vector.fromList[1.0,2.0,3.0,4.0]
-val b = Vector.fromList[4.0,3.0,2.0,1.0]
-val x = Vector.fromList[3.7,2.4,9.9,100.0]
-val y = Vector.fromList[5.5,8.6,7.5,0.01]
-(*(mapcar #'(lambda (x) (/ (first x) (second x))) '((3.7 5.5)(2.4 8.6)(9.9 7.5)(100.0 0.01)))*)*)

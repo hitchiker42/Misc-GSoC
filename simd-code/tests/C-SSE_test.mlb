@@ -3,4 +3,4 @@ $(SML_LIB)/basis/mlton.mlb
 $(SML_LIB)/basis/unsafe.mlb
 ../SSE.sig
 ../C-SSE.sml
-temp-C.sml
+C-SSE_test.sml

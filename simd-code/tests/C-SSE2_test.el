@@ -13,10 +13,10 @@
 (defmacro with-debug-on-error (&rest body)
   `(let ((setq debug-on-error t))
      ,@body))
-(setf simple '(1.0 2.0 3.0 4.0))
-(setf rev-simple (reverse simple))
-(setf rand1 '(3.7 2.4 9.9 100.0))
-(setf rand2 '(5.5 8.6 7.5 0.01))
+(setf a-double '(1.0 2.0 3.0 4.0))
+(setf b-double (reverse simple))
+(setf x-double '(3.7 2.4 9.9 100.0))
+(setf y-double '(5.5 8.6 7.5 0.01))
 (defun lt (x y) (if (< x y)
                     1 0))
 (setf nl ";print \"\\n\"")
@@ -33,10 +33,10 @@ local
 in\n"
              (format "%s\n%s\n%s\n%s\n"
                      ;;set values of arguements
-                     (apply #'vset-fn (cons "a" simple))
-                     (apply #'vset-fn (cons "b" rev-simple))
-                     (apply #'vset-fn (cons "x" rand1))
-                     (apply #'vset-fn (cons "y" rand2)))))
+                     (apply #'vset-fn (cons "a" a-double))
+                     (apply #'vset-fn (cons "b" b-double))
+                     (apply #'vset-fn (cons "x" x-double))
+                     (apply #'vset-fn (cons "y" y-double)))))
     ;;assoicate elisp functions with sml functions and start looping
     (dolist (funs '(("addps" +) ("subps" -) ("mulps" *) ("divps" /)
                     ("maxps" max) ("minps" min) ("cmpltps" lt)))
@@ -57,12 +57,11 @@ val _ = (%s\n\t;%s\n\t%s\n\t;%s\n\t%s\n\t;%s\n\t%s\n\t;%s\n\t%s)\n"
                  ;;print from sml program the name of the function
                  (format "print (\"%s\" ^ \"\\n\")" (upcase funct))
                  ;;run lisp function, insert into sml code as the expected value(and set it to print)
-                 (replace-regexp-in-string "-" "~" (apply #'vp-fn (simd op simple rev-simple))) nl
+                 (replace-regexp-in-string "-" "~" (apply #'vp-fn (simd op a-double b-double))) nl
                  ;;set sml calculates value to print
                  (vp-var "c") nl
                  ;;again run lisp function, ditto above
-                 (replace-regexp-in-string "-" "~" (apply #'vp-fn (simd op rand1 rand2)) )nl
+                 (replace-regexp-in-string "-" "~" (apply #'vp-fn (simd op x-double y-double)) )nl
                  ;;again set sml vals to print
                  (vp-var "z") nl))))
     (insert "end")))
-(make-sse-test)

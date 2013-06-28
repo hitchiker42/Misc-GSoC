@@ -23,6 +23,11 @@ sig
   val SQRTPS:t->t
   val MINPS:t*t->t
   val MAXPS:t*t->t
+  val ANDPS:t*t->t
+  val ORPS:t*t->t
+  val XORPS:t*t->t
+  val ANDNPS:t*t->t
+  val CMPLTPS:t*t->t
 end
 signature SSE_C_TYPE = 
 sig 

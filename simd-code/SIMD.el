@@ -102,7 +102,8 @@
 #ifdef _XMMINTRIN_H_INCLUDED
 /*typedef float v4sf __attribute__ ((__vector_size__ (16)));\n*/
 #define v4sf __v4sf\n")
-  (c-opcodes float2 "addps" "subps" "mulps" "divps" "maxps" "minps")
+  (c-opcodes float2 "addps" "subps" "mulps" "divps" "maxps" "minps" "andps" 
+"orps" "xorps" "andnps" "cmpltps")
   (c-opcodes float1 "rcpps" "sqrtps" "rsqrtps")
 (insert "#endif\n")))
 (C-SSE)
