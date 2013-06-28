@@ -1,0 +1,139 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ([2.69])
+AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
+AC_CONFIG_SRCDIR([regression/library/libm5.c])
+AC_CONFIG_HEADERS([config.h])
+
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+AC_PROG_CPP
+
+# Checks for libraries.
+# FIXME: Replace `main' with a function in `-ldl':
+AC_CHECK_LIB([dl], [main])
+# FIXME: Replace `main' with a function in `-lm':
+AC_CHECK_LIB([m], [main])
+# FIXME: Replace `main' with a function in `-lmlton':
+AC_CHECK_LIB([mlton], [main])
+# FIXME: Replace `main' with a function in `-local_icons':
+AC_CHECK_LIB([ocal_icons], [main])
+# FIXME: Replace `main' with a function in `-lpolymain':
+AC_CHECK_LIB([polymain], [main])
+# FIXME: Replace `main' with a function in `-lpolyml':
+AC_CHECK_LIB([polyml], [main])
+
+# Checks for header files.
+AC_CHECK_HEADERS([fcntl.h fenv.h float.h inttypes.h limits.h locale.h netdb.h netinet/in.h stddef.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h sys/timeb.h syslog.h termios.h unistd.h utime.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_CHECK_HEADER_STDBOOL
+AC_TYPE_UID_T
+AC_C_INLINE
+AC_TYPE_INT16_T
+AC_TYPE_INT32_T
+AC_TYPE_INT64_T
+AC_TYPE_INT8_T
+AC_TYPE_MODE_T
+AC_TYPE_OFF_T
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
+AC_CHECK_MEMBERS([struct stat.st_rdev])
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT64_T
+AC_TYPE_UINT8_T
+AC_CHECK_TYPES([ptrdiff_t])
+
+# Checks for library functions.
+AC_FUNC_CHOWN
+AC_FUNC_FORK
+AC_FUNC_FSEEKO
+AC_FUNC_GETGROUPS
+AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
+AC_FUNC_MALLOC
+AC_FUNC_MKTIME
+AC_FUNC_MMAP
+AC_FUNC_REALLOC
+AC_FUNC_STRCOLL
+AC_FUNC_STRTOD
+AC_CHECK_FUNCS([alarm atexit bzero dup2 fchdir fesetround floor ftruncate getcwd gethostbyaddr gethostbyname gethostname getpass gettimeofday isascii localeconv mblen memchr memmove memset mkdir mkfifo modf munmap pathconf putenv realpath rint rmdir select setenv socket sqrt strcasecmp strchr strcspn strdup strerror strncasecmp strpbrk strrchr strspn strstr strtol strtoul strtoull sysinfo tzset uname utime])
+
+AC_CONFIG_FILES([Makefile
+                 basis-library/Makefile
+                 basis-library/libs/basis-2002/top-level/Makefile
+                 benchmark/Makefile
+                 benchmark/tests/Makefile
+                 bin/Makefile
+                 build/lib/sml/basis/Makefile
+                 build/lib/sml/basis/libs/basis-2002/top-level/Makefile
+                 build/lib/sml/ckit-lib/src/parser/grammar/Makefile
+                 build/lib/sml/mlnlffi-lib/Makefile
+                 build/lib/sml/mlrisc-lib/Doc/Makefile
+                 build/lib/sml/mlrisc-lib/Doc/html/Makefile
+                 build/lib/sml/mlrisc-lib/Doc/latex/Makefile
+                 build/lib/sml/mlrisc-lib/Doc/pictures/Makefile
+                 build/lib/sml/mlrisc-lib/Tools/Doc/Makefile
+                 build/lib/sml/mlrisc-lib/c-call/test/Makefile
+                 build/lib/sml/mlrisc-lib/c-call/varargs/interp/Makefile
+                 doc/examples/Makefile
+                 doc/examples/ffi/Makefile
+                 doc/examples/finalizable/Makefile
+                 doc/examples/profiling/Makefile
+                 doc/examples/save-world/Makefile
+                 doc/guide/Makefile
+                 doc/hacker-guide/Makefile
+                 doc/library-guide/Makefile
+                 doc/mlb-formal/Makefile
+                 doc/style-guide/Makefile
+                 include/Makefile
+                 lib/Makefile
+                 lib/ckit-lib/Makefile
+                 lib/ckit-lib/ckit/src/parser/grammar/Makefile
+                 lib/mllpt-lib/Makefile
+                 lib/mllpt-lib/ml-lpt/gen/Makefile
+                 lib/mllpt-lib/ml-lpt/ml-antlr/Makefile
+                 lib/mllpt-lib/ml-lpt/ml-antlr/examples/c/Makefile
+                 lib/mllpt-lib/ml-lpt/ml-antlr/examples/dragon/Makefile
+                 lib/mllpt-lib/ml-lpt/ml-ulex/Makefile
+                 lib/mlnlffi-lib/Makefile
+                 lib/mlrisc-lib/MLRISC/Doc/Makefile
+                 lib/mlrisc-lib/MLRISC/Doc/html/Makefile
+                 lib/mlrisc-lib/MLRISC/Doc/latex/Makefile
+                 lib/mlrisc-lib/MLRISC/Doc/pictures/Makefile
+                 lib/mlrisc-lib/MLRISC/Tools/Doc/Makefile
+                 lib/mlrisc-lib/MLRISC/c-call/test/Makefile
+                 lib/mlrisc-lib/MLRISC/c-call/varargs/interp/Makefile
+                 lib/mlrisc-lib/Makefile
+                 lib/mlton/Makefile
+                 lib/mlton/basic/Makefile
+                 lib/smlnj-lib/Makefile
+                 lib/stubs/Makefile
+                 lib/stubs/basis-stubs-for-smlnj/Makefile
+                 lib/stubs/mlton-stubs-for-smlnj/Makefile
+                 lib/stubs/mlton-stubs/Makefile
+                 man/Makefile
+                 mllex/Makefile
+                 mlnlffigen/Makefile
+                 mlprof/Makefile
+                 mlton/Makefile
+                 mlton/front-end/Makefile
+                 mlyacc/Makefile
+                 mlyacc/doc/Makefile
+                 package/freebsd/Makefile
+                 package/macosx/Makefile
+                 package/mingw/Makefile
+                 regression/Makefile
+                 regression/library/Makefile
+                 runtime/Makefile
+                 runtime/gdtoa/makefile
+                 runtime/gdtoa/test/makefile
+                 util/cm2mlb/Makefile])
+AC_OUTPUT

@@ -20,6 +20,8 @@ help(){
     echo -e "\t -c|--cc FILE: name of default c compiler [gcc]"
     echo -e "\t -o|--os OS: generate script for operating system OS
 \t\tdefault deturmined by current os"
+    echo -e "\t -r|--ram NUM: Default ram usage of mlton
+\t\tgiven as a number from 0-1 as a % of total ram [0.25]"
     exit 0
 }
 source "$PWD"/platform #functions to get host-os & host-arch
@@ -44,6 +46,7 @@ while true;do
         -a|--arch) HOST_ARCH="$2";shift 2;;
         -f|--file) script="$2";shift 2;;
         -c|--cc) CC="$2";shift 2;;
+        -r|--ram)ram_slop="$2";shift 2;;
         --) shift ; break;;
         *) echo "Internal error!, remaining args: $@"; exit 1 ;;
     esac
@@ -53,10 +56,10 @@ done
 [[ -z "$prefix" ]] && prefix=/usr/local
 [[ -z "$libdir" ]] && libdir=$prefix/lib
 [[ -z "$bindir" ]] && bindir=$prefix/bin
-#[[ -w "$bindir" ]] || echo "can not write to $bindir" && exit 1
 [[ -z "$HOST_ARCH" ]] && HOST_ARCH=$(get_arch)
 [[ -z "$HOST_OS" ]] && HOST_OS=$(get_os)
 [[ -z "$CC" ]] && CC=gcc
+[[ -z "$ram_slop" ]] && ram_slop=0.25
 #os specific options
 case "$HOST_OS" in
     mingw)
@@ -180,7 +183,7 @@ HOST_ARCH=$HOST_ARCH
 HOST_OS=$HOST_OS
 mlton_smlnj_heap=$(ls "$libdir" | grep mlton-smlnj)
 doitMLton () {
-    exec "$mlton_compile" @MLton ram-slop 0.5 "\${rargs[@]}" -- "\$@"
+    exec "$mlton_compile" @MLton $ram-slop 0.5 "\${rargs[@]}" -- "\$@"
 }
 doitSMLNJ () {
     exec sml @SMLload="$mlton_smlnj_heap" "\$@"
