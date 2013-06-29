@@ -24,7 +24,7 @@ help(){
 \t\tgiven as a number from 0-1 as a % of total ram [0.25]"
     exit 0
 }
-source "$PWD"/platform #functions to get host-os & host-arch
+source $(dirname "$0")/platform #functions to get host-os & host-arch
 VERSION="0.01"
 [[ $# = 0 ]] && help
 #run getopt on args
@@ -90,7 +90,7 @@ fi
 
 
 #set c/ld/as flags
-CFLAGS="$CFLAGS -I${libdir}/include -01 -fno-common -fno-strict-aliasing\
+CFLAGS="$CFLAGS -I${libdir}/include -O1 -fno-common -fno-strict-aliasing\
         -fomit-frame-pointer -w"
 LDFLAGS="$LDFLAGS -lm -lgmp"
 ASFLAGS=" "
@@ -183,7 +183,7 @@ HOST_ARCH=$HOST_ARCH
 HOST_OS=$HOST_OS
 mlton_smlnj_heap=$(ls "$libdir" | grep mlton-smlnj)
 doitMLton () {
-    exec "$mlton_compile" @MLton $ram-slop 0.5 "\${rargs[@]}" -- "\$@"
+    exec "$mlton_compile" @MLton ram-slop $ram_slop "\${rargs[@]}" -- "\$@"
 }
 doitSMLNJ () {
     exec sml @SMLload="$mlton_smlnj_heap" "\$@"
@@ -214,3 +214,4 @@ doit "$libdir" \\
         "\$@"
 EOF
 ) >>$script
+chmod +x $script

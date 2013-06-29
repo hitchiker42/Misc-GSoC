@@ -1,7 +1,7 @@
 val print = TextIO.print
 fun printReal x = print (Real32.toString x ^ " ")
 local 
-  open SSE_Software_vec 
+  open SSE_Software
 in
 val a = Vector.fromList[1.000000,2.000000,3.000000,4.000000]
 val b = Vector.fromList[4.000000,3.000000,2.000000,1.000000]

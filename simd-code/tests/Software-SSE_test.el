@@ -28,7 +28,7 @@
 "val print = TextIO.print
 fun printReal x = print (Real32.toString x ^ \" \")
 local 
-  open SSE_Software_vec 
+  open SSE_Software
 in\n"
 (format "%s\n%s\n%s\n%s\n"
         (apply #'vset-fn (cons "a" simple))
@@ -43,8 +43,8 @@ in\n"
         (upcase funct)
         (format "val z = %s(x,y)"(upcase funct))
         (format "val c = %s(a,b)" (upcase funct))
-        (apply #'vp-fn (simd op simple rev-simple)) nl
+        (replace-regexp-in-string "-" "~" (apply #'vp-fn (simd op simple rev-simple))) nl
         (vp-var "c") nl
-        (apply #'vp-fn (simd op rand1 rand2)) nl
+        (replace-regexp-in-string "-" "~" (apply #'vp-fn (simd op rand1 rand2))) nl
         (vp-var "z") nl))))
 (insert "end"))
