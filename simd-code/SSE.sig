@@ -48,6 +48,9 @@ end
   val ANDNPS:v4sf*v4sf->v4sf
   val ORPS:v4sf*v4sf->v4sf
   val XORPS:v4sf*v4sf->v4sf
+NOTE: cmp returns a bitmask, all 1s for true all 0's for false;
+this means that interpreted as a floating point number true is -nan
+and false is +0.0
   val CMPEQPS:v4sf*v4sf->v4sf
   val CMPLTPS:v4sf*v4sf->v4sf
   val CMPLEPS:v4sf*v4sf->v4sf
