@@ -135,8 +135,11 @@ end
 functor C_SSE2_Types(T:SSE_C_TYPES):SSE2 = 
 struct
   type v2df=C_SSE2.v2df
-  type t2f=T.t2f
+  type t2df=T.t2df
   type v2di=C_SSE2.v2di(*...etc I'll do it later*)
+  type m128i=C_SSE2.m128i
+  type n128i=C_SSE2.m128i
+  type smidInt=T.simdInt
   fun sse_call (a,b,f) = T.unpack(f(T.pack(a),T.pack(b)))
   fun sse_call_1 (a,f) = T.unpack(f(T.pack(a)))
   fun ADDPD (a,b) = sse_call(a,b,C_SSE2.ADDPD)
@@ -228,12 +231,11 @@ end
 structure SSE_Ctype_vector:SSE_C_TYPES =
 struct
   type v2df = Real64.real Vector.vector
-  type v4sf = Real32.real Vector.vector
+  type v4sf = Real32.real Vector.vector                          
   type v2di = Word64.word Vector.vector
   type v4si = Word32.word Vector.vector
   type v8hi = Word16.word Vector.vector
   type v16qi = Word8.word Vector.vector
-  type 'a vec_type = { name:type,pack:(name->'a vector),unpack:('a array->name)}
   type t2df = v2df
   type t4sf = v4sf
 end

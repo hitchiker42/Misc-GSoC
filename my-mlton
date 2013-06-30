@@ -1,0 +1,49 @@
+declare -a rargs
+case "$1" in
+@MLton)
+        shift
+        while [ "$#" -gt 0 -a "$1" != "--" ]; do
+                rargs[${#rargs[@]}]="$1"
+                shift
+        done
+        if [ "$#" -gt 0 -a "$1" == "--" ]; then
+                shift
+        else
+                echo '@MLton missing --'
+                exit 1
+        fi
+        ;;
+esac
+HOST_ARCH=amd64
+HOST_OS=linux
+mlton_smlnj_heap=mlton-smlnj.x86-linux
+doitMLton () {
+    exec "/home/tucker/gsoc/mlton/build//lib/mlton-compile" @MLton ram-slop 0.25 "${rargs[@]}" -- "$@"
+}
+doitSMLNJ () {
+    exec sml @SMLload="" "$@"
+}
+doitPolyML () {
+    exec "/home/tucker/gsoc/mlton/build//lib/mlton-polyml" "$@"
+}
+doit () {
+        if [ -x "/home/tucker/gsoc/mlton/build//lib/mlton-compile" ]; then
+            doitMLton "$@"
+        elif [ -s "$mlton_smlnj_heap" ]; then
+            doitSMLNJ "$@"
+        elif [ -x "/home/tucker/gsoc/mlton/build//lib/mlton-polyml" ]; then
+            doitPolyML "$@"
+        fi
+        echo 'Unable to run MLton.  Check that lib is set properly.' >&2
+        exit 1
+}
+
+doit "/home/tucker/gsoc/mlton/build//lib" \
+        -ar-script "/home/tucker/gsoc/mlton/build//lib/static-library"                    \
+        -cc gcc                                              \
+        -as-opt "-m64"                                     \
+        -cc-opt " -I/home/tucker/gsoc/mlton/build//lib/include -O1 -fno-common -fno-strict-aliasing        -fomit-frame-pointer -w -m64"                                      \
+        -link-opt " -lm -lgmp -m64"                                   \
+        -mlb-path-map "/home/tucker/gsoc/mlton/build//lib/mlb-path-map"                   \
+        -profile-exclude '\$\(SML_LIB\)'                   \
+        "$@"
