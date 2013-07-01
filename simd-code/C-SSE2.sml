@@ -3,59 +3,59 @@
 structure C_SSE2 =
 struct
   open SSE_Types
-  val addpd = _import "addpd":v2df*v2df*a2df->unit;
-  val subpd = _import "subpd":v2df*v2df*a2df->unit;
-  val mulpd = _import "mulpd":v2df*v2df*a2df->unit;
-  val divpd = _import "divpd":v2df*v2df*a2df->unit;
-  val rcppd = _import "rcppd":v2df*a2df->unit;
-  val sqrtpd = _import "sqrtpd":v2df*a2df->unit;
-  val maxpd = _import "maxpd":v2df*v2df*a2df->unit;
-  val minpd = _import "minpd":v2df*v2df*a2df->unit;
-  val andpd = _import "andpd":v2df*v2df*a2df->unit;
-  val orpd = _import "orpd":v2df*v2df*a2df->unit;
-  val xorpd = _import "xorpd":v2df*v2df*a2df->unit;
-  val andnpd = _import "andnpd":v2df*v2df*a2df->unit;
-  val paddb128 = _import "paddb128":v16qi*v16qi*a16qi->unit;
-  val psubb128 = _import "psubb128":v16qi*v16qi*a16qi->unit;
-  val pavgb128 = _import "pavgb128":v16qi*v16qi*a16qi->unit;
-  val pminub128 = _import "pminub128":v16qi*v16qi*a16qi->unit;
-  val pmaxub128 = _import "pmaxub128":v16qi*v16qi*a16qi->unit;
-  val psadbw128 = _import "psadbw128":v16qi*v16qi*a16qi->unit;
-  val pcmpeqb128 = _import "pcmpeqb128":v16qi*v16qi*a16qi->unit;
-  val pcmpgtb128 = _import "pcmpgtb128":v16qi*v16qi*a16qi->unit;
-  val paddw128 = _import "paddw128":v8hi*v8hi*a8hi->unit;
-  val psubw128 = _import "psubw128":v8hi*v8hi*a8hi->unit;
-  val pmullw128 = _import "pmullw128":v8hi*v8hi*a8hi->unit;
-  val pmulhw128 = _import "pmulhw128":v8hi*v8hi*a8hi->unit;
-  val pavgw128 = _import "pavgw128":v8hi*v8hi*a8hi->unit;
-  val pmaxw128 = _import "pmaxw128":v8hi*v8hi*a8hi->unit;
-  val pminw128 = _import "pminw128":v8hi*v8hi*a8hi->unit;
-  val pmulhuw128 = _import "pmulhuw128":v8hi*v8hi*a8hi->unit;
-  val psllw128 = _import "psllw128":v8hi*v8hi*a8hi->unit;
-  val psrlw128 = _import "psrlw128":v8hi*v8hi*a8hi->unit;
-  val psraw128 = _import "psraw128":v8hi*v8hi*a8hi->unit;
-  val psllwi128 = _import "psllwi128":v8hi*int*a8hi->unit;
-  val psrlwi128 = _import "psrlwi128":v8hi*int*a8hi->unit;
-  val psrawi128 = _import "psrawi128":v8hi*int*a8hi->unit;
-  val pcmpeqw128= _import "pcmpeqw128":v8hi*v8hi*a8hi->unit;
-  val pcmpgtw128= _import "pcmpgtw128":v8hi*v8hi*a8hi->unit;
-  val paddd128 = _import "paddd128":v4si*v4si*a4si->unit;
-  val psubd128 = _import "psubd128":v4si*v4si*a4si->unit;
-  val pcmpeqd128 = _import "pcmpeqd128":v4si*v4si*a4si->unit;
-  val pcmpgtd128 = _import "pcmpgtd128":v4si*v4si*a4si->unit;
-  val pmuludq128 = _import "pmuludq128":v4si*v4si*a4si->unit;
-  val pslld128 = _import "pslld128":v4si*v4si*a4si->unit;
-  val psrld128 = _import "psrld128":v4si*v4si*a4si->unit;
-  val psrad128 = _import "psrad128":v4si*v4si*a4si->unit;
-  val pslldi128 = _import "pslldi128":v4si*int*a4si->unit;
-  val psrldi128 = _import "psrldi128":v4si*int*a4si->unit;
-  val psradi128 = _import "psradi128":v4si*int*a4si->unit;
-  val paddq = _import "paddq":v2di*v2di*a2di->unit;
-  val psubq = _import "psubq":v2di*v2di*a2di->unit;
-  val psllq128 = _import "psllq128":v2di*v2di*a2di->unit;
-  val psrlq128 = _import "psrlq128":v2di*v2di*a2di->unit;
-  val psllqi128 = _import "psllqi128":v2di*v2di*a2di->unit;
-  val psrlqi128 = _import "psrlqi128":v2di*v2di*a2di->unit;
+  val addpd = _import "addpd":v2df*v2df*v2df->unit;
+  val subpd = _import "subpd":v2df*v2df*v2df->unit;
+  val mulpd = _import "mulpd":v2df*v2df*v2df->unit;
+  val divpd = _import "divpd":v2df*v2df*v2df->unit;
+  val rcppd = _import "rcppd":v2df*v2df->unit;
+  val sqrtpd = _import "sqrtpd":v2df*v2df->unit;
+  val maxpd = _import "maxpd":v2df*v2df*v2df->unit;
+  val minpd = _import "minpd":v2df*v2df*v2df->unit;
+  val andpd = _import "andpd":v2df*v2df*v2df->unit;
+  val orpd = _import "orpd":v2df*v2df*v2df->unit;
+  val xorpd = _import "xorpd":v2df*v2df*v2df->unit;
+  val andnpd = _import "andnpd":v2df*v2df*v2df->unit;
+  val paddb128 = _import "paddb128":v16qi*v16qi*v16qi->unit;
+  val psubb128 = _import "psubb128":v16qi*v16qi*v16qi->unit;
+  val pavgb128 = _import "pavgb128":v16qi*v16qi*v16qi->unit;
+  val pminub128 = _import "pminub128":v16qi*v16qi*v16qi->unit;
+  val pmaxub128 = _import "pmaxub128":v16qi*v16qi*v16qi->unit;
+  val psadbw128 = _import "psadbw128":v16qi*v16qi*v16qi->unit;
+  val pcmpeqb128 = _import "pcmpeqb128":v16qi*v16qi*v16qi->unit;
+  val pcmpgtb128 = _import "pcmpgtb128":v16qi*v16qi*v16qi->unit;
+  val paddw128 = _import "paddw128":v8hi*v8hi*v8hi->unit;
+  val psubw128 = _import "psubw128":v8hi*v8hi*v8hi->unit;
+  val pmullw128 = _import "pmullw128":v8hi*v8hi*v8hi->unit;
+  val pmulhw128 = _import "pmulhw128":v8hi*v8hi*v8hi->unit;
+  val pavgw128 = _import "pavgw128":v8hi*v8hi*v8hi->unit;
+  val pmaxw128 = _import "pmaxw128":v8hi*v8hi*v8hi->unit;
+  val pminw128 = _import "pminw128":v8hi*v8hi*v8hi->unit;
+  val pmulhuw128 = _import "pmulhuw128":v8hi*v8hi*v8hi->unit;
+  val psllw128 = _import "psllw128":v8hi*v8hi*v8hi->unit;
+  val psrlw128 = _import "psrlw128":v8hi*v8hi*v8hi->unit;
+  val psraw128 = _import "psraw128":v8hi*v8hi*v8hi->unit;
+  val psllwi128 = _import "psllwi128":v8hi*int*v8hi->unit;
+  val psrlwi128 = _import "psrlwi128":v8hi*int*v8hi->unit;
+  val psrawi128 = _import "psrawi128":v8hi*int*v8hi->unit;
+  val pcmpeqw128= _import "pcmpeqw128":v8hi*v8hi*v8hi->unit;
+  val pcmpgtw128= _import "pcmpgtw128":v8hi*v8hi*v8hi->unit;
+  val paddd128 = _import "paddd128":v4si*v4si*v4si->unit;
+  val psubd128 = _import "psubd128":v4si*v4si*v4si->unit;
+  val pcmpeqd128 = _import "pcmpeqd128":v4si*v4si*v4si->unit;
+  val pcmpgtd128 = _import "pcmpgtd128":v4si*v4si*v4si->unit;
+  val pmuludq128 = _import "pmuludq128":v4si*v4si*v4si->unit;
+  val pslld128 = _import "pslld128":v4si*v4si*v4si->unit;
+  val psrld128 = _import "psrld128":v4si*v4si*v4si->unit;
+  val psrad128 = _import "psrad128":v4si*v4si*v4si->unit;
+  val pslldi128 = _import "pslldi128":v4si*int*v4si->unit;
+  val psrldi128 = _import "psrldi128":v4si*int*v4si->unit;
+  val psradi128 = _import "psradi128":v4si*int*v4si->unit;
+  val paddq = _import "paddq":v2di*v2di*v2di->unit;
+  val psubq = _import "psubq":v2di*v2di*v2di->unit;
+  val psllq128 = _import "psllq128":v2di*v2di*v2di->unit;
+  val psrlq128 = _import "psrlq128":v2di*v2di*v2di->unit;
+  val psllqi128 = _import "psllqi128":v2di*v2di*v2di->unit;
+  val psrlqi128 = _import "psrlqi128":v2di*v2di*v2di->unit;
   val pand128 = _import "pand128":__mm128i*__mm128i*__mm128i->unit;
   val pandn128 = _import "pandn128":__mm128i*__mm128i*__mm128i->unit;
   val por128 = _import "por128":__mm128i*__mm128i*__mm128i->unit;
@@ -136,9 +136,8 @@ functor C_SSE2_Types(T:SSE_C_TYPES):SSE2 =
 struct
   type v2df=C_SSE2.v2df
   type t2df=T.t2df
-  type v2di=C_SSE2.v2di(*...etc I'll do it later*)
+  datatype m128i=C_SSE2.m128i
   type m128i=C_SSE2.m128i
-  type n128i=C_SSE2.m128i
   type smidInt=T.simdInt
   fun sse_call (a,b,f) = T.unpack(f(T.pack(a),T.pack(b)))
   fun sse_call_1 (a,f) = T.unpack(f(T.pack(a)))
@@ -190,6 +189,7 @@ struct
   fun PSRLDI128 (a,b) = sse_call(a,b,C_SSE2.PSRLDI128)
   fun PSRADI128 (a,b) = sse_call(a,b,C_SSE2.PSRADI128)
 end
+structure C_SSE2_Array = C_SSE2_Types(SSE_Ctype_array)
 (*(defun cffi (name type) (insert (format "val %s = _import \"%s\":v%s*v%s*a%s->unit;\n" name name type type type)))
 (defun c-vals ()
   (let ((beg (point)))
@@ -228,22 +228,3 @@ end
 "paddd128" "psubd128" "pcmpeqd128" "pcmpgtd128" "pmuludq128" "pslld128" "psrld128" "psrad128" "pslldi128" "psrldi128" "psradi128"))
            (sse-call name)) 
    (indent-region beg (point))))*)
-structure SSE_Ctype_vector:SSE_C_TYPES =
-struct
-  type v2df = Real64.real Vector.vector
-  type v4sf = Real32.real Vector.vector                          
-  type v2di = Word64.word Vector.vector
-  type v4si = Word32.word Vector.vector
-  type v8hi = Word16.word Vector.vector
-  type v16qi = Word8.word Vector.vector
-  type t2df = v2df
-  type t4sf = v4sf
-end
-                          
-signature VEC_TYPE_CONVERT =
-sig
-  type t
-  type e
-  val pack:t->e vector
-  val unpack:e array->t
-end

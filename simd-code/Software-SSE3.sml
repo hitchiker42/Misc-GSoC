@@ -3,7 +3,7 @@ struct
   open SSE_TYPES
   local
     val evenp = fn x => op=(op mod(x,2),0)
-    open Vector
+    open Array
   in
   fun ADDSUBPD (a,b) = let
     val f = fn x => if evenp x then op-(sub(a,x),sub(b,x))
@@ -26,7 +26,7 @@ end
 structure SoftwareSSSE3:SSSE3 =
 struct
   local
-    open Vector
+    open Array
 
   in
   fun PHADDD128 (a,b) = fromList(op+(sub(b,1),sub(b,0)),op+(sub(b,3),sub(b,2)),

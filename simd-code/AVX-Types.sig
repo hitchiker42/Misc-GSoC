@@ -6,3 +6,4 @@ sig
   type v8si
   type v16hi
   type v32qi
+end

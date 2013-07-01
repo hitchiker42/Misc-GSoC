@@ -1,12 +1,12 @@
 structure C_SSE3 =
 struct
   open SSE_Types
-  val addsubpd = _import "addsubpd":v2df*v2df*a2df->unit;
-  val haddpd = _import "haddpd":v2df*v2df*a2df->unit;
-  val hsubpd = _import "hsubpd":v2df*v2df*a2df->unit;
-  val addsubps = _import "addsubps":v4sf*v4sf*a4sf->unit;
-  val haddps = _import "haddps":v4sf*v4sf*a4sf->unit;
-  val hsubps = _import "hsubps":v4sf*v4sf*a4sf->unit;
+  val addsubpd = _import "addsubpd":v2df*v2df*v2df->unit;
+  val haddpd = _import "haddpd":v2df*v2df*v2df->unit;
+  val hsubpd = _import "hsubpd":v2df*v2df*v2df->unit;
+  val addsubps = _import "addsubps":v4sf*v4sf*v4sf->unit;
+  val haddps = _import "haddps":v4sf*v4sf*v4sf->unit;
+  val hsubps = _import "hsubps":v4sf*v4sf*v4sf->unit;
   local
     open Unsafe
   in
@@ -30,8 +30,8 @@ functor C_SSE3_Types(T:SSE_C_FLOATS):SSE3 =
 struct
   val v2df=C_SSE3.v2df
   val v4sf=C_SSE3.v4sf
-  val t2f=T.t2f
-  val t4f=T.t4f
+  val t2df=T.t2df
+  val t4df=T.t4df
   fun sse_calld (a,b,f) = T.unpack2f(f(T.pack2f(a),T.pack2f(b)))
   fun sse_calls (a,b,f) = T.unpack4f(f(T.pack4f(a),T.pack4f(b)))
   fun ADDSUBPD (a,b) = sse_calld(a,b,SSE_C.ADDSUBPD)
@@ -45,17 +45,17 @@ end
 structure C_SSSE3 =
 struct
   open SSE_Types
-  val phaddd128 = _import "phaddd128":v4si*v4si*a4si->unit
-  val phaddw128 = _import "phaddw128":v8hi*v8hi*a8hi->unit
-  val phaddsw128 = _import "phaddsw128":v8hi*v8hi*a8hi->unit
-  val phsubd128 = _import "phsubd128":v4si*v4si*a4si->unit
-  val phsubw128 = _import "phsubw128":v8hi*v8hi*a8hi->unit
-  val phsubsw128 = _import "phsubsw128":v8hi*v8hi*a8hi->unit
-  val pmaddubsw128 = _import "pmaddubsw128":v16qi*v16qi*a8hi->unit
-  val pmulhrsw = _import "pmulhrsw":v8hi*v8hi*a8hi->unit
-  val pabsb128 = _import "pabsb128":v16qi*a16qi->unit  
-  val pabsw128 = _import "pabsw128":v8hi*a8hi->unit
-  val pabsd128 = _import "pabsd128":v4si*a4si->unit
+  val phaddd128 = _import "phaddd128":v4si*v4si*v4si->unit
+  val phaddw128 = _import "phaddw128":v8hi*v8hi*v8hi->unit
+  val phaddsw128 = _import "phaddsw128":v8hi*v8hi*v8hi->unit
+  val phsubd128 = _import "phsubd128":v4si*v4si*v4si->unit
+  val phsubw128 = _import "phsubw128":v8hi*v8hi*v8hi->unit
+  val phsubsw128 = _import "phsubsw128":v8hi*v8hi*v8hi->unit
+  val pmaddubsw128 = _import "pmaddubsw128":v16qi*v16qi*v8hi->unit
+  val pmulhrsw = _import "pmulhrsw":v8hi*v8hi*v8hi->unit
+  val pabsb128 = _import "pabsb128":v16qi*v16qi->unit  
+  val pabsw128 = _import "pabsw128":v8hi*v8hi->unit
+  val pabsd128 = _import "pabsd128":v4si*v4si->unit
   fun sml2c_int f = fn (x,y) =>
 		       let
 (* it would be nice not to make 8 functions for all int types but I'm
@@ -82,8 +82,8 @@ struct
 end
 functor C_SSSE3_Types(T:SSE_C_INTS):SSSE3 = 
 struct
-  val v4si=SSSE3.v4si
-  val t4i=T.t4i
+  val m128i=SSE_Types.m128i
+  val simdInt=T.simdInt
   fun sse_calls (a,b,f) = T.unpack4i(f(T.pack4i(a),T.pack4i(b)))
   fun PHADDD128 (a,b) = sse_call(a,b,SSE_C.PHADDD128)
   fun PHADDW128 (a,b) = sse_call(a,b,SSE_C.PHADDW128)

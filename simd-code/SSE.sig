@@ -6,10 +6,10 @@ signature SSE_TYPE = sig
 end
 signature SSE_C_TYPE = 
 sig 
-  type v4sf = Real32.real Vector.vector
+  type v4sf = Real32.real Array.array
   type t
   val pack:t->v4sf
-  val unpack:MLton.Pointer.t->t
+  val unpack:v4sf->t
 end
 signature SSE =
 sig
@@ -31,10 +31,10 @@ sig
 end
 signature SSE_C_TYPE = 
 sig 
-  type v4sf = Real32.real Vector.vector
+  type v4sf = Real32.real Array.array
   type t
   val pack:t->v4sf
-  val unpack:Real32.real array->t
+  val unpack:v4sf->t
 end
 (*
   val MULPS:v4sf*v4sf->v4sf

@@ -1,7 +1,7 @@
 structure SSE_Software:SSE =
 struct
   local
-    open Vector
+    open Array
   in
   fun vectorFun vecOp = 
       fn (a,b) =>
@@ -23,7 +23,7 @@ struct
 		       MLton.Real32.castToWord(sub(b,x))))
 	 in tabulate (4,f) end
   end
-  type v4sf = Real32.real vector
+  type v4sf = Real32.real array
   type t = v4sf
   (*Math fxns*)
   val ADDPS = vectorFun Real32.+
@@ -38,5 +38,5 @@ struct
   val ORPS = bitwiseFun Word32.orb
   val XORPS = bitwiseFun Word32.xorb
   val ANDNPS = bitwiseFun (Word32.notb o Word32.andb)
-  val CMPLTPS:(Real32.real vector*Real32.real vector -> Real32.real vector) = vectorFun (fn (x,y) => if Real32.<(x,y) then 1.0 else 0.0)
+  val CMPLTPS:(Real32.real array*Real32.real array -> Real32.real array) = vectorFun (fn (x,y) => if Real32.<(x,y) then 1.0 else 0.0)
 end

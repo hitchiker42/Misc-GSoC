@@ -25,7 +25,7 @@ sig
  *val unpack v->t(*or MLton.Pointer->t*)*)
   type v (*the vector type we're using, for now*)
   type e (*the element type*)
-  type vi (*lets call this some integer type for now*)
+  type m128i (*lets call this some integer type for now*)
 (*(avx extensions) vex incoding (3 opperand support,no alignment restriction)
  *256 bit vex instructions, extended width. 128 bit, only ^*)
 (*vex incoding makes vectorization much eaiser, because we have to use

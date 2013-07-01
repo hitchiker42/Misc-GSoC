@@ -2,7 +2,7 @@
 structure Software_SSE2:SSE2 = 
 struct
   local 
-    open Vector
+    open Array
   in
 (* val vecBinOp:('a*'a->'a)->('a vector*'a vector ->'a vector)*)
     fun vecBinOp f n = (*generate a binary vector function*)
@@ -50,7 +50,7 @@ struct
 	fn x => 
 	   toInt16(andb(0wxFFFFFFFF,( *(fromInt(sub(a,x)),fromInt(sub(b,x))))))
     end
-  in Vector.tabulate f 8 end
+  in Array.tabulate f 8 end
   fun PMULLW128 (a,b) = let
     local
       open Word32
@@ -58,7 +58,7 @@ struct
 	fn x => 
 	   toInt16(>>(16,( *(fromInt(sub(a,x)),fromInt(sub(b,x))))))
     end
-  in Vector.tabulate f 8 end
+  in Array.tabulate f 8 end
   fun PMADDWD128 (a,b) = let
     local
       open Word32
@@ -67,7 +67,7 @@ struct
 	   +( *(toWord32sub(a,(2*x-1)),sub(b,(2*x-1))),
 	      *(sub(a,(2*x)),sub(b,(2*x))))
     end
-  in Vector.tabulate f 4 end
+  in Array.tabulate f 4 end
   val PAVGB128 = vecBinOp (fn (x,y) => ((x+y)/2)) 16
   val PAVGW128 = vecBinOp (fn (x,y) => ((x+y)/2)) 8
 (* << logical left

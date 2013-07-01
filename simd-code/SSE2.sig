@@ -39,14 +39,14 @@ sig
   val UNPCKLPD:v2df*v2df->v2df
 (*CONVERT DOUBLES*)
 (*two ts indicate conversion with truncation*)
-  val CVTPD2PI:v2df->v2si
+(*  val CVTPD2PI:v2df->v2si
   val CVTTPD2PI:v2df->v2si(*v2si is in mmx reg*)
   val CVTPI2PD:v2si->v2df
   val CVTPD2DQ:v2df->v4si
   val CVTTPD2DQ:v2df->v4si(*v4si is 2 doublewords, but in xmm reg*)
   val CVTDQ2PD:v4si->v2df
   val CVTPS2PD:v4sf->v2df(*not sure what floats get copied*)
-  val CVTPD2PS:v2df->v4sf
+  val CVTPD2PS:v2df->v4sf*)
 (*CVTSS2SD:v4sf->v2df
  *CVTSD2SS:v2df->v4sf
  *CVTSD2SI:v2df->v4si

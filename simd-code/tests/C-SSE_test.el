@@ -1,15 +1,15 @@
 (require 'dash)
 (require 'cl)
 (defmacro vp (&rest vals)
-  `(format "Vector.app printReal (Vector.fromList[%f,%f,%f,%f])" ,@vals))
+  `(format "Array.app printReal (Array.fromList[%f,%f,%f,%f])" ,@vals))
 (defun vp-var (var)
-  (format "Vector.app printReal %s" var))
+  (format "Array.app printReal %s" var))
 (defun vp-fn (a b c d)
-  (format "Vector.app printReal (Vector.fromList[%f,%f,%f,%f])" a b c d))
+  (format "Array.app printReal (Array.fromList[%f,%f,%f,%f])" a b c d))
 (defmacro vset (name &rest vals)
-  `(format "val %s = Vector.fromList[%f,%f,%f,%f]" ,name ,@vals))
+  `(format "val %s = Array.fromList[%f,%f,%f,%f]" ,name ,@vals))
 (defun vset-fn (a b c d e)
-  (format "val %s = Vector.fromList[%f,%f,%f,%f]" a b c d e))
+  (format "val %s = Array.fromList[%f,%f,%f,%f]" a b c d e))
 (defmacro with-debug-on-error (&rest body)
   `(let ((setq debug-on-error t))
      ,@body))
@@ -29,7 +29,7 @@
              "val print = TextIO.print
 fun printReal x = print (Real32.toString x ^ \" \")
 local 
-  open C_SSE_vector
+  open C_SSE_array
 in\n"
              (format "%s\n%s\n%s\n%s\n"
                      ;;set values of arguements

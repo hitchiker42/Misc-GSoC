@@ -1,8 +1,8 @@
 structure C_SSE4.1 =
 struct
   open SSE_TYPES
-  val dppd = _import "dppd":v2df*v2df->Real64.real
-  val dpps = _import "dpps":v4sf*v4sf->Real32.real
+  val dppd = _import "dppd":v2df*v2df*v2df->Real64.real
+  val dpps = _import "dpps":v4sf*v4sf*v4sf->Real32.real
   (*rounding stuff are scalar ops, so not sure what to do with them*)
   local
     open Unsafe
