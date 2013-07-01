@@ -112,7 +112,7 @@
     (insert (concat
              SSE-Types
              "#ifdef _EMMINTRIN_H_INCLUDED"))
-    (c-opcodes double2 "addpd" "subpd" "mulpd" "divpd")
+    (c-opcodes double2 "addpd" "subpd" "mulpd" "divpd" "andpd" "minpd" "maxpd" "orpd" "xorpd" "andnpd")
     (c-opcodes double1 "rcppd" "sqrtpd" "rsqrtpd")
     (insert "#endif\n")))
 (C-SSE2)

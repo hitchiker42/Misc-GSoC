@@ -1,15 +1,15 @@
 (require 'dash)
 (require 'cl)
 (defmacro vp (&rest vals)
-  `(format "Vector.app printReal (Vector.fromList[%f,%f,%f,%f])" ,@vals))
+  `(format "Array.app printReal (Array.fromList[%f,%f,%f,%f])" ,@vals))
 (defun vp-var (var)
-  (format "Vector.app printReal %s" var))
+  (format "Array.app printReal %s" var))
 (defun vp-fn (a b c d)
-  (format "Vector.app printReal (Vector.fromList[%f,%f,%f,%f])" a b c d))
+  (format "Array.app printReal (Array.fromList[%f,%f,%f,%f])" a b c d))
 (defmacro vset (name &rest vals)
-  `(format "val %s = Vector.fromList[%f,%f,%f,%f]" ,name ,@vals))
+  `(format "val %s = Array.fromList[%f,%f,%f,%f]" ,name ,@vals))
 (defun vset-fn (a b c d e)
-  (format "val %s = Vector.fromList[%f,%f,%f,%f]" a b c d e))
+  (format "val %s = Array.fromList[%f,%f,%f,%f]" a b c d e))
 (defmacro with-debug-on-error (&rest body)
   `(let ((setq debug-on-error t))
      ,@body))
@@ -22,14 +22,14 @@
 (setf nl ";print \"\\n\"")
 (defun simd (fun list1 list2) 
   (-zip-with fun list1 list2))
-(defun make-sse-test ()
-  (with-temp-file "C-SSE_test.sml"
+(defun make-sse2-test ()
+  (with-temp-file "C-SSE2_test.sml"
     (insert (concat
              ;;toplevel definitons
              "val print = TextIO.print
-fun printReal x = print (Real32.toString x ^ \" \")
+fun printReal x = print (Real64.toString x ^ \" \")
 local 
-  open C_SSE_vector
+  open C_SSE2
 in\n"
              (format "%s\n%s\n%s\n%s\n"
                      ;;set values of arguements
@@ -38,8 +38,8 @@ in\n"
                      (apply #'vset-fn (cons "x" x-double))
                      (apply #'vset-fn (cons "y" y-double)))))
     ;;assoicate elisp functions with sml functions and start looping
-    (dolist (funs '(("addps" +) ("subps" -) ("mulps" *) ("divps" /)
-                    ("maxps" max) ("minps" min) ("cmpltps" lt)))
+    (dolist (funs '(("addpd" +) ("subpd" -) ("mulpd" *) ("divpd" /)
+                    ("maxpd" max) ("minpd" min)))
       (let ((funct (first funs))
             (op (second funs)))
         (insert
@@ -65,3 +65,4 @@ val _ = (%s\n\t;%s\n\t%s\n\t;%s\n\t%s\n\t;%s\n\t%s\n\t;%s\n\t%s)\n"
                  ;;again set sml vals to print
                  (vp-var "z") nl))))
     (insert "end")))
+(make-sse2-test)

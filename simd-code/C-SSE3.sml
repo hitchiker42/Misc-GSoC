@@ -1,6 +1,10 @@
 structure C_SSE3 =
 struct
   open SSE_Types
+  type v2di = m128i
+  type v4si = m128i
+  type v8hi = m128i 
+  type v16qi = m128i
   val addsubpd = _import "addsubpd":v2df*v2df*v2df->unit;
   val haddpd = _import "haddpd":v2df*v2df*v2df->unit;
   val hsubpd = _import "hsubpd":v2df*v2df*v2df->unit;

@@ -1,6 +1,12 @@
 signature SSE2 = 
 sig
   include SSE_TYPES
+(*  local*)
+    type v2di = m128i
+    type v4si = m128i
+    type v8hi = m128i
+    type v16qi = m128i
+(*  in*)
 (*MOVAPD 
  *MOVUPD
  *MOVHPD
@@ -141,3 +147,4 @@ sig
  *(p)movmskpd(128)
  *all move & cache control instructions*)
 end
+(*end*)

@@ -3,6 +3,10 @@
 structure C_SSE2 =
 struct
   open SSE_Types
+  type v2di = m128i
+  type v4si = m128i
+  type v8hi = m128i 
+  type v16qi = m128i
   val addpd = _import "addpd":v2df*v2df*v2df->unit;
   val subpd = _import "subpd":v2df*v2df*v2df->unit;
   val mulpd = _import "mulpd":v2df*v2df*v2df->unit;
@@ -56,31 +60,28 @@ struct
   val psrlq128 = _import "psrlq128":v2di*v2di*v2di->unit;
   val psllqi128 = _import "psllqi128":v2di*v2di*v2di->unit;
   val psrlqi128 = _import "psrlqi128":v2di*v2di*v2di->unit;
-  val pand128 = _import "pand128":__mm128i*__mm128i*__mm128i->unit;
-  val pandn128 = _import "pandn128":__mm128i*__mm128i*__mm128i->unit;
-  val por128 = _import "por128":__mm128i*__mm128i*__mm128i->unit;
-  val pxor128 = _import "pxor128":__mm128i*__mm128i*__mm128i->unit;
+  val pand128 = _import "pand128":m128i*m128i*m128i->unit;
+  val pandn128 = _import "pandn128":m128i*m128i*m128i->unit;
+  val por128 = _import "por128":m128i*m128i*m128i->unit;
+  val pxor128 = _import "pxor128":m128i*m128i*m128i->unit;
 local
   open Unsafe
 in
   fun sml2c_double f = fn (x,y) =>
                    let
-                     val z = Real64Array.create 2
+                     val z = Unsafe.Array.create(2,0.0:Real64.real)
                    in (f(x,y,z);z) end
   fun sml2c_unary_double f = fn (x) =>
                          let 
-                           val y = Real64Array.create 2
+                           val y = Unsafe.Array.create(2,0.0:Real64.real)
                          in (f(x,y);y) end
   fun sml2c_int f = fn (x,y) =>
 		       let
-(* it would be nice not to make 8 functions for all int types but I'm
- * not sure the best way to cast a Word8 array to all the other types
- * Maybe I should used a packed type instead?*)
-			 val z = Word8Array.create 16
+			 val z = Unsafe.Array.create(16,0w0:Word8.word)
 		       in (f(x,y,z);z) end
   fun sml2c_unary_int f = fn (x) =>
 			   let 
-			     val y = Word8Array.create 16
+			     val y = Unsafe.Array.create(16,0w0:Word8.word)
 			   in (f(x);y) end
 end
 			    
@@ -132,6 +133,7 @@ end
   val PSRLDI128 = sml2c_int psrldi128
   val PSRADI128 = sml2c_int psradi128
 end
+(*
 functor C_SSE2_Types(T:SSE_C_TYPES):SSE2 = 
 struct
   type v2df=C_SSE2.v2df
@@ -139,8 +141,8 @@ struct
   datatype m128i=C_SSE2.m128i
   type m128i=C_SSE2.m128i
   type smidInt=T.simdInt
-  fun sse_call (a,b,f) = T.unpack(f(T.pack(a),T.pack(b)))
-  fun sse_call_1 (a,f) = T.unpack(f(T.pack(a)))
+  fun double_sse_call (a,b,f) = T.unpack(f(T.pack(a),T.pack(b)))
+  fun double_sse_call_1 (a,f) = T.unpack(f(T.pack(a)))
   fun ADDPD (a,b) = sse_call(a,b,C_SSE2.ADDPD)
   fun SUBPD (a,b) = sse_call(a,b,C_SSE2.SUBPD)
   fun MULPD (a,b) = sse_call(a,b,C_SSE2.MULPD)
@@ -190,6 +192,9 @@ struct
   fun PSRADI128 (a,b) = sse_call(a,b,C_SSE2.PSRADI128)
 end
 structure C_SSE2_Array = C_SSE2_Types(SSE_Ctype_array)
+*)
+
+
 (*(defun cffi (name type) (insert (format "val %s = _import \"%s\":v%s*v%s*a%s->unit;\n" name name type type type)))
 (defun c-vals ()
   (let ((beg (point)))

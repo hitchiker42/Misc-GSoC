@@ -1,6 +1,10 @@
 signature SSE4.1 = 
 sig
   include SSE_TYPES
+  type v2di = m128i
+  type v4si = m128i
+  type v8hi = m128i 
+  type v16qi = m128i
 (*doubleword multiply instructions*)
   val PMULDQ128:v4si*v4si->v2di
   val PMULLD128:v4si*v4si->v4si(*results are low 16 bits of intermediates*)

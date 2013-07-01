@@ -1,0 +1,7 @@
+$(SML_LIB)/basis/basis.mlb
+$(SML_LIB)/basis/mlton.mlb
+$(SML_LIB)/basis/unsafe.mlb
+../SSE-Types.sig
+../SSE2.sig
+../C-SSE2.sml
+C-SSE2_test.sml
