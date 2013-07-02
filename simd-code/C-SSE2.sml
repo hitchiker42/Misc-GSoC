@@ -5,7 +5,7 @@ struct
   open SSE_Types
   type v2di = m128i
   type v4si = m128i
-  type v8hi = m128i 
+  type v8hi = m128i
   type v16qi = m128i
   val addpd = _import "addpd":v2df*v2df*v2df->unit;
   val subpd = _import "subpd":v2df*v2df*v2df->unit;
@@ -86,19 +86,19 @@ in
                      val z = Unsafe.Array.create(2,0.0:Real64.real)
                    in (f(x,y,z);z) end
   fun sml2c_unary_double f = fn (x) =>
-                         let 
+                         let
                            val y = Unsafe.Array.create(2,0.0:Real64.real)
                          in (f(x,y);y) end
   fun sml2c_int f = fn (x,y) =>
-		       let
-			 val z = Unsafe.Array.create(16,0w0:Word8.word)
-		       in (f(x,y,z);z) end
+                let
+                  val z = Unsafe.Array.create(16,0w0:Word8.word)
+                in (f(x,y,z);z) end
   fun sml2c_unary_int f = fn (x) =>
-			   let 
-			     val y = Unsafe.Array.create(16,0w0:Word8.word)
-			   in (f(x);y) end
+                      let
+                        val y = Unsafe.Array.create(16,0w0:Word8.word)
+                      in (f(x);y) end
 end
-			    
+
   val ADDPD = sml2c_double addpd
   val SUBPD = sml2c_double subpd
   val MULPD = sml2c_double mulpd
@@ -160,12 +160,12 @@ end
   val PSRLDI128 = sml2c_int psrldi128
   val PSRADI128 = sml2c_int psradi128*)
 end
-functor C_SSE2_Types(T:SSE_C_TYPES)(*:SSE2*) = 
+functor C_SSE2_Types(T:SSE_C_TYPES)(*:SSE2*) =
 struct
   type m128i=C_SSE2.m128i
   type v2di = m128i
   type v4si = m128i
-  type v8hi = m128i 
+  type v8hi = m128i
   type v16qi = m128i
   type v2df=C_SSE2.v2df
   type t2df=T.t2df
@@ -248,31 +248,31 @@ structure C_SSE2_Array = C_SSE2_Types(SSE_Ctype_array)
 ;;long (dolist (name '("paddq" "psubq" "psllq128" "psrlq128" "psllqi128" "psrlqi128"))
 ;;word128 (dolist (name '("pand128" "pandn128" "por128" "pxor128"))
 ;;doubles   (dolist (name '("addpd" "subpd" "mulpd" "divpd" "rcppd" "sqrtpd" "maxpd" "minpd" "andpd" "orpd" "xorpd" "andnpd"))
-           (cffi name "_mm128i")) 
+           (cffi name "_mm128i"))
    (indent-region beg (point))))
 (defun sml-ffi (name) (insert (format "val %s = sml2c %s\n" (upcase name) (downcase name))))
 (defun sml-vals()
 (let ((beg (point)))
    (insert "\n")
 ;;double (dolist (name '("addpd" "subpd" "mulpd" "divpd" "rcppd" "sqrtpd" "maxpd" "minpd" "andpd" "orpd" "xorpd" "andnpd"))
-;;byte 
+;;byte
 (dolist (name '("paddb128"  "pavgb128" "psubb128" "pminub128" "pmaxub128" "psadbw128" "pcmpeqb128" "pcmpgtb128"
 ;;short (dolist (name '(
 "paddw128" "psubw128" "pmullw128" "pmulhw128" "pavgw128" "pmaxw128" "pminw128" "pmulhuw128" "psllw128" "psrlw128" "psraw128" "psllwi128" "psrlwi128" "psrawi128" "pcmpeqw128" "pcmpgtw128"
 ;;int (dolist (name '(
 "paddd128" "psubd128" "pcmpeqd128" "pcmpgtd128" "pmuludq128" "pslld128" "psrld128" "psrad128" "pslldi128" "psrldi128" "psradi128"))
-           (sml-ffi name)) 
+           (sml-ffi name))
    (indent-region beg (point))))
 (defun sse-call (name) (insert (format "fun %s (a,b) = sse_call(a,b,C_SSE2.%s)\n" (upcase name) (upcase name))))
 (defun sml-calls()
 (let ((beg (point)))
    (insert "\n")
 ;;double (dolist (name '("addpd" "subpd" "mulpd" "divpd" "rcppd" "sqrtpd" "maxpd" "minpd" "andpd" "orpd" "xorpd" "andnpd"))
-;;byte 
+;;byte
 (dolist (name '("paddb128"  "pavgb128" "psubb128" "pminub128" "pmaxub128" "psadbw128" "pcmpeqb128" "pcmpgtb128"
 ;;short (dolist (name '(
 "paddw128" "psubw128" "pmullw128" "pmulhw128" "pavgw128" "pmaxw128" "pminw128" "pmulhuw128" "psllw128" "psrlw128" "psraw128" "psllwi128" "psrlwi128" "psrawi128" "pcmpeqw128" "pcmpgtw128"
 ;;int (dolist (name '(
 "paddd128" "psubd128" "pcmpeqd128" "pcmpgtd128" "pmuludq128" "pslld128" "psrld128" "psrad128" "pslldi128" "psrldi128" "psradi128"))
-           (sse-call name)) 
+           (sse-call name))
    (indent-region beg (point))))*)

@@ -89,6 +89,10 @@ end
 signature SSE4.2 =
 sig
   include SSE_TYPES
+  type v2di = m128i
+  type v4si = m128i
+  type v8hi = m128i
+  type v16qi = m128i
 (*String compare instructions,
  *4 instructions with really damn complicated ways of comparing strings
  *too tired to figure it out now

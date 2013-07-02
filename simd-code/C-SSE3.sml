@@ -15,13 +15,13 @@ struct
     open Unsafe
   in
   fun sml2c_double f = fn (x,y) =>
-			  let
-			    val z = Real64Array.create 2
-			  in (f(x,y,z);z) end
+                   let
+                     val z = Unsafe.Array.create(2,0.0:Real64.real)
+                   in (f(x,y,z);z) end
   fun sml2c_float  f = fn (x,y) =>
-			  let
-			    val z = Real32Array.create 2
-			  in (f(x,y,z);z) end
+                   let
+		     val z = Unsafe.Array.create(4,0.0:Real32.real)
+		   in (f(x,y,z);z) end
   end
   val ADDSUBPD = sml2c_double addsubpd
   val HADDPD = sml2c_double haddpd
@@ -36,19 +36,23 @@ struct
   val v4sf=C_SSE3.v4sf
   val t2df=T.t2df
   val t4df=T.t4df
-  fun sse_calld (a,b,f) = T.unpack2f(f(T.pack2f(a),T.pack2f(b)))
-  fun sse_calls (a,b,f) = T.unpack4f(f(T.pack4f(a),T.pack4f(b)))
-  fun ADDSUBPD (a,b) = sse_calld(a,b,SSE_C.ADDSUBPD)
-  fun HADDPD (a,b) = sse_calld(a,b,SSE_C.HADDPD)
-  fun HSUBPD (a,b) = sse_calld(a,b,SSE_C.HSUBPD)
-  fun ADDSUBPS (a,b) = sse_calls(a,b,SSE_C.ADDSUBPS)
-  fun HADDPS (a,b) = sse_calls(a,b,SSE_C.HADDPS)
-  fun HSUBPS (a,b) = sse_calls(a,b,SSE_C.HSUBPS)
+  fun sse_calld (a,b,f) = T.unpackDouble(f(T.packDouble(a),T.packDouble(b)))
+  fun sse_calls (a,b,f) = T.unpackFloat(f(T.packFloat(a),T.packFloat(b)))
+  fun ADDSUBPD (a,b) = sse_calld(a,b,SSE3_C.ADDSUBPD)
+  fun HADDPD (a,b) = sse_calld(a,b,SSE3_C.HADDPD)
+  fun HSUBPD (a,b) = sse_calld(a,b,SSE3_C.HSUBPD)
+  fun ADDSUBPS (a,b) = sse_calls(a,b,SSE3_C.ADDSUBPS)
+  fun HADDPS (a,b) = sse_calls(a,b,SSE3_C.HADDPS)
+  fun HSUBPS (a,b) = sse_calls(a,b,SSE3_C.HSUBPS)
 
 end
 structure C_SSSE3 =
 struct
   open SSE_Types
+  type v2di = m128i
+  type v4si = m128i
+  type v8hi = m128i
+  type v16qi = m128i
   val phaddd128 = _import "phaddd128":v4si*v4si*v4si->unit
   val phaddw128 = _import "phaddw128":v8hi*v8hi*v8hi->unit
   val phaddsw128 = _import "phaddsw128":v8hi*v8hi*v8hi->unit
@@ -62,14 +66,11 @@ struct
   val pabsd128 = _import "pabsd128":v4si*v4si->unit
   fun sml2c_int f = fn (x,y) =>
 		       let
-(* it would be nice not to make 8 functions for all int types but I'm
- * not sure the best way to cast a Word8 array to all the other types
- * Maybe I should used a packed type instead?*)
-			 val z = Word8Array.create 16
+			 val z = Unsafe.Array.create(16,0w0:Word8.word)
 		       in (f(x,y,z);z) end
   fun sml2c_unary_int f = fn (x) =>
 			   let 
-			     val y = Word8Array.create 16
+			     val y = Unsafe.Array.create(16,0w0:Word8.word)
 			   in (f(x);y) end
   val PHADDD128 = sml2c_int phaddd128
   val PHADDW128 = sml2c_int phaddw128
@@ -88,18 +89,18 @@ functor C_SSSE3_Types(T:SSE_C_INTS):SSSE3 =
 struct
   val m128i=SSE_Types.m128i
   val simdInt=T.simdInt
-  fun sse_calls (a,b,f) = T.unpack4i(f(T.pack4i(a),T.pack4i(b)))
-  fun PHADDD128 (a,b) = sse_call(a,b,SSE_C.PHADDD128)
-  fun PHADDW128 (a,b) = sse_call(a,b,SSE_C.PHADDW128)
-  fun PHADDSW128 (a,b) = sse_call(a,b,SSE_C.PHADDSW128)
-  fun PSUBD128 (a,b) = sse_call(a,b,SSE_C.PSUBD128)
-  fun PSUBW128 (a,b) = sse_call(a,b,SSE_C.PSUBW128)
-  fun PSUBSW128 (a,b) = sse_call(a,b,SSE_C.PSUBSW128)
-  fun PMADDUBSW128 (a,b) = sse_call(a,b,SSE_C.PMADDUBSW128)
-  fun PMULHRSW (a,b) = sse_call(a,b,SSE_C.PMULHRSW)
-  fun PABSB128 (a,b) = sse_call(a,b,SSE_C.PABSB128)
-  fun PABSW128 (a,b) = sse_call(a,b,SSE_C.PABSW128)
-  fun PABSD128 (a,b) = sse_call(a,b,SSE_C.PABSD128)
+  fun sse_call (a,b,f) = T.unpackInt(f(T.packInt(a),T.packInt(b)))
+  fun PHADDD128 (a,b) = sse_call(a,b,SSSE3_C.PHADDD128)
+  fun PHADDW128 (a,b) = sse_call(a,b,SSSE3_C.PHADDW128)
+  fun PHADDSW128 (a,b) = sse_call(a,b,SSSE3_C.PHADDSW128)
+  fun PSUBD128 (a,b) = sse_call(a,b,SSSE3_C.PSUBD128)
+  fun PSUBW128 (a,b) = sse_call(a,b,SSSE3_C.PSUBW128)
+  fun PSUBSW128 (a,b) = sse_call(a,b,SSSE3_C.PSUBSW128)
+  fun PMADDUBSW128 (a,b) = sse_call(a,b,SSSE3_C.PMADDUBSW128)
+  fun PMULHRSW (a,b) = sse_call(a,b,SSSE3_C.PMULHRSW)
+  fun PABSB128 (a,b) = sse_call(a,b,SSSE3_C.PABSB128)
+  fun PABSW128 (a,b) = sse_call(a,b,SSSE3_C.PABSW128)
+  fun PABSD128 (a,b) = sse_call(a,b,SSSE3_C.PABSD128)
 end
 (*
 (*(defun cffi (name type) (insert (format "val %s = _import \"%s\":v%s*v%s*a%s->unit;\n" name name type type type)))

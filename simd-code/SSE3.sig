@@ -1,10 +1,6 @@
 signature SSE3 =
 sig
   include SSE_TYPES
-  type v2di = m128i
-  type v4si = m128i
-  type v8hi = m128i 
-  type v16qi = m128i
 (*duplicate 2nd and 4th 32 bit elements,i.e.
  *SRC:|X3|X2|X1|X0|
  *END:|X3|X3|X1|x1|*)
@@ -30,10 +26,14 @@ sig
 end
 signature SSSE3 = sig
   include SSE_TYPES
+  type v2di = m128i
+  type v4si = m128i
+  type v8hi = m128i
+  type v16qi = m128i
 (*Horizontal add/sub instructions
  *same idea as above but using integers instead of floats
  *There are 64&128 bit versions,but ignore the 64 bit ones, at least for now*)
-p  val PHADDD128:v4si*v4si->v4si
+  val PHADDD128:v4si*v4si->v4si
   val PHADDW128:v8hi*v8hi->v8hi
   val PHADDSW128:v8hi*v8hi->v8hi(*add w/saturation*)
   val PHSUBD128:v4si*v4si->v4si
