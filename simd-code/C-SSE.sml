@@ -48,21 +48,19 @@ struct
     val orps = _import "orps":v4sf*v4sf*v4sf->unit;
     val xorps = _import "xorps":v4sf*v4sf*v4sf->unit;
     val andnps = _import "andnps":v4sf*v4sf*v4sf->unit;
+    val cmpeqps = _import "cmpeqps":v4sf*v4sf*v4sf->unit;
     val cmpltps = _import "cmpltps":v4sf*v4sf*v4sf->unit;
-    val cmpeqps = _import "cmpeqps" v4sf*v4sf*v4sf->unit;
-    val cmpltps = _import "cmpltps" v4sf*v4sf*v4sf->unit;
-    val cmpleps = _import "cmpleps" v4sf*v4sf*v4sf->unit;
-    val cmpgtps = _import "cmpgtps" v4sf*v4sf*v4sf->unit;
-    val cmpgeps = _import "cmpgeps" v4sf*v4sf*v4sf->unit;
-    val cmpunordps = _import "cmpunordps" v4sf*v4sf*v4sf->unit;
-    val cmpneqps = _import "cmpneqps" v4sf*v4sf*v4sf->unit;
-    val cmpnltps = _import "cmpnltps" v4sf*v4sf*v4sf->unit;
-    val cmpnleps = _import "cmpnleps" v4sf*v4sf*v4sf->unit;
-    val cmpngtps = _import "cmpngtps" v4sf*v4sf*v4sf->unit;
-    val cmpngeps = _import "cmpngeps" v4sf*v4sf*v4sf->unit;
-    val cmpordps = _import "cmpordps" v4sf*v4sf*v4sf->unit;
-    val shufps = _import "shufps" v4sf*v4sf*v4sf->unit;
-
+    val cmpleps = _import "cmpleps":v4sf*v4sf*v4sf->unit;
+    val cmpgtps = _import "cmpgtps":v4sf*v4sf*v4sf->unit;
+    val cmpgeps = _import "cmpgeps":v4sf*v4sf*v4sf->unit;
+    val cmpunordps = _import "cmpunordps":v4sf*v4sf*v4sf->unit;
+    val cmpneqps = _import "cmpneqps":v4sf*v4sf*v4sf->unit;
+    val cmpnltps = _import "cmpnltps":v4sf*v4sf*v4sf->unit;
+    val cmpnleps = _import "cmpnleps":v4sf*v4sf*v4sf->unit;
+    val cmpngtps = _import "cmpngtps":v4sf*v4sf*v4sf->unit;
+    val cmpngeps = _import "cmpngeps":v4sf*v4sf*v4sf->unit;
+    val cmpordps = _import "cmpordps":v4sf*v4sf*v4sf->unit;
+(*    val shufps = _import "shufps" v4sf*v4sf*v4sf->unit;*)
     fun sml2c f = fn (x,y) =>
                      let
                        val z = Unsafe.Array.create (4,0.0:Real32.real)
@@ -90,7 +88,6 @@ struct
     val ORPS = sml2c orps
     val XORPS = sml2c xorps
     val ANDNPS = sml2c andnps
-    val CMPLTPS = sml2c cmpltps
     val CMPEQPS = sml2c cmpeqps
     val CMPLTPS = sml2c cmpltps
     val CMPLEPS = sml2c cmpleps
@@ -103,7 +100,7 @@ struct
     val CMPNGTPS = sml2c cmpngtps
     val CMPNGEPS = sml2c cmpngeps
     val CMPORDPS = sml2c cmpordps
-    val SHUFPS = sml2c shufps
+(*    val SHUFPS = sml2c shufps*)
 
 end
 (*  TODO
@@ -138,28 +135,28 @@ struct
   fun XORPS (a,b) = sse_call(a,b,C_SSE.XORPS)
   fun ANDNPS (a,b) = sse_call(a,b,C_SSE.ANDNPS)
   fun CMPLTPS (a,b) = sse_call(a,b,C_SSE.CMPLTPS)
-  fun CMPLTPS (a,b) = sse_call(a,b,C_SSE.CMPLTPS)
   fun CMPEQPS (a,b) = sse_call(a,b,C_SSE.CMPEQPS)
   fun CMPLEPS (a,b) = sse_call(a,b,C_SSE.CMPLEPS)
   fun CMPGTPS (a,b) = sse_call(a,b,C_SSE.CMPGTPS)
   fun CMPGEPS (a,b) = sse_call(a,b,C_SSE.CMPGEPS)
-  fun CMPUNORDYS (a,b) = sse_call(a,b,C_SSE.CMPUNORDYS)
+  fun CMPUNORDPS (a,b) = sse_call(a,b,C_SSE.CMPUNORDPS)
   fun CMPNEQPS (a,b) = sse_call(a,b,C_SSE.CMPNEQPS)
   fun CMPNLTPS (a,b) = sse_call(a,b,C_SSE.CMPNLTPS)
   fun CMPNLEPS (a,b) = sse_call(a,b,C_SSE.CMPNLEPS)
   fun CMPNGTPS (a,b) = sse_call(a,b,C_SSE.CMPNGTPS)
   fun CMPNGEPS (a,b) = sse_call(a,b,C_SSE.CMPNGEPS)
   fun CMPORDPS (a,b) = sse_call(a,b,C_SSE.CMPORDPS)
-  fun SHUFPS (a,b) = sse_call(a,b,C_SSE.SHUFPS)
+(*  fun SHUFPS (a,b) = sse_call(a,b,C_SSE.SHUFPS)*)
 end
 
 (*need to see if mlton does -nan and -0 or not*)
-local
+(*local
     fun cvt nan = True
-    | cvt 0 = False
+    | cvt 0.0 = False
     open Array
 in
-fun cmpToBool x = (cvt sub(x,0),cvt sub(x,1),cvt sub(x,2),cvt sub(x,3))
+fun cmpToBool x = (cvt(sub(x,0)),cvt(sub(x,1)),cvt(sub(x,2)),cvt(sub(x,3)))
+end*)
 
 structure C_SSE_vector = C_SSE_Typed(SSE_Ctype_vector)
 structure C_SSE_array = C_SSE_Typed(SSE_Ctype_array)

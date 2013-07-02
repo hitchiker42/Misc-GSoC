@@ -1,6 +1,6 @@
-/home/tucker/usr/lib/mlton/sml/basis/basis.mlb
-/home/tucker/usr/lib/mlton/sml/basis/mlton.mlb
-/home/tucker/usr/lib/mlton/sml/basis/unsafe.mlb
+$(SML_LIB)/basis/basis.mlb
+$(SML_LIB)/basis/mlton.mlb
+$(SML_LIB)/basis/unsafe.mlb
 SSE-Types.sig
 SSE4.sig
 C-SSE4.sml

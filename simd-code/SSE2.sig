@@ -40,9 +40,9 @@ sig
   val CMPNGTPD:v2df*v2df->v2df 
   val CMPORDPD:v2df*v2df->v2df 
 (*PACK/SHUFFLE*)
-  val SHUFPD:v2df*v2df->v2df (*I believe that it takes an immediate to determine order*)
+(*(  val SHUFPD:v2df*v2df->v2df (*I believe that it takes an immediate to determine order*)
   val UNPCKHPD:v2df*v2df->v2df 
-  val UNPCKLPD:v2df*v2df->v2df
+  val UNPCKLPD:v2df*v2df->v2df*)
 (*CONVERT DOUBLES*)
 (*two ts indicate conversion with truncation*)
 (*  val CVTPD2PI:v2df->v2si

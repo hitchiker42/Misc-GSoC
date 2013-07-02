@@ -103,7 +103,8 @@
 /*typedef float v4sf __attribute__ ((__vector_size__ (16)));\n*/
 #define v4sf __v4sf\n")
   (c-opcodes float2 "addps" "subps" "mulps" "divps" "maxps" "minps" "andps" 
-"orps" "xorps" "andnps" "cmpltps")
+"orps" "xorps" "andnps" "cmpeqps" "cmpltps" "cmpleps" "cmpgtps" "cmpgeps" "cmpunordps"
+"cmpneqps" "cmpnltps" "cmpnleps" "cmpngtps" "cmpngeps" "cmpordps")
   (c-opcodes float1 "rcpps" "sqrtps" "rsqrtps")
 (insert "#endif\n")))
 (C-SSE)
@@ -111,16 +112,18 @@
   (with-temp-file "C-SSE2.c"
     (insert (concat
              SSE-Types
-             "#ifdef _EMMINTRIN_H_INCLUDED"))
-    (c-opcodes double2 "addpd" "subpd" "mulpd" "divpd" "andpd" "minpd" "maxpd" "orpd" "xorpd" "andnpd")
-    (c-opcodes double1 "rcppd" "sqrtpd" "rsqrtpd")
+             "#ifdef _EMMINTRIN_H_INCLUDED\n"))
+    (c-opcodes double2 "addpd" "subpd" "mulpd" "divpd" "andpd" "minpd" "maxpd" "orpd" "xorpd" "andnpd"
+"cmpeqpd" "cmpltpd" "cmplepd" "cmpgtpd" "cmpgepd" "cmpunordpd" "cmpneqpd" "cmpnltpd"
+"cmpnlepd" "cmpngtpd" "cmpngepd" "cmpordpd")
+    (c-opcodes double1 "sqrtpd");"rcppd"  "rsqrtpd")
     (insert "#endif\n")))
 (C-SSE2)
 (defun C-SSE3 ()
   (with-temp-file "C-SSE3.c"
     (insert (concat
              SSE-Types
-             "#ifdef _PMMINTRIN_H_INCLUDED"))
+             "#ifdef _PMMINTRIN_H_INCLUDED\n"))
     (c-opcodes float2 "addsubps" "haddps" "hsubps")
     (c-opcodes double2 "addsubpd" "haddpd" "hsubpd")
     (insert "#endif\n")

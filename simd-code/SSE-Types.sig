@@ -1,13 +1,13 @@
 signature SSE_TYPES =
 sig
-  type v2df
-  type v4sf
+  type v2df = Real64.real Array.array
+  type v4sf = Real32.real Array.array
 (*would like to do this  datatype m128i = v2di | v4si | v8hi | v16qi*)
 (*  type v2di
   type v4si
   type v8hi
   type v16qi*)
-  type m128i
+  type m128i = Word8.word Array.array
 (* packed types/values(with x = the appropiate integer)
  * vxdf = double float
  * vxsf = single float
@@ -26,8 +26,8 @@ sig
   val packDouble:t2df->v2df
   val packFloat:t4sf->v4sf
   val packInt:simdInt->m128i
-  val unpack2f:Real64.real Array.array->t2df
-  val unpack4f:Real32.real Array.array->t4sf
+  val unpackDouble:Real64.real Array.array->t2df
+  val unpackFloat:Real32.real Array.array->t4sf
   val unpackInt:m128i->simdInt
 end
 signature SSE_C_FLOATS =
@@ -36,15 +36,17 @@ sig
   type v4sf = Real32.real Array.array
   type t2df
   type t4sf
-  val pack2f:t2df->v2df
-  val pack4f:t4sf->v4sf
-  val unpack2f:Real64.real Array.array->t2df
-  val unpack4f:Real32.real Array.array->t4sf
+  val packDouble:t2df->v2df
+  val packFloat:t4sf->v4sf
+  val unpackDouble:Real64.real Array.array->t2df
+  val unpackFloat:Real32.real Array.array->t4sf
 end
 signature SSE_C_INTS =
 sig
-  datatype m128i = v2di | v4si | v8hi | v16qi
-  datatype simdInt = t2di| t4si | t8hi | t16qi
+ (*datatype m128i = v2di | v4si | v8hi | v16qi
+  datatype simdInt = t2di| t4si | t8hi | t16qi*)
+  type m128i
+  type simdInt
   val packInt:simdInt->m128i
   val unpackInt:m128i->simdInt
 end
@@ -73,10 +75,29 @@ struct
   val packDouble=id
   val packFloat=id
   val packInt=id
-  val unpack2f=id
-  val unpack4f=id
+  val unpackDouble=id
+  val unpackFloat=id
   val unpackInt=id
   end
+end
+structure SSE_Ctype_vector:SSE_C_TYPES =
+struct
+  open SSE_Types
+  type t2df = Real64.real Vector.vector
+  type t4sf = Real32.real Vector.vector
+  type simdInt = Word8.word Vector.vector
+  fun packDouble a = let 
+    val z = Unsafe.Array.create (2,0.0:Real64.real)
+  in (Array.copyVec{src=a,dst=z,di=0};z) end
+  fun packFloat a = let 
+    val z = Unsafe.Array.create (4,0.0:Real32.real)
+  in (Array.copyVec{src=a,dst=z,di=0};z) end
+  fun packInt a = let 
+    val z = Unsafe.Array.create (16,0w0:Word8.word)
+  in (Array.copyVec{src=a,dst=z,di=0};z) end
+  fun unpackDouble x = Array.vector x
+  fun unpackFloat x = Array.vector x
+  fun unpackInt x = Array.vector x
 end
 (*
 structure SSE_Ctype_array:SSE_C_TYPES =
