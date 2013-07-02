@@ -20,7 +20,7 @@ sig
  *DEST:|Y3|Y2|Y1|Y0|
  *END :|X3+/-X2|X1+/-X0|Y3+/-Y2|Y1+/-Y0|*)
   val HADDPD:v2df*v2df->v2df
-  val HADDPS:v4vf*v4sf->v4sf
+  val HADDPS:v4sf*v4sf->v4sf
   val HSUBPD:v2df*v2df->v2df
   val HSUBPS:v4sf*v4sf->v4sf
 end
