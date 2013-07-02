@@ -1,27 +1,27 @@
-* TODO SIMD Research [14%]
-  DEADLINE: <2013-06-28 Fri>
-** TODO GCC Research [2/3]
+* TODO SIMD Research [30%]
+  DEADLINE:<2013-07-18 Thu>
+** TODO GCC Research [3/5]
 *** DONE Use of SIMD Primitives
 *** DONE Basic implementation of SIMD Primitives
-*** TODO Advanced implementation details [0/2]
-**** TODO Vector type implementations
+*** TODO Advanced implementation details [1/2]
+**** DONE Vector type implementations
 **** TODO Autovectorization
-** TODO llvm Research [0/3]
-*** TODO Read up on LLVM implementation (basic stuff)
+** TODO llvm Research [1/3]
+*** DONE Read up on LLVM implementation (basic stuff)
 *** TODO Read/dig through code to learn about LLVM vector type, vectorization,
     compilier intrinsics etc...
 *** TODO Rather unlikely but figure out how hard implementing an llvm backend would be 
 ** TODO D Research
 ** TODO Mono.Simd Research
-** TODO Non C-language Research [0/3]
-*** TODO GHC SIMD implementation via llvm
+** TODO Non C-language Research [2/3]
+*** DONE GHC SIMD implementation via llvm
 *** TODO cl-simd, generic and sbcl specific
-*** TODO Any other useful languages?
+*** DONE Any other useful languages?
 ** TODO Write MLton SIMD implementation specification [0/3]
 *** TODO Orginize Code Structure
 *** TODO Writeup basic signature files
 *** TODO Write formal spec
-* TODO Write MLton SIMD implementation [25%]
+* TODO Write MLton SIMD implementation [31%]
   DEADLINE: <2013-09-16 Mon>
 ** TODO MLton Research/Hacking
 *** DONE C-ffi stuff [2/2]
@@ -37,19 +37,19 @@
 **** TODO ssa (1&2)
 **** TODO rsa
 **** TODO machine
-*** TODO MLton specific libraries etc
-** TODO Finalize Signature files
-** TODO Write C backend [1/5]
+*** DONE MLton specific libraries etc
+** DONE Finalize Signature files
+** TODO Write C backend [2/6]
    DEADLINE: <2013-07-28 Sun>
 *** TODO Unit tests everywhere
-*** TODO SSE implementation
-*** TODO SSE2 implementation
+*** DONE SSE implementation
+*** DONE SSE2 implementation
 *** TODO SSE3(etc) implementation
 *** TODO SSE4(.1,.2) implementation
-*** OPT AVX implementation
+*** TODO AVX implementation
 ** TODO Write AMD-64 backend
    DEADLINE: <2013-09-16 Mon>
-** OPT Write Software backend
+** TODO Write Software backend
 ** TODO Figure out how to align to 16 bit boundries
    Its pretty important to figure this out, simd stuff really needs
    to be aligned
@@ -61,3 +61,6 @@ Start <2013-06-17 Mon>
 Midterm <2013-07-29 Sat> - <2013-08-02 Fri>
 End <2013-09-16 Mon>
 Due <2013-09-23 Mon>
+* TODO <2013-07-02 Tue>
+  Write frontend & update backend to fit with using Word8 arrays for
+  all int types
