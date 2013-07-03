@@ -10,6 +10,11 @@ functor SimdReal32_128(S:SSE and S3:SSE3 and S4:SSE4):SIMD_FLOAT =
   val VSQRT = SQRTPS
   val VMIN = MAXPS
   val VAND = ANDPS
+  val VOR = ORPS
+  val VXOR = XORPS
+  val VANDN = ANDNPS
+  (*not sure the best way to do cmp*)
+
 end
 	    
 functor SimdReal32_256 (A:AVX):SIMD_FLOAT =
@@ -18,6 +23,22 @@ end
 
 functor SimdReal64_128 (S2:SSE2 and S3:SSE3 and S4:SSE4):SIMD_FLOAT = 
   struct
+  open S2
+  open S3
+  open S4
+  val VADD = ADDPD
+  val VSUB = SUBPD
+  val VMUL = MULPD
+  val VDIV = DIVPD
+  val VRPC = RCPPD
+  val VSQRT = SQRTPD
+  val VMIN = MINPD
+  val VMAX = MAXPD
+  val VAND = ANDPD
+  val VOR = ORPD
+  val VXOR = XORPD
+  val VANDN = ANDNPD
+  fun VNOT x = 
 end
 
 functor SimdInt8_128 (S2:SSE2 and S3:SSSE3 and S4:SSE4):SIMD_INT =
@@ -29,6 +50,8 @@ is necessary, however, we don't have a ton of byte opperations...*)
   open S4
   val VADD = PADDB128
   val VSUB = PSUBB128
+  val VCMPEQ = PCMPEQB128
+  val VCMPGT = PCMPGTB128
 end
 (*for the rest of the int structures we need to convert the word 8 array
 used internally into the proper word size array. We do this using the 

@@ -68,7 +68,7 @@ Design of SIMD implementation in MLton
   instructions. Ideas from all of these implementations have been used in
   creating this design and will be used in the further development of the
   native code backend.
-
+  
 * Design Plan
 ** Introduction
    The implementation will be broken up into several parts, a C backend, a
@@ -96,6 +96,13 @@ Design of SIMD implementation in MLton
    extended to include 16 byte alignment. This should be the default alignment
    for any code using simd functions. This will increase code size, but as 8 or
    4 byte alignment will cause a notable speed penalty, this is acceptable.
+
+   Internally there will be three types used, a separate type for both single
+   precision and double precision floating point numbers and a single type for
+   all the various integer types. This is consistent with the available
+   hardware instructions. The types used will be arrays of Real32,Real64 and
+   Word8 values. The interface that will be presented to the programmer will
+   have unique types for 8,16,32 and 64 bit words/integers.
 
    The specific design details of the native code backend are currently
    incomplete. The current design focus is on the general structure of the

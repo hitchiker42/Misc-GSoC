@@ -54,7 +54,7 @@ sig
   val VXOR:v*v->v(*vex 256 && 128*)
   val VOR: v*v->v(*vex 256 && 128*)
   val VANDN:v*v->v(*vex 256 && 128*)
-  val VNOT:v->v
+  val VNOT:v->v(*all 1s  and opperand = ! opperand*)
 (*Round/Convert*)
   val VROUNDP:v*v*Word8.word->vi(*actual round instruction*)(*vex 256 && 128*)
 (*might not make ^ part of the final sig, but it does need to exist internally*)

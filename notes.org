@@ -29,6 +29,16 @@
   -basis lib unsafe.mlb to create uninitalized array
   -compare c calls to c calls, i.e. c-simd call vs c-for loop
 
+* google hangout <2013-07-03 Wed>
+  -want something like word128 ! ! !
+  -this is important for performance.
+  -tuples are tricky.
+  -pack word should work ok.
+  -enumerate the specific subset of instructions for frontend.
+  -start working from backend and moving up for implementing hardware stuff.
+  -work with the simple ir's, basically ssa, working with primitive not object.
+  -start with ssa and work down and up from there.
+  -look at word based things in ssa.
 * Low level details
 ** Immediate opperands
 *** Compairson
