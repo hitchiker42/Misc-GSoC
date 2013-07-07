@@ -9,12 +9,13 @@ help(){
     echo -e "\t -h|--help print this help and exit"
     echo -e "\t -v|--version print version information"
     echo -e "\t -d|--default generate script using default options"
+    echo -e "\t --default-opts OPTS, additional default options for mlton"
     echo -e "\t --prefix DIR:prefix for mlton & mlton libs [/usr/local]"
     echo -e "\t --libdir DIR:location of mlton libs [/usr/local/lib]"
     echo -e "\t --bindir DIR:location of mlton excutable (aka. this script)
 \t\t[/usr/local/bin]"
     echo -e "\t -f|--file FILE: name of mlton excutable
-\t\t[mlton], if host=mingw append .exe"
+\t\t[bindir/mlton], if host=mingw append .exe"
     echo -e "\t -a|--arch ARCH: generate script for architecture ARCH
 \t\tdefault determined by current architecture"
     echo -e "\t -c|--cc FILE: name of default c compiler [gcc]"
@@ -29,7 +30,7 @@ VERSION="0.01"
 [[ $# = 0 ]] && help
 #run getopt on args
 TEMP=$(getopt -o a:,c:,f:,h,o:,v,d \
--l prefix:,libdir:,bindir:,file:,os:,arch:,cc:,help,version,default \
+-l prefix:,libdir:,bindir:,file:,os:,arch:,cc:,help,version,default,default-opts: \
 -n 'mlton.sh' -- "$@")
 if [ $? != 0 ] ; then echo "Getopt failed, error $?" >&2 ; exit 1 ; fi
 
@@ -42,6 +43,7 @@ while true;do
         --prefix) prefix="$2";shift 2;;
         --libdir) libdir="$2";shift 2;;
         --bindir) bindir="$2";shift 2;;
+        --default-opts) default_opts="$2";shift 2;;
         -o|--os) HOST_OS="$2";shift 2;;
         -a|--arch) HOST_ARCH="$2";shift 2;;
         -f|--file) script="$2";shift 2;;
@@ -211,6 +213,7 @@ doit "$libdir" \\
         -link-opt "$LDFLAGS"                                   \\
         -mlb-path-map "$libdir/mlb-path-map"                   \\
         -profile-exclude '\\\$\\(SML_LIB\\)'                   \\
+        $default_opts                                          \\
         "\$@"
 EOF
 ) >>$script
