@@ -8,13 +8,16 @@ TEMP=$(getopt -o a:,c:,k:,o:,m:\
 -n 'mlton-compile.sh' -- "&@")
 while true;do
     case "$1" in
-        a|align) align="2";shift 2 ;;
+        a|align) align="$2";shift 2 ;;
         as-opt) as_opts="$2";shift 2;;
         c|cc-opt) cc_opts="$2";shift 2;;
         o|output) output_file="$2";shift 2;;
         k|keep)
             for i in $(echo "$1" | tr ',' ' ');do
                 case "$i" in
+                    build-constants)keep="$keep $1";shift;;
+                    core-ml)keep="$keep $1";shift;;
+                    
                 esac
             done
             shift 2;;

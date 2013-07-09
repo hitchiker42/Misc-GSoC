@@ -39,6 +39,8 @@
   -work with the simple ir's, basically ssa, working with primitive not object.
   -start with ssa and work down and up from there.
   -look at word based things in ssa.
+* google hangout <2013-07-10 Wed>
+  QUESTIONS: adding Ymm register stuff to amd64 codegen
 * Low level details
 ** Immediate opperands
 *** Compairson

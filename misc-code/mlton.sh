@@ -3,7 +3,7 @@
 #Rather than deducing the platform and necessary options each time
 #mlton is called, do it once and generate a script with platform dependent
 #variables builtin
-
+#TODO Add option -m InstructionSet to decide to use specific instructions
 help(){  
   echo -e "usage: mlton.sh [options]\nOptions:"
     echo -e "\t -h|--help print this help and exit"
@@ -161,6 +161,7 @@ if [ ! -w "$script" ] ; then
 fi
 #generate part of script w/out shell expansion (thus the quoted EOF)
 (cat <<"EOF"
+#!/bin/bash
 declare -a rargs
 case "$1" in
 @MLton)
