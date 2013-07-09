@@ -41,6 +41,8 @@
   -look at word based things in ssa.
 * google hangout <2013-07-10 Wed>
   QUESTIONS: adding Ymm register stuff to amd64 codegen
+  -alias the ymm registers to the xmm registers
+  -keep just xmm register structure and work on that
 * Low level details
 ** Immediate opperands
 *** Compairson
