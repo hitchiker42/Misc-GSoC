@@ -182,3 +182,156 @@
   We probably need both int and word versions of the general simd opperations
   but at the low level it seems easiest to work with words, but as of now
   I have everything as ints, fix this
+* Compilation warnings
+Warning: ../backend/rep-type.fun 735.10.
+  Case is not exhaustive.
+    missing pattern: Align32
+    in: case ! Control.align of Control.A  ...  16 => Bits.inWord128
+Warning: ../codegen/c-codegen/c-codegen.fun 76.13.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim (size w) of W8  ...   toString w, "llu"])
+Warning: ../codegen/x86-codegen/x86.fun 104.13.
+  Case is not exhaustive.
+    missing pattern: Word128 | Word256
+    in: case t of CPointer => (Vector.new  ...  r.new2 (LONG, LONG))
+Warning: ../codegen/x86-codegen/x86.fun 480.13.
+  Case is not exhaustive.
+    missing pattern: Word128 | Word256
+    in: case t of CPointer => Four | Int8  ...  ur | Word64 => Eight
+Warning: ../codegen/x86-codegen/x86.fun 1245.19.
+  Case is not exhaustive.
+    missing pattern: Word128 | Word256
+    in: case RepType.toCType ty of CPoint  ...   w32 | Word64 => w64
+Warning: ../codegen/x86-codegen/x86-mlton-basic.fun 306.13.
+  Case is not exhaustive.
+    missing pattern: Word128 | Word256
+    in: case t of CPointer => (Label.from  ...  | Word64 => (w "64")
+Warning: ../codegen/x86-codegen/x86-mlton.fun 37.12.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim s of W8 => tru  ...   true | W64 => false
+Warning: ../codegen/x86-codegen/x86-mlton.fun 686.12.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim size of W8 =>   ...   => (binal64 (i, i))
+Warning: ../codegen/x86-codegen/x86-mlton.fun 695.15.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim size of W8 =>   ...  prim: compare, W64")
+Warning: ../codegen/x86-codegen/x86-mlton.fun 702.12.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim size of W8 =>   ...  n.prim: shift, W64")
+Warning: ../codegen/x86-codegen/x86-mlton.fun 1384.17.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim s of W8 => (bi  ...  B, Instruction.SBB))
+Warning: ../codegen/x86-codegen/x86-mlton.fun 1369.17.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim s of W8 => (un  ...  on.NOT, fn _ => []))
+Warning: ../codegen/x86-codegen/x86-mlton.fun 1358.17.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim s of W8 => (un  ...  , size = dstsize}]))
+Warning: ../codegen/x86-codegen/x86-mlton.fun 1350.17.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim s of W8 => (pm  ...  rim: Word_mul, W64")
+Warning: ../codegen/x86-codegen/x86-mlton.fun 1340.17.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim s of W8 => (bi  ...  D, Instruction.ADC))
+Warning: ../codegen/x86-codegen/x86-mlton.fun 1292.20.
+  Case is not exhaustive.
+    missing pattern: (R32, W128 | W256) | (R64, W128 | W256)
+    in: case (s, WordSize.prim s') of (R6  ...  W8) => (default' ())
+Warning: ../codegen/x86-codegen/x86-mlton.fun 1870.20.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim s of W8 => (bi  ...  truction.SBB, flag))
+Warning: ../codegen/x86-codegen/x86-mlton.fun 1861.16.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim s of W8 => (un  ...   | W64 => (neg64 ())
+Warning: ../codegen/x86-codegen/x86-mlton.fun 1854.23.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim s of W8 => (pm  ...  Word_mulCheck, W64")
+Warning: ../codegen/x86-codegen/x86-mlton.fun 1848.26.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim s of W8 => (pm  ...  Word_mulCheck, W64")
+Warning: ../codegen/x86-codegen/x86-mlton.fun 1837.20.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim s of W8 => (bi  ...  truction.ADC, flag))
+Warning: ../codegen/x86-codegen/x86-translate.fun 275.19.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim (WordX.size w)  ...   x86.Size.LONG)) end
+Warning: ../codegen/amd64-codegen/amd64.fun 1481.19.
+  Case has redundant rules.
+    rules: word256 => v256
+    in: case RepType.toCType ty of CPoint  ...  28 | word256 => v256
+Warning: ../codegen/amd64-codegen/amd64.fun 1976.16.
+  Function is not exhaustive.
+    missing pattern: (SSE_BinAP _) | (SSE_UnAP _)
+    in: fn NOP => (str "nop") | HLT => (s  ...  Operand.layout dst))
+Warning: ../codegen/amd64-codegen/amd64.fun 2196.14.
+  Function is not exhaustive.
+    missing pattern: (SSE_BinAP _) | (SSE_UnAP _)
+    in: fn NOP => {uses = [], defs = [],   ...  = [dst], kills = []}
+Warning: ../codegen/amd64-codegen/amd64.fun 2470.14.
+  Function is not exhaustive.
+    missing pattern: (SSE_BinAP _) | (SSE_UnAP _)
+    in: fn NOP => {srcs = NONE, dsts = NO  ...  , dsts = SOME [dst]}
+Warning: ../codegen/amd64-codegen/amd64.fun 2615.14.
+  Function is not exhaustive.
+    missing pattern: (SSE_BinAP _) | (SSE_UnAP _)
+    in: fn NOP => NOP | HLT => HLT | (Bin  ...   dstsize = dstsize})
+Warning: ../codegen/amd64-codegen/amd64-mlton-basic.fun 245.13.
+  Case is not exhaustive.
+    missing pattern: Word128 | Word256
+    in: case t of CPointer => (Label.from  ...  | Word64 => (w "64")
+Warning: ../codegen/amd64-codegen/amd64-mlton.fun 38.12.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim s of W8 => tru  ...   true | W64 => false
+Warning: ../codegen/amd64-codegen/amd64-mlton.fun 1041.17.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim s of W8 => (pm  ...   | W64 => (imul2 ())
+Warning: ../codegen/amd64-codegen/amd64-mlton.fun 1387.26.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim s of W8 => (pm  ...  amd64.Instruction.O)
+Warning: ../codegen/amd64-codegen/amd64-translate.fun 275.19.
+  Case is not exhaustive.
+    missing pattern: W128 | W256
+    in: case WordSize.prim (WordX.size w)  ...  gle amd64.Size.QUAD)
+Warning: ../codegen/amd64-codegen/amd64-translate.fun 433.26.
+  Case is not exhaustive.
+    missing pattern: VEC
+    in: case amd64.Size.class srcsize of   ...  rc, size = srcsize})
+Warning: ../codegen/amd64-codegen/amd64-simplify.fun 2319.39.
+  Case is not exhaustive.
+    missing pattern: VEC
+    in: case Size.class size of Size.INT   ...  c dst, size = size})
+Warning: ../codegen/amd64-codegen/amd64-simplify.fun 2398.22.
+  Case is not exhaustive.
+    missing pattern: VEC
+    in: case Size.class size of Size.INT   ...  c dst, size = size})
+Warning: ../codegen/amd64-codegen/amd64-generate-transfers.fun 594.49.
+  Case is not exhaustive.
+    missing pattern: VEC
+    in: case Size.class dstsize of Size.I  ...   dstsize}) :: stmts)
+Warning: ../codegen/amd64-codegen/amd64-allocate-registers.fun 10109.33.
+  Case is not exhaustive.
+    missing pattern: VEC
+    in: case Size.class (MemLoc.size meml  ...  .FLT => (doitFLT ())
+Warning: ../codegen/amd64-codegen/amd64-allocate-registers.fun 10151.33.
+  Case is not exhaustive.
+    missing pattern: VEC
+    in: case Size.class (MemLoc.size meml  ...  .FLT => (doitFLT ())
